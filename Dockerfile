@@ -5,7 +5,8 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+# Install ALL dependencies (including dev) for building
+RUN npm ci
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
@@ -14,6 +15,9 @@ WORKDIR /app
 # Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Copy prisma files
+COPY prisma ./prisma
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -37,6 +41,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/prisma ./prisma
 
 # Set correct permissions
 USER nextjs
