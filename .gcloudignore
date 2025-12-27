@@ -1,0 +1,25 @@
+# Git files
+.git
+.gitignore
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+
+# PDFs - large files
+public/documents/*.pdf
+backups/
+
+# Database
+prisma/*.db
+prisma/*.db-journal
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
