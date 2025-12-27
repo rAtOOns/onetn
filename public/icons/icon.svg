@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background - Government Green -->
+  <rect width="512" height="512" rx="64" fill="#065f46"/>
+
+  <!-- Document Shape - White -->
+  <path d="M140 80 L320 80 L372 132 L372 432 L140 432 Z" fill="white"/>
+  <path d="M320 80 L320 132 L372 132" fill="none" stroke="#e5e7eb" stroke-width="4"/>
+
+  <!-- Document Lines -->
+  <rect x="172" y="180" width="168" height="12" rx="6" fill="#065f46" opacity="0.3"/>
+  <rect x="172" y="220" width="140" height="12" rx="6" fill="#065f46" opacity="0.3"/>
+  <rect x="172" y="260" width="168" height="12" rx="6" fill="#065f46" opacity="0.3"/>
+  <rect x="172" y="300" width="120" height="12" rx="6" fill="#065f46" opacity="0.3"/>
+
+  <!-- TN Badge -->
+  <circle cx="300" cy="380" r="56" fill="#d97706"/>
+  <text x="300" y="395" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">TN</text>
+
+  <!-- Government Seal Accent -->
+  <circle cx="300" cy="380" r="50" fill="none" stroke="white" stroke-width="3" opacity="0.5"/>
+</svg>

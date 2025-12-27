@@ -1,33 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  /* Tamil Nadu Color Palette */
+  --tn-primary: #065f46;
+  --tn-secondary: #b91c1c;
+  --tn-accent: #d97706;
+  --tn-highlight: #10b981;
+  --tn-government: #1e3a5f;
+  --tn-chestnut: #7c2d12;
+  --tn-background: #f0fdf4;
+  --tn-surface: #ffffff;
+  --tn-text: #1a202c;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  font-family: 'Inter', 'Noto Sans Tamil', sans-serif;
+  color: var(--tn-text);
+  background-color: var(--tn-background);
+}
+
+/* Tamil text styling */
+.tamil {
+  font-family: 'Noto Sans Tamil', sans-serif;
+}
+
+@layer components {
+  /* TN Button styles */
+  .btn-primary {
+    @apply bg-tn-highlight text-white px-6 py-2 rounded-lg font-medium
+           hover:bg-tn-primary transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-tn-government text-white px-6 py-2 rounded-lg font-medium
+           hover:bg-tn-primary transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply border-2 border-tn-primary text-tn-primary px-6 py-2 rounded-lg font-medium
+           hover:bg-tn-primary hover:text-white transition-colors duration-200;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-tn-surface rounded-xl shadow-md p-6 border border-gray-100;
+  }
+
+  /* Link styles */
+  .link-primary {
+    @apply text-tn-primary hover:text-tn-highlight underline-offset-2 hover:underline;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Gradient text for headings */
+  .text-tn-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-tn-primary to-tn-highlight;
   }
 }

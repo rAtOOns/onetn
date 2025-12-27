@@ -26,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -34,3 +35,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# Database
+/prisma/*.db
+/prisma/*.db-journal
+
+# Backups
+/backups/
+
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# PDF documents (hosted separately)
+/public/documents/*.pdf
+
+# PWA generated files
+/public/sw.js
+/public/workbox-*.js
+/public/sw.js.map
+/public/workbox-*.js.map

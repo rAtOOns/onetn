@@ -1,0 +1,408 @@
+"use client";
+
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import {
+  Calculator,
+  TrendingUp,
+  Calendar,
+  Clock,
+  FileText,
+  IndianRupee,
+  Receipt,
+  PiggyBank,
+  Wallet,
+  Gift,
+  Home,
+  Table,
+  MapPin,
+  Type,
+  User,
+  Building2,
+  BookOpen,
+  Building,
+  Sparkles,
+} from "lucide-react";
+
+interface Tool {
+  id: string;
+  name: string;
+  nameTamil: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
+  color: string;
+  category: string;
+  isNew?: boolean;
+}
+
+const tools: Tool[] = [
+  // Salary & Pay
+  {
+    id: "salary-calculator",
+    name: "Salary Calculator",
+    nameTamil: "சம்பள கால்குலேட்டர்",
+    description: "Calculate gross salary based on 7th Pay Commission",
+    icon: IndianRupee,
+    href: "/tools/salary-calculator",
+    color: "bg-green-500",
+    category: "Salary & Pay",
+  },
+  {
+    id: "pay-matrix",
+    name: "Pay Matrix Lookup",
+    nameTamil: "சம்பள அட்டவணை",
+    description: "7th Pay Commission pay scale table lookup",
+    icon: Table,
+    href: "/tools/pay-matrix",
+    color: "bg-blue-500",
+    category: "Salary & Pay",
+    isNew: true,
+  },
+  {
+    id: "increment-calculator",
+    name: "Increment Calculator",
+    nameTamil: "ஊதிய உயர்வு கால்குலேட்டர்",
+    description: "Calculate next increment date and amount",
+    icon: Calendar,
+    href: "/tools/increment-calculator",
+    color: "bg-orange-500",
+    category: "Salary & Pay",
+  },
+  {
+    id: "da-rates",
+    name: "DA Rate Table",
+    nameTamil: "அகவிலைப்படி விகிதம்",
+    description: "Current and historical DA rates",
+    icon: TrendingUp,
+    href: "/tools/da-rates",
+    color: "bg-blue-500",
+    category: "Salary & Pay",
+  },
+  // Tax & Deductions
+  {
+    id: "income-tax-calculator",
+    name: "Income Tax Calculator",
+    nameTamil: "வருமான வரி கால்குலேட்டர்",
+    description: "Calculate tax under Old vs New regime",
+    icon: Receipt,
+    href: "/tools/income-tax-calculator",
+    color: "bg-indigo-500",
+    category: "Tax & Deductions",
+  },
+  {
+    id: "hra-calculator",
+    name: "HRA Exemption",
+    nameTamil: "HRA விலக்கு",
+    description: "Calculate HRA tax exemption under Section 10(13A)",
+    icon: Home,
+    href: "/tools/hra-calculator",
+    color: "bg-cyan-500",
+    category: "Tax & Deductions",
+  },
+  // Provident Fund
+  {
+    id: "tpf-calculator",
+    name: "TPF Calculator",
+    nameTamil: "TPF கால்குலேட்டர்",
+    description: "Calculate TPF interest and generate statement",
+    icon: PiggyBank,
+    href: "/tools/tpf-calculator",
+    color: "bg-emerald-500",
+    category: "Provident Fund",
+  },
+  {
+    id: "loan-calculator",
+    name: "GPF/Loan Calculator",
+    nameTamil: "GPF கடன் கால்குலேட்டர்",
+    description: "Calculate GPF balance and loan eligibility",
+    icon: Calculator,
+    href: "/tools/loan-calculator",
+    color: "bg-red-500",
+    category: "Provident Fund",
+  },
+  // Retirement Benefits
+  {
+    id: "pension-calculator",
+    name: "Pension Calculator",
+    nameTamil: "ஓய்வூதிய கால்குலேட்டர்",
+    description: "Calculate pension, commutation and family pension",
+    icon: Wallet,
+    href: "/tools/pension-calculator",
+    color: "bg-purple-600",
+    category: "Retirement Benefits",
+  },
+  {
+    id: "gratuity-calculator",
+    name: "Gratuity Calculator",
+    nameTamil: "நன்கொடை கால்குலேட்டர்",
+    description: "Calculate gratuity based on service and last pay",
+    icon: Gift,
+    href: "/tools/gratuity-calculator",
+    color: "bg-pink-500",
+    category: "Retirement Benefits",
+  },
+  {
+    id: "leave-encashment-calculator",
+    name: "Leave Encashment",
+    nameTamil: "விடுப்பு பணமாக்கல்",
+    description: "Calculate EL and HPL encashment at retirement",
+    icon: Calendar,
+    href: "/tools/leave-encashment-calculator",
+    color: "bg-teal-600",
+    category: "Retirement Benefits",
+  },
+  // Service & Leave
+  {
+    id: "service-calculator",
+    name: "Service Calculator",
+    nameTamil: "பணிக்கால கால்குலேட்டர்",
+    description: "Calculate total service period and retirement date",
+    icon: Clock,
+    href: "/tools/service-calculator",
+    color: "bg-purple-500",
+    category: "Service & Leave",
+  },
+  {
+    id: "leave-calculator",
+    name: "Leave Balance",
+    nameTamil: "விடுப்பு நிலுவை",
+    description: "Track your CL, EL, ML and other leave balances",
+    icon: FileText,
+    href: "/tools/leave-calculator",
+    color: "bg-teal-500",
+    category: "Service & Leave",
+  },
+  {
+    id: "leave-rules",
+    name: "Leave Rules",
+    nameTamil: "விடுப்பு விதிகள்",
+    description: "Quick reference for leave entitlements and rules",
+    icon: FileText,
+    href: "/tools/leave-rules",
+    color: "bg-teal-600",
+    category: "Service & Leave",
+    isNew: true,
+  },
+  // Date & Time
+  {
+    id: "age-calculator",
+    name: "Age Calculator",
+    nameTamil: "வயது கால்குலேட்டர்",
+    description: "Calculate exact age for admissions and records",
+    icon: User,
+    href: "/tools/age-calculator",
+    color: "bg-pink-500",
+    category: "Date & Time",
+    isNew: true,
+  },
+  {
+    id: "date-difference",
+    name: "Date Difference",
+    nameTamil: "தேதி வேறுபாடு",
+    description: "Calculate days/months/years between dates",
+    icon: Calendar,
+    href: "/tools/date-difference",
+    color: "bg-indigo-500",
+    category: "Date & Time",
+    isNew: true,
+  },
+  {
+    id: "working-days",
+    name: "Working Days Counter",
+    nameTamil: "பணி நாட்கள் கணக்கு",
+    description: "Count working days excluding weekends and holidays",
+    icon: Building2,
+    href: "/tools/working-days",
+    color: "bg-emerald-600",
+    category: "Date & Time",
+    isNew: true,
+  },
+  // Reference
+  {
+    id: "holiday-calendar",
+    name: "Holiday Calendar 2025",
+    nameTamil: "விடுமுறை நாட்கள்",
+    description: "TN Government holidays list",
+    icon: Calendar,
+    href: "/tools/holiday-calendar",
+    color: "bg-red-500",
+    category: "Reference",
+    isNew: true,
+  },
+  {
+    id: "important-dates",
+    name: "Important Dates",
+    nameTamil: "முக்கிய தேதிகள்",
+    description: "Exam dates, admission schedules, academic events",
+    icon: Calendar,
+    href: "/tools/important-dates",
+    color: "bg-blue-600",
+    category: "Reference",
+    isNew: true,
+  },
+  {
+    id: "ta-da-rates",
+    name: "TA/DA Rates",
+    nameTamil: "பயணப்படி விகிதம்",
+    description: "Travel allowance and daily allowance rates",
+    icon: MapPin,
+    href: "/tools/ta-da-rates",
+    color: "bg-orange-500",
+    category: "Reference",
+    isNew: true,
+  },
+  {
+    id: "contact-directory",
+    name: "Contact Directory",
+    nameTamil: "தொடர்பு விவரங்கள்",
+    description: "CEO/DEO office contacts by district",
+    icon: Building,
+    href: "/tools/contact-directory",
+    color: "bg-amber-600",
+    category: "Reference",
+    isNew: true,
+  },
+  {
+    id: "abbreviations",
+    name: "Abbreviations",
+    nameTamil: "சுருக்கங்கள்",
+    description: "Common education department abbreviations",
+    icon: BookOpen,
+    href: "/tools/abbreviations",
+    color: "bg-cyan-600",
+    category: "Reference",
+    isNew: true,
+  },
+  // Utilities
+  {
+    id: "number-to-words",
+    name: "Number to Words",
+    nameTamil: "எண்ணை சொல்லாக",
+    description: "Convert amount to words for cheques/vouchers",
+    icon: Type,
+    href: "/tools/number-to-words",
+    color: "bg-violet-500",
+    category: "Utilities",
+    isNew: true,
+  },
+];
+
+// Group tools by category
+const groupedTools = tools.reduce((acc, tool) => {
+  if (!acc[tool.category]) {
+    acc[tool.category] = [];
+  }
+  acc[tool.category].push(tool);
+  return acc;
+}, {} as Record<string, Tool[]>);
+
+const categoryOrder = [
+  "Salary & Pay",
+  "Tax & Deductions",
+  "Provident Fund",
+  "Retirement Benefits",
+  "Service & Leave",
+  "Date & Time",
+  "Reference",
+  "Utilities",
+];
+
+export default function ToolsPage() {
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-tn-text mb-2">
+          All Tools & Calculators
+        </h1>
+        <p className="text-gray-600">
+          {tools.length} tools for Tamil Nadu Education Department employees
+        </p>
+        <p className="text-sm text-gray-500 tamil">
+          தமிழ்நாடு கல்வித்துறை ஊழியர்களுக்கான {tools.length} கருவிகள்
+        </p>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+        <p className="text-sm text-amber-800">
+          <strong>Disclaimer:</strong> These tools are for informational purposes only.
+          Always verify calculations with official sources or your DDO.
+        </p>
+      </div>
+
+      {/* New Tools Badge */}
+      {tools.filter((t) => t.isNew).length > 0 && (
+        <div className="bg-gradient-to-r from-tn-primary to-tn-secondary text-white rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles size={20} />
+            <span className="font-semibold">New Tools Added!</span>
+          </div>
+          <p className="text-sm opacity-90">
+            {tools.filter((t) => t.isNew).length} new reference tools and utilities have been added.
+            Check out Holiday Calendar, Contact Directory, and more.
+          </p>
+        </div>
+      )}
+
+      {/* Tools by Category */}
+      {categoryOrder.map((category) => {
+        const categoryTools = groupedTools[category];
+        if (!categoryTools) return null;
+
+        return (
+          <div key={category} className="mb-8">
+            <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-tn-primary rounded-full"></span>
+              {category}
+            </h2>
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {categoryTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <Link
+                    key={tool.id}
+                    href={tool.href}
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-tn-primary/20 transition-all group relative"
+                  >
+                    {tool.isNew && (
+                      <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        New
+                      </span>
+                    )}
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`${tool.color} p-2.5 rounded-lg text-white group-hover:scale-110 transition-transform`}
+                      >
+                        <Icon size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-tn-text group-hover:text-tn-primary transition-colors">
+                          {tool.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 tamil mb-1">
+                          {tool.nameTamil}
+                        </p>
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {tool.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Footer Note */}
+      <div className="mt-8 text-center border-t pt-6">
+        <p className="text-sm text-gray-500">
+          More tools coming soon. Use the sidebar to navigate between tools.
+        </p>
+      </div>
+    </div>
+  );
+}

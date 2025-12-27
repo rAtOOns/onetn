@@ -1,0 +1,346 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  nameTamil String?
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  Document  Document[]
+}
+
+model Constituency {
+  id           String   @id @default(cuid())
+  name         String
+  nameTamil    String?
+  type         String
+  districtId   String
+  mlaName      String?
+  mlaNameTamil String?
+  mpName       String?
+  mpNameTamil  String?
+  createdAt    DateTime @default(now())
+
+  @@index([type])
+  @@index([districtId])
+}
+
+model Department {
+  id        String     @id @default(cuid())
+  name      String
+  nameTamil String?
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  Document  Document[]
+}
+
+model DigestSubscriber {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String?
+  isActive    Boolean   @default(true)
+  verifiedAt  DateTime?
+  verifyToken String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model District {
+  id              String            @id @default(cuid())
+  name            String
+  nameTamil       String?
+  slug            String            @unique
+  createdAt       DateTime          @default(now())
+  Document        Document[]
+  DocumentRequest DocumentRequest[]
+}
+
+model Document {
+  id            String     @id @default(cuid())
+  title         String
+  titleTamil    String?
+  description   String?
+  descTamil     String?
+
+  // Rich GO metadata
+  goNum         Int?           // Numeric GO number (264)
+  goType        String?        // Ms, RT, OP, D
+  goDate        DateTime?      // Parsed date
+  deptCode      String?        // FD, SED, HD, etc.
+  subject       String?        // Subject line in English
+  subjectTamil  String?        // Subject line in Tamil
+  sourceUrl     String?        // Original source URL
+
+  // Legacy field (keep for compatibility)
+  goNumber      String?
+
+  fileName      String
+  fileUrl       String
+  fileSize      Int
+  fileType      String
+  departmentId  String
+  categoryId    String
+  topicId       String?
+  districtId    String?
+  downloads     Int        @default(0)
+  isPublished   Boolean    @default(true)
+  publishedYear Int?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  District      District?  @relation(fields: [districtId], references: [id])
+  Topic         Topic?     @relation(fields: [topicId], references: [id])
+  Category      Category   @relation(fields: [categoryId], references: [id])
+  Department    Department @relation(fields: [departmentId], references: [id])
+
+  @@index([goNum])
+  @@index([goDate])
+  @@index([deptCode])
+  @@index([downloads])
+  @@index([publishedYear])
+  @@index([isPublished])
+  @@index([districtId])
+  @@index([topicId])
+  @@index([categoryId])
+  @@index([departmentId])
+}
+
+model DocumentRequest {
+  id           String    @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  documentType String
+  description  String
+  districtId   String?
+  status       String    @default("pending")
+  adminNotes   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  District     District? @relation(fields: [districtId], references: [id])
+
+  @@index([status])
+}
+
+model GOTimeline {
+  id           String   @id @default(cuid())
+  documentId   String
+  relatedDocId String?
+  eventType    String
+  eventDate    DateTime
+  description  String?
+  createdAt    DateTime @default(now())
+
+  @@index([relatedDocId])
+  @@index([documentId])
+}
+
+model NewsLead {
+  id          String   @id @default(cuid())
+  title       String
+  titleTamil  String?
+  description String?
+  sourceUrl   String
+  sourceName  String   // kalvisolai, padasalai, etc.
+  status      String   @default("pending") // pending, reviewing, verified, rejected, published
+  fetchedAt   DateTime @default(now())
+  reviewedAt  DateTime?
+  reviewedBy  String?  // admin id
+  notes       String?  // admin notes during review
+  articleId   String?  // linked to NewsArticle if published
+
+  @@index([status])
+  @@index([fetchedAt])
+  @@index([sourceName])
+}
+
+model NewsArticle {
+  id            String    @id @default(cuid())
+  title         String
+  titleTamil    String?
+  summary       String    // short summary for listing
+  summaryTamil  String?
+  content       String    // full article content
+  contentTamil  String?
+  imageUrl      String?   // featured image URL
+  imageAlt      String?   // image alt text
+  documentId    String?   // linked GO/document if applicable
+  status        String    @default("draft") // draft, published
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String    // admin id
+  views         Int       @default(0)
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Subscription {
+  id           String    @id @default(cuid())
+  email        String
+  phone        String?
+  name         String?
+  departmentId String?
+  categoryId   String?
+  districtId   String?
+  frequency    String    @default("instant")
+  isActive     Boolean   @default(true)
+  verifiedAt   DateTime?
+  verifyToken  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([email, departmentId, categoryId, districtId])
+  @@index([isActive])
+  @@index([departmentId])
+  @@index([email])
+}
+
+model Topic {
+  id          String     @id @default(cuid())
+  name        String
+  nameTamil   String?
+  slug        String     @unique
+  description String?
+  icon        String?
+  color       String?
+  createdAt   DateTime   @default(now())
+  Document    Document[]
+}
+
+// ═══════════════════════════════════════════════════════════
+// QUALITY GO PORTAL - New high-quality GO model
+// ═══════════════════════════════════════════════════════════
+
+model QualityGO {
+  id            String    @id @default(cuid())
+
+  // Core GO identification
+  goNumber      Int                    // 264
+  goType        String    @default("Ms") // Ms, RT, OP, D
+  goDate        DateTime               // 2025-12-10
+
+  // Department
+  deptCode      String                 // FD, SED, HD
+  deptName      String                 // Finance Department
+  deptNameTamil String?                // நிதித்துறை
+
+  // Rich content - WHAT MAKES THIS QUALITY
+  titleEn       String                 // English title
+  titleTa       String?                // Tamil title
+  summaryEn     String?                // English summary (2-3 sentences)
+  summaryTa     String?                // Tamil summary
+  keywords      String?                // Comma-separated keywords
+
+  // Files
+  fileName      String    @unique      // GO-Ms-264-2025-12-10.pdf
+  fileUrl       String                 // /documents/quality/...
+  fileSize      Int
+  isClean       Boolean   @default(false) // Watermark removed
+
+  // Source tracking
+  sourceUrl     String?                // kalvisolai URL
+  officialUrl   String?                // tn.gov.in URL if available
+
+  // Quality flags
+  isVerified    Boolean   @default(false) // Manually verified
+  hasEnglish    Boolean   @default(false)
+  hasTamil      Boolean   @default(false)
+  qualityScore  Int       @default(0)     // 0-100
+
+  // Metadata
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Indexes for fast search
+  @@unique([goNumber, goType, goDate])
+  @@index([goNumber])
+  @@index([goDate])
+  @@index([deptCode])
+  @@index([qualityScore])
+  @@index([isVerified])
+}
+
+model GOTag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  nameTamil String?
+  slug      String   @unique
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCHOOL DIRECTORY - TN Government & Aided Schools
+// ═══════════════════════════════════════════════════════════
+
+model School {
+  id              String   @id @default(cuid())
+
+  // Identification
+  emisCode        String   @unique          // EMIS/UDISE code
+  udiseCode       String?                   // 11-digit UDISE+ code
+
+  // School name
+  name            String                    // School name in English
+  nameTamil       String?                   // School name in Tamil
+
+  // Location
+  district        String                    // District name
+  districtTamil   String?
+  block           String?                   // Block/Taluk
+  blockTamil      String?
+  village         String?                   // Village/Town
+  villageTamil    String?
+  address         String?                   // Full address
+  pincode         String?
+
+  // Classification
+  schoolType      String                    // Primary, Middle, High, Hr.Sec
+  management      String                    // Government, Govt Aided, ADW
+  medium          String?                   // Tamil, English, Telugu, Urdu, etc.
+  category        String?                   // Boys, Girls, Co-ed
+
+  // Contact
+  phone           String?
+  email           String?
+  headmaster      String?                   // HM/Principal name
+
+  // Additional info
+  establishedYear Int?
+  studentCount    Int?
+  teacherCount    Int?
+
+  // Status
+  isActive        Boolean  @default(true)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Indexes for fast search
+  @@index([district])
+  @@index([block])
+  @@index([schoolType])
+  @@index([management])
+  @@index([pincode])
+  @@index([name])
+}
