@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Calendar, Newspaper, ArrowRight, FileText } from "lucide-react";
 import prisma from "@/lib/db";
 
+export const dynamic = 'force-dynamic';
+
 async function getNews() {
   const articles = await prisma.newsArticle.findMany({
     where: { status: "published" },

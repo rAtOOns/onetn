@@ -11,6 +11,8 @@ import {
   Inbox,
 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 async function getStats() {
   const [documentCount, categoryCount, departmentCount, totalDownloads, recentDocuments, pendingLeads, publishedArticles] =
     await Promise.all([

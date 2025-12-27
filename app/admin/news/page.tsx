@@ -11,6 +11,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 async function getNewsStats() {
   const [
     pendingLeads,
