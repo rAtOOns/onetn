@@ -1,0 +1,281 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowLeft, HelpCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
+import { useState } from "react";
+
+interface FAQ {
+  id: string;
+  question: string;
+  questionTamil: string;
+  answer: string;
+  category: string;
+}
+
+const faqs: FAQ[] = [
+  // Salary & DA
+  {
+    id: "da-revision",
+    question: "When is the next DA revision expected?",
+    questionTamil: "அடுத்த அகவிலைப்படி திருத்தம் எப்போது?",
+    answer: "DA is typically revised twice a year - in January and July. The Tamil Nadu government announces DA hikes through Government Orders (G.O.) after the Central Government announces its DA revision. The current DA rate is 53% effective from July 2024.",
+    category: "Salary & DA",
+  },
+  {
+    id: "da-calculation",
+    question: "How is DA calculated?",
+    questionTamil: "அகவிலைப்படி எவ்வாறு கணக்கிடப்படுகிறது?",
+    answer: "DA (Dearness Allowance) is calculated as a percentage of your Basic Pay. Formula: DA Amount = Basic Pay × DA Rate / 100. For example, if your Basic Pay is ₹36,900 and DA rate is 53%, your DA = ₹36,900 × 53% = ₹19,557 per month.",
+    category: "Salary & DA",
+  },
+  {
+    id: "hra-rates",
+    question: "What are the HRA rates for different cities?",
+    questionTamil: "வெவ்வேறு நகரங்களுக்கான HRA விகிதங்கள் என்ன?",
+    answer: "HRA rates in Tamil Nadu: X cities (Chennai/Metro) - 24% of Basic Pay, Y cities (District HQ) - 16% of Basic Pay, Z cities (Other areas) - 8% of Basic Pay. CCA (City Compensatory Allowance) is ₹600 for Chennai and ₹300 for District HQs.",
+    category: "Salary & DA",
+  },
+  // Leave
+  {
+    id: "cl-eligibility",
+    question: "How many Casual Leaves am I entitled to?",
+    questionTamil: "எனக்கு எத்தனை தற்காலிக விடுப்புகள் கிடைக்கும்?",
+    answer: "Government employees are entitled to 12 Casual Leaves (CL) per calendar year. CL cannot be accumulated and lapses if not used within the year. Maximum 8 CLs can be taken at a time. CL is not a right and can be refused.",
+    category: "Leave",
+  },
+  {
+    id: "el-accumulation",
+    question: "What is the maximum Earned Leave I can accumulate?",
+    questionTamil: "நான் சேர்க்கக்கூடிய அதிகபட்ச ஈட்டிய விடுப்பு என்ன?",
+    answer: "You can accumulate a maximum of 300 days of Earned Leave (EL). EL is credited at the rate of 15 days for every 6 months of service. At retirement, EL up to 300 days can be encashed.",
+    category: "Leave",
+  },
+  {
+    id: "maternity-leave",
+    question: "What is the maternity leave entitlement?",
+    questionTamil: "மகப்பேறு விடுப்பு உரிமை என்ன?",
+    answer: "Female employees are entitled to 180 days (6 months) of Maternity Leave with full pay for up to 2 surviving children. Additional 60 days without pay can be taken. Male employees get 15 days Paternity Leave.",
+    category: "Leave",
+  },
+  // GPF & Pension
+  {
+    id: "gpf-minimum",
+    question: "What is the minimum GPF contribution?",
+    questionTamil: "குறைந்தபட்ச GPF பங்களிப்பு என்ன?",
+    answer: "The minimum GPF contribution is 6% of Basic Pay. You can contribute up to 100% of your Basic Pay. The government provides interest on GPF at the rate announced annually (currently 7.1%).",
+    category: "GPF & Pension",
+  },
+  {
+    id: "gpf-advance",
+    question: "Can I take an advance from my GPF account?",
+    questionTamil: "GPF கணக்கிலிருந்து முன்பணம் பெற முடியுமா?",
+    answer: "Yes, you can take refundable and non-refundable advances from GPF for specified purposes like education, medical treatment, house construction, marriage, etc. Maximum advance depends on the purpose and your GPF balance.",
+    category: "GPF & Pension",
+  },
+  {
+    id: "pension-eligibility",
+    question: "What is the minimum service required for pension?",
+    questionTamil: "ஓய்வூதியத்திற்கு தேவையான குறைந்தபட்ச சேவை என்ன?",
+    answer: "Minimum 10 years of qualifying service is required for pension eligibility. For full pension (50% of last drawn Basic Pay), you need 33 years of qualifying service. Proportionate pension is given for service between 10-33 years.",
+    category: "GPF & Pension",
+  },
+  {
+    id: "commutation",
+    question: "How much pension can I commute?",
+    questionTamil: "நான் எவ்வளவு ஓய்வூதியத்தை மாற்றலாம்?",
+    answer: "You can commute up to 40% of your basic pension to receive a lump sum amount. The commuted value depends on your age at retirement. After commutation, your monthly pension will be reduced proportionately for 15 years.",
+    category: "GPF & Pension",
+  },
+  // Transfer
+  {
+    id: "transfer-request",
+    question: "How can I apply for transfer?",
+    questionTamil: "இடமாற்றத்திற்கு எவ்வாறு விண்ணப்பிப்பது?",
+    answer: "Transfer requests are submitted during the annual transfer counseling period. You need to apply through the EMIS portal with preferences. Transfers are based on seniority, vacancy, and the department's transfer policy guidelines.",
+    category: "Transfer",
+  },
+  {
+    id: "spouse-station",
+    question: "Can I get posting with my spouse?",
+    questionTamil: "என் துணையுடன் பணியிடம் பெற முடியுமா?",
+    answer: "Yes, government employees can request spouse station posting. Both spouses should be government employees. Application should be submitted during counseling with marriage certificate and spouse's posting order.",
+    category: "Transfer",
+  },
+  // Exams
+  {
+    id: "tet-validity",
+    question: "What is the validity of TET certificate?",
+    questionTamil: "TET சான்றிதழின் செல்லுபடியாகும் காலம் என்ன?",
+    answer: "TN TET certificate is valid for lifetime for recruitment purposes. However, this is subject to government policies and candidates should check the latest notifications during recruitment.",
+    category: "Exams",
+  },
+  {
+    id: "trb-age-limit",
+    question: "What is the age limit for TRB recruitment?",
+    questionTamil: "TRB ஆட்சேர்ப்புக்கான வயது வரம்பு என்ன?",
+    answer: "General category: 18-57 years. SC/ST/MBC/BC: 18-62 years. Age relaxation is provided as per government norms. The age is calculated as on the date specified in the notification.",
+    category: "Exams",
+  },
+  // Service
+  {
+    id: "increment-date",
+    question: "When do I get my annual increment?",
+    questionTamil: "எனது வருடாந்திர ஊதிய உயர்வு எப்போது?",
+    answer: "Annual increment is given on July 1st every year if you have completed at least 6 months of service by June 30th. The increment is 3% of Basic Pay rounded off to the nearest ₹100.",
+    category: "Service",
+  },
+  {
+    id: "promotion-eligibility",
+    question: "What is the minimum service for promotion?",
+    questionTamil: "பதவி உயர்வுக்கு குறைந்தபட்ச சேவை என்ன?",
+    answer: "Promotion eligibility varies by cadre. Generally, 5-8 years of service in the current post is required. Promotion is based on seniority-cum-merit and vacancy availability. Departmental exams may be required for some posts.",
+    category: "Service",
+  },
+];
+
+const categories = [
+  "All",
+  "Salary & DA",
+  "Leave",
+  "GPF & Pension",
+  "Transfer",
+  "Exams",
+  "Service",
+];
+
+export default function FAQPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const filteredFaqs = faqs.filter((faq) => {
+    const matchesSearch =
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.questionTamil.includes(searchQuery) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || faq.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const groupedFaqs = filteredFaqs.reduce((acc, faq) => {
+    if (!acc[faq.category]) acc[faq.category] = [];
+    acc[faq.category].push(faq);
+    return acc;
+  }, {} as Record<string, FAQ[]>);
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ArrowLeft size={20} />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
+            <HelpCircle className="text-purple-600" size={28} />
+            Frequently Asked Questions
+          </h1>
+          <p className="text-sm text-gray-500 tamil">அடிக்கடி கேட்கப்படும் கேள்விகள்</p>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <input
+          type="text"
+          placeholder="Search questions..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-tn-primary focus:border-transparent"
+        />
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              selectedCategory === cat
+                ? "bg-tn-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* FAQ List */}
+      {Object.keys(groupedFaqs).length === 0 ? (
+        <div className="text-center py-12">
+          <HelpCircle size={48} className="mx-auto text-gray-300 mb-4" />
+          <p className="text-gray-500">No questions found matching your search.</p>
+        </div>
+      ) : (
+        Object.entries(groupedFaqs).map(([category, categoryFaqs]) => (
+          <div key={category} className="mb-8">
+            <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-tn-primary rounded-full"></span>
+              {category}
+            </h2>
+            <div className="space-y-3">
+              {categoryFaqs.map((faq) => (
+                <div
+                  key={faq.id}
+                  className="bg-white rounded-xl shadow-sm border overflow-hidden"
+                >
+                  <button
+                    onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
+                    className="w-full px-4 py-4 text-left flex items-start justify-between gap-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div>
+                      <h3 className="font-medium text-tn-text">{faq.question}</h3>
+                      <p className="text-xs text-gray-500 tamil mt-0.5">{faq.questionTamil}</p>
+                    </div>
+                    {expandedId === faq.id ? (
+                      <ChevronUp className="text-gray-400 flex-shrink-0" size={20} />
+                    ) : (
+                      <ChevronDown className="text-gray-400 flex-shrink-0" size={20} />
+                    )}
+                  </button>
+                  {expandedId === faq.id && (
+                    <div className="px-4 pb-4 pt-0">
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <p className="text-gray-700 text-sm leading-relaxed">{faq.answer}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      )}
+
+      {/* Still Have Questions */}
+      <div className="bg-blue-50 rounded-xl p-6 mt-8">
+        <h3 className="font-semibold text-blue-800 mb-2">Still have questions?</h3>
+        <p className="text-sm text-blue-700 mb-4">
+          Check our Government Orders section for official rules and regulations.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href="/go"
+            className="px-4 py-2 bg-white rounded-lg text-sm font-medium text-tn-primary hover:bg-blue-100 transition-colors"
+          >
+            Browse GOs
+          </Link>
+          <Link
+            href="/tools"
+            className="px-4 py-2 bg-white rounded-lg text-sm font-medium text-tn-primary hover:bg-blue-100 transition-colors"
+          >
+            Use Calculators
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

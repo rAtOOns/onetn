@@ -12,9 +12,10 @@ export default function Header() {
   const tabs = [
     { name: "Home", href: "/" },
     { name: "Education GOs", href: "/go" },
-    { name: "News", href: "/news" },
+    { name: "Exams", href: "/exams" },
     { name: "Tools", href: "/tools" },
-    { name: "Alerts", href: "/subscribe" },
+    { name: "Forms", href: "/forms" },
+    { name: "FAQ", href: "/faq" },
   ];
 
   return (

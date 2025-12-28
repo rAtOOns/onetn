@@ -34,8 +34,8 @@ const cityTypes = [
   { value: "Z", label: "Z - Other Areas", hraPercent: 8, cca: 0 },
 ];
 
-// Current DA rate for TN (as of 2024)
-const CURRENT_DA_RATE = 50;
+// Current DA rate for TN (as of July 2024)
+const CURRENT_DA_RATE = 53;
 
 // Fixed allowances
 const MEDICAL_ALLOWANCE = 350; // Per month

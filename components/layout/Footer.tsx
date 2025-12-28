@@ -3,9 +3,10 @@ import Link from "next/link";
 export default function Footer() {
   const links = [
     { name: "Education GOs", href: "/go" },
-    { name: "News", href: "/news" },
+    { name: "Exams", href: "/exams" },
     { name: "Tools", href: "/tools" },
-    { name: "GO Alerts", href: "/subscribe" },
+    { name: "Forms", href: "/forms" },
+    { name: "FAQ", href: "/faq" },
   ];
 
   return (
