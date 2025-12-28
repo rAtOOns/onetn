@@ -548,3 +548,4 @@ gcloud run services list
 # Delete a service (careful!)
 gcloud run services delete onetn-portal --region=asia-south1
 ```
+
