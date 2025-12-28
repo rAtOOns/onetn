@@ -27,6 +27,10 @@ import {
   ChevronRight,
   Menu,
   X,
+  Plane,
+  ArrowRightLeft,
+  Award,
+  Landmark,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -54,6 +58,7 @@ const toolCategories: ToolCategory[] = [
       { id: "pay-matrix", name: "Pay Matrix Lookup", nameTamil: "சம்பள அட்டவணை", href: "/tools/pay-matrix", icon: Table },
       { id: "increment-calculator", name: "Increment Calculator", nameTamil: "ஊதிய உயர்வு", href: "/tools/increment-calculator", icon: Calendar },
       { id: "da-rates", name: "DA Rate Table", nameTamil: "அகவிலைப்படி விகிதம்", href: "/tools/da-rates", icon: TrendingUp },
+      { id: "arrears-calculator", name: "DA Arrears Calculator", nameTamil: "நிலுவை கால்குலேட்டர்", href: "/tools/arrears-calculator", icon: TrendingUp },
     ],
   },
   {
@@ -70,12 +75,14 @@ const toolCategories: ToolCategory[] = [
     tools: [
       { id: "tpf-calculator", name: "TPF Calculator", nameTamil: "TPF கால்குலேட்டர்", href: "/tools/tpf-calculator", icon: PiggyBank },
       { id: "loan-calculator", name: "GPF/Loan Calculator", nameTamil: "GPF கடன்", href: "/tools/loan-calculator", icon: Calculator },
+      { id: "gpf-interest-calculator", name: "GPF Interest Calculator", nameTamil: "GPF வட்டி", href: "/tools/gpf-interest-calculator", icon: PiggyBank },
     ],
   },
   {
-    name: "Retirement Benefits",
+    name: "Retirement Planning",
     nameTamil: "ஓய்வூதிய பலன்கள்",
     tools: [
+      { id: "retirement-summary", name: "Retirement Summary", nameTamil: "ஓய்வு சுருக்கம்", href: "/tools/retirement-summary", icon: Wallet },
       { id: "pension-calculator", name: "Pension Calculator", nameTamil: "ஓய்வூதியம்", href: "/tools/pension-calculator", icon: Wallet },
       { id: "gratuity-calculator", name: "Gratuity Calculator", nameTamil: "நன்கொடை", href: "/tools/gratuity-calculator", icon: Gift },
       { id: "leave-encashment-calculator", name: "Leave Encashment", nameTamil: "விடுப்பு பணமாக்கல்", href: "/tools/leave-encashment-calculator", icon: Calendar },
@@ -88,6 +95,17 @@ const toolCategories: ToolCategory[] = [
       { id: "service-calculator", name: "Service Calculator", nameTamil: "பணிக்காலம்", href: "/tools/service-calculator", icon: Clock },
       { id: "leave-calculator", name: "Leave Balance", nameTamil: "விடுப்பு நிலுவை", href: "/tools/leave-calculator", icon: FileText },
       { id: "leave-rules", name: "Leave Rules", nameTamil: "விடுப்பு விதிகள்", href: "/tools/leave-rules", icon: FileText },
+      { id: "surrender-leave-calculator", name: "Surrender Leave Calculator", nameTamil: "விடுப்பு சரண்", href: "/tools/surrender-leave-calculator", icon: Calendar },
+      { id: "ltc-calculator", name: "LTC Calculator", nameTamil: "LTC கால்குலேட்டர்", href: "/tools/ltc-calculator", icon: Plane },
+    ],
+  },
+  {
+    name: "Service Matters",
+    nameTamil: "பணி விவகாரங்கள்",
+    tools: [
+      { id: "transfer-rules", name: "Transfer Rules & Process", nameTamil: "இடமாற்ற விதிகள்", href: "/tools/transfer-rules", icon: ArrowRightLeft },
+      { id: "promotion-info", name: "Promotion Information", nameTamil: "பதவி உயர்வு", href: "/tools/promotion-info", icon: Award },
+      { id: "loans-advances", name: "Loans & Advances Guide", nameTamil: "கடன்கள் வழிகாட்டி", href: "/tools/loans-advances", icon: Landmark },
     ],
   },
   {
