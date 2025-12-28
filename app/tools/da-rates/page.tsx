@@ -118,19 +118,14 @@ export default function DARatesPage() {
           <div>
             <p className="text-blue-200 text-sm">Current DA Rate</p>
             <p className="text-sm tamil text-blue-200">தற்போதைய அகவிலைப்படி</p>
-            <p className="text-4xl font-bold mt-2">{currentDA.rate}%</p>
-            <p className="text-blue-200 text-sm mt-1">
+            <p className="text-5xl font-bold mt-2">{currentDA.rate}%</p>
+            <p className="text-blue-200 text-sm mt-2">
               Effective from {currentDA.effectiveFrom}
             </p>
           </div>
           <div className="text-right">
-            <div className="bg-white/20 rounded-lg px-4 py-2">
-              <p className="text-sm">For Basic Pay ₹{sampleBasicPay.toLocaleString("en-IN")}</p>
-              <p className="text-2xl font-bold">
-                ₹{Math.round((sampleBasicPay * currentDA.rate) / 100).toLocaleString("en-IN")}
-              </p>
-              <p className="text-xs text-blue-200">DA Amount</p>
-            </div>
+            <p className="text-blue-200 text-sm">Reference</p>
+            <p className="text-lg font-medium mt-1">{currentDA.goNumber}</p>
           </div>
         </div>
       </div>
@@ -142,6 +137,43 @@ export default function DARatesPage() {
           under 7th Pay Commission. Central Government employees have different rates.
           G.O. numbers are indicative. Verify with official sources.
         </p>
+      </div>
+
+      {/* Quick DA Calculator */}
+      <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <h2 className="font-semibold text-tn-text mb-4">Quick DA Calculator</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Enter your Basic Pay to calculate DA at current rate ({currentDA.rate}%)
+        </p>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Basic Pay (₹)
+            </label>
+            <input
+              type="number"
+              defaultValue={sampleBasicPay}
+              id="basicPayInput"
+              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-tn-primary focus:border-transparent"
+              onChange={(e) => {
+                const basic = Number(e.target.value);
+                const daAmount = Math.round((basic * currentDA.rate) / 100);
+                const resultEl = document.getElementById("daResult");
+                if (resultEl) resultEl.textContent = `₹${daAmount.toLocaleString("en-IN")}`;
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              DA Amount
+            </label>
+            <div className="w-full border rounded-lg p-3 bg-gray-50">
+              <span id="daResult" className="text-xl font-bold text-green-600">
+                ₹{Math.round((sampleBasicPay * currentDA.rate) / 100).toLocaleString("en-IN")}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Pay Commission Selector */}
@@ -183,9 +215,6 @@ export default function DARatesPage() {
                   Increase
                 </th>
                 <th className="px-4 py-3 text-sm font-semibold text-gray-700">
-                  DA for ₹36,900
-                </th>
-                <th className="px-4 py-3 text-sm font-semibold text-gray-700">
                   Reference
                 </th>
               </tr>
@@ -218,9 +247,6 @@ export default function DARatesPage() {
                       <span className="text-gray-400">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-medium">
-                    ₹{Math.round((sampleBasicPay * da.rate) / 100).toLocaleString("en-IN")}
-                  </td>
                   <td className="px-4 py-3 text-sm text-gray-500">
                     {da.goNumber}
                   </td>
@@ -228,43 +254,6 @@ export default function DARatesPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* DA Calculator */}
-      <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <h2 className="font-semibold text-tn-text mb-4">Quick DA Calculator</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Enter your Basic Pay to calculate DA at current rate ({currentDA.rate}%)
-        </p>
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Basic Pay (₹)
-            </label>
-            <input
-              type="number"
-              defaultValue={sampleBasicPay}
-              id="basicPayInput"
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-tn-primary focus:border-transparent"
-              onChange={(e) => {
-                const basic = Number(e.target.value);
-                const daAmount = Math.round((basic * currentDA.rate) / 100);
-                const resultEl = document.getElementById("daResult");
-                if (resultEl) resultEl.textContent = `₹${daAmount.toLocaleString("en-IN")}`;
-              }}
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              DA Amount
-            </label>
-            <div className="w-full border rounded-lg p-3 bg-gray-50">
-              <span id="daResult" className="text-xl font-bold text-green-600">
-                ₹{Math.round((sampleBasicPay * currentDA.rate) / 100).toLocaleString("en-IN")}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 
