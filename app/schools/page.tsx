@@ -119,16 +119,16 @@ export default function SchoolDirectoryPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-tn-primary to-tn-secondary text-white">
-        <div className="container mx-auto px-4 py-8">
+      <div className="bg-gradient-to-r from-tn-primary to-tn-highlight text-white py-6">
+        <div className="container mx-auto px-4">
           <div className="flex items-center gap-3 mb-4">
-            <SchoolIcon size={32} />
+            <SchoolIcon size={28} />
             <div>
-              <h1 className="text-2xl font-bold">School Directory</h1>
-              <p className="text-sm opacity-90 tamil">பள்ளி கையேடு</p>
+              <h1 className="text-xl md:text-2xl font-bold">School Directory</h1>
+              <p className="text-sm tamil text-emerald-100">பள்ளி கையேடு</p>
             </div>
           </div>
-          <p className="text-white/80">
+          <p className="text-emerald-200 text-sm">
             Search Government and Government Aided schools across Tamil Nadu
           </p>
 

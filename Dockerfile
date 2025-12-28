@@ -1,59 +1,54 @@
 # Stage 1: Dependencies
-FROM node:18-alpine AS deps
-RUN apk add --no-cache libc6-compat
+FROM node:18-slim AS deps
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Copy package files
 COPY package.json package-lock.json ./
-# Install ALL dependencies (including dev) for building
 RUN npm ci
 
 # Stage 2: Builder
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-# Set DATABASE_URL for Prisma generate
 ENV DATABASE_URL="file:./dev.db"
 
-# Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Copy prisma files
-COPY prisma ./prisma
-
-# Generate Prisma client
 RUN npx prisma generate
-
-# Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-# Stage 3: Runner
-FROM node:18-alpine AS runner
+# Stage 3: Runner (minimal production image)
+FROM node:18-slim AS runner
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
-# Copy necessary files
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
+# Copy with correct ownership to avoid extra chown layer
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Set correct permissions
+# Copy only required Prisma/libsql modules
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@libsql ./node_modules/@libsql
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/adapter-libsql ./node_modules/@prisma/adapter-libsql
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/driver-adapter-utils ./node_modules/@prisma/driver-adapter-utils
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/libsql ./node_modules/libsql
+
 USER nextjs
 
-# Expose port
-EXPOSE 3000
-
-ENV PORT=3000
+EXPOSE 8080
+ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
 CMD ["node", "server.js"]

@@ -74,11 +74,11 @@ export default function BookmarksPage() {
 
       <div className="container mx-auto px-4 py-8">
         <Link
-          href="/documents"
+          href="/go"
           className="inline-flex items-center gap-2 text-tn-primary hover:text-tn-highlight mb-6"
         >
           <ArrowLeft size={20} />
-          Browse Documents
+          Browse GOs
         </Link>
 
         {bookmarks.length === 0 ? (
@@ -88,8 +88,8 @@ export default function BookmarksPage() {
             <p className="text-gray-600 mb-6">
               Save documents to access them quickly later.
             </p>
-            <Link href="/documents" className="btn-primary">
-              Browse Documents
+            <Link href="/go" className="btn-primary">
+              Browse GOs
             </Link>
           </div>
         ) : (

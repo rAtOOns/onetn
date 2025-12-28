@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft,
   Calendar,
@@ -77,10 +78,11 @@ export default async function NewsDetailPage({ params }: PageProps) {
               {/* Featured Image */}
               {article.imageUrl && (
                 <div className="w-full h-64 md:h-80 relative">
-                  <img
+                  <Image
                     src={article.imageUrl}
                     alt={article.imageAlt || article.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}

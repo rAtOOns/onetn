@@ -61,6 +61,7 @@ export default function ArticleDetailPage() {
 
   useEffect(() => {
     fetchArticle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   async function fetchArticle() {

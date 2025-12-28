@@ -3,11 +3,11 @@ import { ExternalLink } from "lucide-react";
 
 export default function Footer() {
   const links = [
-    { name: "Documents", href: "/documents" },
+    { name: "Education GOs", href: "/go" },
+    { name: "Schools", href: "/schools" },
     { name: "News", href: "/news" },
+    { name: "Tools", href: "/tools" },
     { name: "GO Alerts", href: "/subscribe" },
-    { name: "Request", href: "/request" },
-    { name: "About", href: "/about" },
   ];
 
   const externalLinks = [

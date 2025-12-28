@@ -102,20 +102,15 @@ export default async function QualityGOPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-tn-background to-white">
       {/* Hero Header - Education Focused */}
-      <div className="bg-gradient-to-r from-tn-primary to-tn-highlight text-white py-8">
+      <div className="bg-gradient-to-r from-tn-primary to-tn-highlight text-white py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
-                Education Department GOs
-              </h1>
-              <p className="text-lg tamil text-emerald-100">கல்வித்துறை அரசாணைகள்</p>
-              <p className="text-emerald-200 text-sm mt-1">
-                Teachers, Schools, Exams, Pay & Service Rules
-              </p>
-              <p className="text-yellow-300 text-xs mt-1">
-                Unofficial - Community curated collection
-              </p>
+            <div className="flex items-center gap-3">
+              <FileText size={28} />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Education Department GOs</h1>
+                <p className="text-sm tamil text-emerald-100">கல்வித்துறை அரசாணைகள்</p>
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span className="bg-white/20 px-3 py-1 rounded-full flex items-center gap-1">

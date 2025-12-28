@@ -21,7 +21,6 @@ import {
   Building2,
   BookOpen,
   Building,
-  Sparkles,
 } from "lucide-react";
 
 interface Tool {
@@ -33,7 +32,6 @@ interface Tool {
   href: string;
   color: string;
   category: string;
-  isNew?: boolean;
 }
 
 const tools: Tool[] = [
@@ -57,7 +55,6 @@ const tools: Tool[] = [
     href: "/tools/pay-matrix",
     color: "bg-blue-500",
     category: "Salary & Pay",
-    isNew: true,
   },
   {
     id: "increment-calculator",
@@ -182,7 +179,6 @@ const tools: Tool[] = [
     href: "/tools/leave-rules",
     color: "bg-teal-600",
     category: "Service & Leave",
-    isNew: true,
   },
   // Date & Time
   {
@@ -194,7 +190,6 @@ const tools: Tool[] = [
     href: "/tools/age-calculator",
     color: "bg-pink-500",
     category: "Date & Time",
-    isNew: true,
   },
   {
     id: "date-difference",
@@ -205,7 +200,6 @@ const tools: Tool[] = [
     href: "/tools/date-difference",
     color: "bg-indigo-500",
     category: "Date & Time",
-    isNew: true,
   },
   {
     id: "working-days",
@@ -216,7 +210,6 @@ const tools: Tool[] = [
     href: "/tools/working-days",
     color: "bg-emerald-600",
     category: "Date & Time",
-    isNew: true,
   },
   // Reference
   {
@@ -228,7 +221,6 @@ const tools: Tool[] = [
     href: "/tools/holiday-calendar",
     color: "bg-red-500",
     category: "Reference",
-    isNew: true,
   },
   {
     id: "important-dates",
@@ -239,7 +231,6 @@ const tools: Tool[] = [
     href: "/tools/important-dates",
     color: "bg-blue-600",
     category: "Reference",
-    isNew: true,
   },
   {
     id: "ta-da-rates",
@@ -250,7 +241,6 @@ const tools: Tool[] = [
     href: "/tools/ta-da-rates",
     color: "bg-orange-500",
     category: "Reference",
-    isNew: true,
   },
   {
     id: "contact-directory",
@@ -261,7 +251,6 @@ const tools: Tool[] = [
     href: "/tools/contact-directory",
     color: "bg-amber-600",
     category: "Reference",
-    isNew: true,
   },
   {
     id: "abbreviations",
@@ -272,7 +261,6 @@ const tools: Tool[] = [
     href: "/tools/abbreviations",
     color: "bg-cyan-600",
     category: "Reference",
-    isNew: true,
   },
   // Utilities
   {
@@ -284,7 +272,6 @@ const tools: Tool[] = [
     href: "/tools/number-to-words",
     color: "bg-violet-500",
     category: "Utilities",
-    isNew: true,
   },
 ];
 
@@ -332,20 +319,6 @@ export default function ToolsPage() {
         </p>
       </div>
 
-      {/* New Tools Badge */}
-      {tools.filter((t) => t.isNew).length > 0 && (
-        <div className="bg-gradient-to-r from-tn-primary to-tn-secondary text-white rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles size={20} />
-            <span className="font-semibold">New Tools Added!</span>
-          </div>
-          <p className="text-sm opacity-90">
-            {tools.filter((t) => t.isNew).length} new reference tools and utilities have been added.
-            Check out Holiday Calendar, Contact Directory, and more.
-          </p>
-        </div>
-      )}
-
       {/* Tools by Category */}
       {categoryOrder.map((category) => {
         const categoryTools = groupedTools[category];
@@ -364,13 +337,8 @@ export default function ToolsPage() {
                   <Link
                     key={tool.id}
                     href={tool.href}
-                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-tn-primary/20 transition-all group relative"
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-tn-primary/20 transition-all group"
                   >
-                    {tool.isNew && (
-                      <span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                        New
-                      </span>
-                    )}
                     <div className="flex items-start gap-3">
                       <div
                         className={`${tool.color} p-2.5 rounded-lg text-white group-hover:scale-110 transition-transform`}

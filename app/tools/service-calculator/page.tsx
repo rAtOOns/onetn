@@ -106,6 +106,7 @@ export default function ServiceCalculatorPage() {
       isGratuityEligible,
       isRetired: today >= retirementDate,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dob, joiningDate, breaks]);
 
   return (

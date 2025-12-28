@@ -25,11 +25,11 @@ export default function NotFound() {
             </Link>
 
             <Link
-              href="/documents"
+              href="/go"
               className="btn-outline w-full flex items-center justify-center gap-2"
             >
               <FileText size={18} />
-              Browse Documents
+              Browse GOs
             </Link>
 
             <Link
@@ -37,7 +37,7 @@ export default function NotFound() {
               className="btn-outline w-full flex items-center justify-center gap-2"
             >
               <Search size={18} />
-              Search Documents
+              Search GOs
             </Link>
           </div>
 

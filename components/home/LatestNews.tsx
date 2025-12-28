@@ -26,6 +26,9 @@ function formatTimeAgo(date: Date | null) {
 export default async function LatestNews() {
   const news = await getLatestNews();
 
+  // Hide section if no news
+  if (news.length === 0) return null;
+
   return (
     <section className="py-6 bg-gradient-to-r from-tn-primary to-tn-government text-white">
       <div className="container mx-auto px-4">
@@ -47,9 +50,7 @@ export default async function LatestNews() {
           </Link>
         </div>
 
-        {news.length === 0 ? (
-          <p className="text-gray-300 text-sm">No news articles yet. Check back soon!</p>
-        ) : (
+        {
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-3">
             {news.map((article) => (
               <Link
@@ -79,7 +80,7 @@ export default async function LatestNews() {
               </Link>
             ))}
           </div>
-        )}
+        }
       </div>
     </section>
   );

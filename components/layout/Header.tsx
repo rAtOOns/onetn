@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X, Search, Bookmark } from "lucide-react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const tabs = [
     { name: "Home", href: "/" },
     { name: "Education GOs", href: "/go" },
-    { name: "Documents", href: "/documents" },
     { name: "Schools", href: "/schools" },
     { name: "News", href: "/news" },
     { name: "Tools", href: "/tools" },
@@ -53,28 +54,42 @@ export default function Header() {
 
             {/* Desktop tabs */}
             <div className="hidden lg:flex items-center">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.href}
-                  href={tab.href}
-                  className="px-4 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap"
-                >
-                  {tab.name}
-                </Link>
-              ))}
+              {tabs.map((tab) => {
+                const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                return (
+                  <Link
+                    key={tab.href}
+                    href={tab.href}
+                    className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 ${
+                      isActive
+                        ? "text-white bg-white/10 border-white"
+                        : "text-white/90 hover:bg-white/10 border-transparent"
+                    }`}
+                  >
+                    {tab.name}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Tablet tabs - scrollable */}
             <div className="hidden md:flex lg:hidden items-center overflow-x-auto">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.href}
-                  href={tab.href}
-                  className="px-3 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap flex-shrink-0"
-                >
-                  {tab.name}
-                </Link>
-              ))}
+              {tabs.map((tab) => {
+                const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                return (
+                  <Link
+                    key={tab.href}
+                    href={tab.href}
+                    className={`px-3 py-3 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 border-b-2 ${
+                      isActive
+                        ? "text-white bg-white/10 border-white"
+                        : "text-white/90 hover:bg-white/10 border-transparent"
+                    }`}
+                  >
+                    {tab.name}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Spacer */}
@@ -114,16 +129,23 @@ export default function Header() {
         <nav className="md:hidden bg-white border-t">
           <div className="container mx-auto px-4 py-2">
             <div className="space-y-1">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.href}
-                  href={tab.href}
-                  className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {tab.name}
-                </Link>
-              ))}
+              {tabs.map((tab) => {
+                const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href));
+                return (
+                  <Link
+                    key={tab.href}
+                    href={tab.href}
+                    className={`block px-3 py-2 text-sm rounded-lg ${
+                      isActive
+                        ? "bg-tn-primary text-white font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {tab.name}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </nav>

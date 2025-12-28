@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { getFileUrl } from "@/lib/storage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -266,7 +267,7 @@ export default async function GODetailPage({ params }: PageProps) {
                 {/* Action Buttons */}
                 <div className="flex flex-wrap gap-3 pt-4 border-t">
                   <a
-                    href={go.fileUrl}
+                    href={getFileUrl(go.fileUrl)}
                     download={go.fileName}
                     className="btn-primary flex items-center gap-2 flex-1 justify-center md:flex-none"
                   >
@@ -292,7 +293,7 @@ export default async function GODetailPage({ params }: PageProps) {
                   Document Preview
                 </h2>
                 <a
-                  href={go.fileUrl}
+                  href={getFileUrl(go.fileUrl)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-tn-primary hover:text-tn-highlight flex items-center gap-1 text-sm"
@@ -303,7 +304,7 @@ export default async function GODetailPage({ params }: PageProps) {
               </div>
               <div className="bg-gray-100" style={{ height: "700px" }}>
                 <embed
-                  src={go.fileUrl}
+                  src={getFileUrl(go.fileUrl)}
                   type="application/pdf"
                   className="w-full h-full"
                   title={`G.O. No. ${go.goNumber}`}
@@ -311,7 +312,7 @@ export default async function GODetailPage({ params }: PageProps) {
               </div>
               <div className="px-6 py-3 bg-gray-50 text-center text-sm text-gray-500">
                 If preview doesn&apos;t load, please{" "}
-                <a href={go.fileUrl} download className="text-tn-primary hover:underline">
+                <a href={getFileUrl(go.fileUrl)} download className="text-tn-primary hover:underline">
                   download the document
                 </a>
               </div>

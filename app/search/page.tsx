@@ -125,10 +125,10 @@ function SearchContent() {
                   No Results Found
                 </h3>
                 <p className="text-gray-500 mb-4">
-                  Try different keywords or browse all documents
+                  Try different keywords or browse all GOs
                 </p>
-                <Link href="/documents" className="btn-primary">
-                  Browse All Documents
+                <Link href="/go" className="btn-primary">
+                  Browse All GOs
                 </Link>
               </div>
             ) : (

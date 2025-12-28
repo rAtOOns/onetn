@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Save, Eye, Loader2, FileText, Search, ImagePlus, X } from "lucide-react";
 
 interface Lead {
@@ -49,6 +50,7 @@ function NewArticleForm() {
     if (leadId) {
       fetchLead();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leadId]);
 
   async function fetchLead() {
@@ -351,11 +353,12 @@ function NewArticleForm() {
             </h2>
 
             {form.imageUrl ? (
-              <div className="relative">
-                <img
+              <div className="relative h-40 rounded-lg overflow-hidden">
+                <Image
                   src={form.imageUrl}
                   alt={form.imageAlt || "Preview"}
-                  className="w-full h-40 object-cover rounded-lg"
+                  fill
+                  className="object-cover"
                 />
                 <button
                   onClick={() =>

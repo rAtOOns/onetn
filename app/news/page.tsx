@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, Newspaper, ArrowRight, FileText } from "lucide-react";
 import prisma from "@/lib/db";
 
@@ -36,20 +37,20 @@ export default async function NewsPage() {
   return (
     <div className="min-h-screen">
       {/* Page Header */}
-      <div className="bg-tn-primary text-white py-4">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Newspaper size={24} />
-            <h1 className="text-xl md:text-2xl font-bold">
-              Latest News{" "}
-              <span className="tamil font-normal text-gray-300 text-base">
-                அண்மை செய்திகள்
-              </span>
-            </h1>
+      <div className="bg-gradient-to-r from-tn-primary to-tn-highlight text-white py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Newspaper size={28} />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Latest News</h1>
+                <p className="text-sm tamil text-emerald-100">அண்மை செய்திகள்</p>
+              </div>
+            </div>
+            <p className="text-sm text-emerald-200 hidden md:block">
+              Education updates & announcements
+            </p>
           </div>
-          <p className="text-sm text-gray-300 hidden md:block">
-            Education updates & announcements
-          </p>
         </div>
       </div>
 
@@ -63,8 +64,8 @@ export default async function NewsPage() {
             <p className="text-gray-500 mb-4">
               Check back later for the latest updates
             </p>
-            <Link href="/documents" className="btn-primary">
-              Browse Documents
+            <Link href="/go" className="btn-primary">
+              Browse GOs
             </Link>
           </div>
         ) : (
@@ -75,10 +76,11 @@ export default async function NewsPage() {
                 <div className="md:flex">
                   {news[0].imageUrl ? (
                     <div className="md:w-1/3 h-64 md:h-auto relative">
-                      <img
+                      <Image
                         src={news[0].imageUrl}
                         alt={news[0].imageAlt || news[0].title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   ) : (
@@ -138,11 +140,12 @@ export default async function NewsPage() {
                     className="card hover:shadow-lg transition-all group"
                   >
                     {item.imageUrl ? (
-                      <div className="h-40 rounded-lg mb-4 overflow-hidden">
-                        <img
+                      <div className="h-40 rounded-lg mb-4 overflow-hidden relative">
+                        <Image
                           src={item.imageUrl}
                           alt={item.imageAlt || item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
                     ) : (

@@ -47,11 +47,11 @@ export default async function LatestDocuments() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Clock className="text-tn-primary" size={20} />
-            <h2 className="text-xl font-bold text-tn-text">Latest Documents</h2>
-            <span className="text-sm text-gray-500 tamil">சமீபத்திய ஆவணங்கள்</span>
+            <h2 className="text-xl font-bold text-tn-text">Recent GOs</h2>
+            <span className="text-sm text-gray-500 tamil">சமீபத்திய அரசாணைகள்</span>
           </div>
           <Link
-            href="/documents"
+            href="/go"
             className="flex items-center gap-1 text-sm text-tn-primary hover:text-tn-highlight font-medium"
           >
             View All <ArrowRight size={16} />

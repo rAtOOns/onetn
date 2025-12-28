@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (will be installed fresh)
+node_modules/
+
+# Build output (will be built fresh)
+.next/
+
+# Large files not needed for build
+public/documents/
+public/uploads/
+public/screenshots/
+backups/
+
+# Local database files
+prisma/*.db
+prisma/*.db-journal
+*.db
+*.db-journal
+
+# Environment files (will be set via Cloud Run)
+.env
+.env.local
+.env.development
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation (not needed in container)
+README.md
+*.md
+docs/
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.docker/

@@ -38,6 +38,7 @@ export default function LeadDetailPage() {
 
   useEffect(() => {
     fetchLead();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   async function fetchLead() {

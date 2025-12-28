@@ -176,7 +176,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       <aside
         className={`
           fixed lg:sticky top-0 left-0 z-40 h-screen lg:h-[calc(100vh-64px)]
-          w-72 bg-white border-r border-gray-200 overflow-y-auto
+          w-72 bg-gradient-to-b from-emerald-50 to-teal-50 border-r border-emerald-100 overflow-y-auto
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
@@ -201,7 +201,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Tool Count */}
-          <div className="mb-4 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+          <div className="mb-4 px-2 py-1 bg-emerald-100/50 rounded text-xs text-emerald-700">
             {allTools.length} tools available
           </div>
 
@@ -211,7 +211,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
               <div key={category.name}>
                 <button
                   onClick={() => toggleCategory(category.name)}
-                  className="w-full flex items-center justify-between px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-between px-2 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-100/50 rounded-lg transition-colors"
                 >
                   <span>{category.name}</span>
                   {expandedCategories.has(category.name) ? (
@@ -235,8 +235,8 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                             flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors
                             ${
                               isActive
-                                ? "bg-tn-primary text-white"
-                                : "text-gray-600 hover:bg-gray-100"
+                                ? "bg-tn-primary text-white shadow-sm"
+                                : "text-gray-600 hover:bg-emerald-100/70"
                             }
                           `}
                         >

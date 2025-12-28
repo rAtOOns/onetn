@@ -89,16 +89,21 @@ export default function SubscribePage() {
 
   return (
     <div className="min-h-screen bg-tn-background">
-      {/* Compact Header */}
-      <div className="bg-tn-primary text-white py-4">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Bell size={24} />
-            <h1 className="text-xl md:text-2xl font-bold">GO Alert Subscription <span className="tamil font-normal text-gray-300 text-base">அரசாணை அறிவிப்பு</span></h1>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-tn-primary to-tn-highlight text-white py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Bell size={28} />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">GO Alert Subscription</h1>
+                <p className="text-sm tamil text-emerald-100">அரசாணை அறிவிப்பு</p>
+              </div>
+            </div>
+            <p className="text-sm text-emerald-200 hidden md:block">
+              Get notified on new GOs
+            </p>
           </div>
-          <p className="text-sm text-gray-300 hidden md:block">
-            Get notified on new GOs
-          </p>
         </div>
       </div>
 

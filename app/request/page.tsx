@@ -93,8 +93,8 @@ export default function DocumentRequestPage() {
             You&apos;ll receive an email update at <strong>{formData.email}</strong>.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/documents" className="btn-primary">
-              Browse Documents
+            <Link href="/go" className="btn-primary">
+              Browse GOs
             </Link>
             <Link href="/" className="btn-outline">
               Go Home
@@ -124,11 +124,11 @@ export default function DocumentRequestPage() {
         <div className="max-w-2xl mx-auto">
           {/* Back Button */}
           <Link
-            href="/documents"
+            href="/go"
             className="inline-flex items-center gap-2 text-tn-primary hover:text-tn-highlight mb-6"
           >
             <ArrowLeft size={20} />
-            Back to Documents
+            Back to GOs
           </Link>
 
           {/* Request Form */}
