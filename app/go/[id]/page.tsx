@@ -421,22 +421,6 @@ export default async function GODetailPage({ params }: PageProps) {
               </dl>
             </div>
 
-            {/* Source Info */}
-            {go.sourceUrl && (
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="font-semibold text-tn-text mb-3">Source</h3>
-                <a
-                  href={go.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-tn-primary hover:underline text-sm flex items-center gap-1 break-all"
-                >
-                  <ExternalLink size={14} />
-                  View original source
-                </a>
-              </div>
-            )}
-
             {/* Related GOs */}
             {relatedGOs.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-6">

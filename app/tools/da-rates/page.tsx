@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, TrendingUp, Calendar, Info, ExternalLink } from "lucide-react";
+import { ArrowLeft, TrendingUp, Calendar, Info } from "lucide-react";
+import { useState } from "react";
 
 // Historical DA rates for Tamil Nadu Government Employees (7th Pay Commission)
-const daRates = [
+const daRates7thPC = [
+  { effectiveFrom: "July 2024", rate: 53, increase: 3, goNumber: "G.O.Ms.No.215/2024" },
   { effectiveFrom: "January 2024", rate: 50, increase: 4, goNumber: "G.O.Ms.No.1/2024" },
   { effectiveFrom: "July 2023", rate: 46, increase: 4, goNumber: "G.O.Ms.No.234/2023" },
   { effectiveFrom: "January 2023", rate: 42, increase: 4, goNumber: "G.O.Ms.No.12/2023" },
@@ -20,14 +22,73 @@ const daRates = [
   { effectiveFrom: "January 2018", rate: 13, increase: 3, goNumber: "G.O.Ms.No.9/2018" },
   { effectiveFrom: "July 2017", rate: 10, increase: 3, goNumber: "G.O.Ms.No.178/2017" },
   { effectiveFrom: "January 2017", rate: 7, increase: 3, goNumber: "G.O.Ms.No.14/2017" },
-  { effectiveFrom: "January 2016", rate: 4, increase: 4, goNumber: "G.O.Ms.No.1/2016 (7th PC Implementation)" },
+  { effectiveFrom: "January 2016", rate: 4, increase: 4, goNumber: "G.O.Ms.No.1/2016 (7th PC)" },
+];
+
+// 6th Pay Commission DA rates (2006-2015)
+const daRates6thPC = [
+  { effectiveFrom: "January 2016", rate: 125, increase: 6, goNumber: "G.O.Ms.No.1/2016" },
+  { effectiveFrom: "July 2015", rate: 119, increase: 6, goNumber: "G.O.Ms.No.245/2015" },
+  { effectiveFrom: "January 2015", rate: 113, increase: 6, goNumber: "G.O.Ms.No.12/2015" },
+  { effectiveFrom: "July 2014", rate: 107, increase: 7, goNumber: "G.O.Ms.No.198/2014" },
+  { effectiveFrom: "January 2014", rate: 100, increase: 10, goNumber: "G.O.Ms.No.8/2014" },
+  { effectiveFrom: "July 2013", rate: 90, increase: 10, goNumber: "G.O.Ms.No.156/2013" },
+  { effectiveFrom: "January 2013", rate: 80, increase: 8, goNumber: "G.O.Ms.No.5/2013" },
+  { effectiveFrom: "July 2012", rate: 72, increase: 7, goNumber: "G.O.Ms.No.178/2012" },
+  { effectiveFrom: "January 2012", rate: 65, increase: 7, goNumber: "G.O.Ms.No.12/2012" },
+  { effectiveFrom: "July 2011", rate: 58, increase: 7, goNumber: "G.O.Ms.No.201/2011" },
+  { effectiveFrom: "January 2011", rate: 51, increase: 6, goNumber: "G.O.Ms.No.9/2011" },
+  { effectiveFrom: "July 2010", rate: 45, increase: 10, goNumber: "G.O.Ms.No.167/2010" },
+  { effectiveFrom: "January 2010", rate: 35, increase: 8, goNumber: "G.O.Ms.No.14/2010" },
+  { effectiveFrom: "July 2009", rate: 27, increase: 5, goNumber: "G.O.Ms.No.189/2009" },
+  { effectiveFrom: "January 2009", rate: 22, increase: 6, goNumber: "G.O.Ms.No.11/2009" },
+  { effectiveFrom: "July 2008", rate: 16, increase: 4, goNumber: "G.O.Ms.No.156/2008" },
+  { effectiveFrom: "January 2008", rate: 12, increase: 6, goNumber: "G.O.Ms.No.9/2008" },
+  { effectiveFrom: "July 2007", rate: 6, increase: 3, goNumber: "G.O.Ms.No.178/2007" },
+  { effectiveFrom: "January 2007", rate: 3, increase: 3, goNumber: "G.O.Ms.No.14/2007" },
+  { effectiveFrom: "January 2006", rate: 0, increase: 0, goNumber: "G.O.Ms.No.1/2006 (6th PC)" },
+];
+
+// 5th Pay Commission DA rates (2001-2005)
+const daRates5thPC = [
+  { effectiveFrom: "January 2006", rate: 50, increase: 4, goNumber: "Merged into 6th PC" },
+  { effectiveFrom: "July 2005", rate: 50, increase: 3, goNumber: "G.O.Ms.No.201/2005" },
+  { effectiveFrom: "January 2005", rate: 47, increase: 4, goNumber: "G.O.Ms.No.12/2005" },
+  { effectiveFrom: "July 2004", rate: 43, increase: 3, goNumber: "G.O.Ms.No.178/2004" },
+  { effectiveFrom: "April 2004", rate: 40, increase: 0, goNumber: "50% DA merged into DP" },
+  { effectiveFrom: "January 2004", rate: 90, increase: 5, goNumber: "G.O.Ms.No.14/2004" },
+  { effectiveFrom: "July 2003", rate: 85, increase: 6, goNumber: "G.O.Ms.No.189/2003" },
+  { effectiveFrom: "January 2003", rate: 79, increase: 5, goNumber: "G.O.Ms.No.9/2003" },
+  { effectiveFrom: "July 2002", rate: 74, increase: 5, goNumber: "G.O.Ms.No.156/2002" },
+  { effectiveFrom: "January 2002", rate: 69, increase: 5, goNumber: "G.O.Ms.No.11/2002" },
+  { effectiveFrom: "July 2001", rate: 64, increase: 4, goNumber: "G.O.Ms.No.178/2001" },
+  { effectiveFrom: "January 2001", rate: 60, increase: 5, goNumber: "G.O.Ms.No.14/2001" },
 ];
 
 // Sample calculation
 const sampleBasicPay = 36900;
 
+type PayCommission = "7th" | "6th" | "5th";
+
 export default function DARatesPage() {
-  const currentDA = daRates[0];
+  const [selectedPC, setSelectedPC] = useState<PayCommission>("7th");
+  const currentDA = daRates7thPC[0];
+
+  const getDAData = () => {
+    switch (selectedPC) {
+      case "7th": return daRates7thPC;
+      case "6th": return daRates6thPC;
+      case "5th": return daRates5thPC;
+    }
+  };
+
+  const getPCLabel = () => {
+    switch (selectedPC) {
+      case "7th": return "7th Pay Commission (2016-Present)";
+      case "6th": return "6th Pay Commission (2006-2015)";
+      case "5th": return "5th Pay Commission (2001-2005)";
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -82,12 +143,29 @@ export default function DARatesPage() {
         </p>
       </div>
 
+      {/* Pay Commission Selector */}
+      <div className="flex gap-2 mb-6">
+        {(["7th", "6th", "5th"] as PayCommission[]).map((pc) => (
+          <button
+            key={pc}
+            onClick={() => setSelectedPC(pc)}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              selectedPC === pc
+                ? "bg-tn-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {pc} PC
+          </button>
+        ))}
+      </div>
+
       {/* DA Rate Table */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden mb-6">
         <div className="p-4 border-b bg-gray-50">
           <h2 className="font-semibold text-tn-text flex items-center gap-2">
             <Calendar size={18} />
-            Historical DA Rates (7th Pay Commission)
+            {getPCLabel()}
           </h2>
         </div>
         <div className="overflow-x-auto">
@@ -112,14 +190,14 @@ export default function DARatesPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {daRates.map((da, index) => (
+              {getDAData().map((da, index) => (
                 <tr
                   key={da.effectiveFrom}
-                  className={`${index === 0 ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                  className={`${selectedPC === "7th" && index === 0 ? "bg-blue-50" : "hover:bg-gray-50"}`}
                 >
                   <td className="px-4 py-3 text-sm">
                     <div className="flex items-center gap-2">
-                      {index === 0 && (
+                      {selectedPC === "7th" && index === 0 && (
                         <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
                           Current
                         </span>
@@ -221,17 +299,15 @@ export default function DARatesPage() {
       <div className="mt-6 flex flex-wrap gap-4">
         <Link
           href="/tools/salary-calculator"
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
         >
           Salary Calculator
-          <ExternalLink size={14} />
         </Link>
         <Link
           href="/documents?search=DA"
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
         >
           DA Related G.O.s
-          <ExternalLink size={14} />
         </Link>
       </div>
     </div>
