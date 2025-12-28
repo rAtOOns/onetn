@@ -19,8 +19,8 @@ const commutationFactors: Record<number, number> = {
   65: 7.427,
 };
 
-// Dearness Relief rate (current as of July 2024)
-const DR_RATE = 53; // 53% DR
+// Dearness Relief rate (current as of January 2025)
+const DR_RATE = 55; // 55% DR
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {

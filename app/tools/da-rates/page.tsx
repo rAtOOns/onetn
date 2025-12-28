@@ -6,6 +6,7 @@ import { useState } from "react";
 
 // Historical DA rates for Tamil Nadu Government Employees (7th Pay Commission)
 const daRates7thPC = [
+  { effectiveFrom: "January 2025", rate: 55, increase: 2, goNumber: "G.O.Ms.No.1/2025" },
   { effectiveFrom: "July 2024", rate: 53, increase: 3, goNumber: "G.O.Ms.No.215/2024" },
   { effectiveFrom: "January 2024", rate: 50, increase: 4, goNumber: "G.O.Ms.No.1/2024" },
   { effectiveFrom: "July 2023", rate: 46, increase: 4, goNumber: "G.O.Ms.No.234/2023" },

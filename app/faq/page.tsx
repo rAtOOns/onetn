@@ -18,14 +18,14 @@ const faqs: FAQ[] = [
     id: "da-revision",
     question: "When is the next DA revision expected?",
     questionTamil: "அடுத்த அகவிலைப்படி திருத்தம் எப்போது?",
-    answer: "DA is typically revised twice a year - in January and July. The Tamil Nadu government announces DA hikes through Government Orders (G.O.) after the Central Government announces its DA revision. The current DA rate is 53% effective from July 2024.",
+    answer: "DA is typically revised twice a year - in January and July. The Tamil Nadu government announces DA hikes through Government Orders (G.O.) after the Central Government announces its DA revision. The current DA rate is 55% effective from January 2025.",
     category: "Salary & DA",
   },
   {
     id: "da-calculation",
     question: "How is DA calculated?",
     questionTamil: "அகவிலைப்படி எவ்வாறு கணக்கிடப்படுகிறது?",
-    answer: "DA (Dearness Allowance) is calculated as a percentage of your Basic Pay. Formula: DA Amount = Basic Pay × DA Rate / 100. For example, if your Basic Pay is ₹36,900 and DA rate is 53%, your DA = ₹36,900 × 53% = ₹19,557 per month.",
+    answer: "DA (Dearness Allowance) is calculated as a percentage of your Basic Pay. Formula: DA Amount = Basic Pay × DA Rate / 100. For example, if your Basic Pay is ₹36,900 and DA rate is 55%, your DA = ₹36,900 × 55% = ₹20,295 per month.",
     category: "Salary & DA",
   },
   {
