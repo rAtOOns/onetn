@@ -27,9 +27,9 @@ export default function Header() {
           <div className="flex items-center justify-between text-xs">
             <span>TN Education GOs & Resources <span className="text-yellow-300">(Unofficial)</span></span>
             <div className="flex items-center gap-3">
-              <button className="hover:underline">English</button>
+              <Link href="/about" className="hover:underline">About</Link>
               <span>|</span>
-              <button className="hover:underline tamil">தமிழ்</button>
+              <Link href="/contact" className="hover:underline">Contact</Link>
             </div>
           </div>
         </div>

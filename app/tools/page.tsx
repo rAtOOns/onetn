@@ -33,6 +33,9 @@ import {
   GraduationCap,
   Users,
   Baby,
+  UserMinus,
+  UserCheck,
+  ClipboardList,
 } from "lucide-react";
 
 interface Tool {
@@ -232,6 +235,16 @@ const tools: Tool[] = [
     color: "bg-rose-600",
     category: "Retirement Planning",
       },
+  {
+    id: "voluntary-retirement",
+    name: "Voluntary Retirement Calculator",
+    nameTamil: "தன்னார்வ ஓய்வு கால்குலேட்டர்",
+    description: "Calculate VRS benefits and eligibility",
+    icon: UserMinus,
+    href: "/tools/voluntary-retirement",
+    color: "bg-orange-600",
+    category: "Retirement Planning",
+      },
   // Service & Leave
   {
     id: "service-calculator",
@@ -301,6 +314,26 @@ const tools: Tool[] = [
     icon: Baby,
     href: "/tools/special-leave-calculator",
     color: "bg-pink-500",
+    category: "Service & Leave",
+      },
+  {
+    id: "probation-tracker",
+    name: "Probation Period Tracker",
+    nameTamil: "தகுதிகாண் பருவ கண்காணிப்பான்",
+    description: "Track probation completion and confirmation date",
+    icon: UserCheck,
+    href: "/tools/probation-tracker",
+    color: "bg-blue-600",
+    category: "Service & Leave",
+      },
+  {
+    id: "study-leave",
+    name: "Study Leave Guide",
+    nameTamil: "படிப்பு விடுப்பு வழிகாட்டி",
+    description: "Rules for study leave for higher education",
+    icon: GraduationCap,
+    href: "/tools/study-leave",
+    color: "bg-purple-600",
     category: "Service & Leave",
       },
   // Service Matters (New Category)
@@ -442,6 +475,26 @@ const tools: Tool[] = [
     icon: ArrowRightLeft,
     href: "/tools/deputation-guide",
     color: "bg-cyan-600",
+    category: "Service Matters",
+      },
+  {
+    id: "compassionate-appointment",
+    name: "Compassionate Appointment Guide",
+    nameTamil: "இரக்கப்படி நியமன வழிகாட்டி",
+    description: "Guide for family appointment if employee dies in service",
+    icon: Heart,
+    href: "/tools/compassionate-appointment",
+    color: "bg-rose-500",
+    category: "Service Matters",
+      },
+  {
+    id: "apar-guide",
+    name: "APAR Self-Assessment Guide",
+    nameTamil: "APAR சுய மதிப்பீட்டு வழிகாட்டி",
+    description: "Tips for writing effective performance appraisal",
+    icon: ClipboardList,
+    href: "/tools/apar-guide",
+    color: "bg-indigo-500",
     category: "Service Matters",
       },
   // Date & Time

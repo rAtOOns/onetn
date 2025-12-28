@@ -39,6 +39,9 @@ import {
   GraduationCap,
   Users,
   Baby,
+  UserMinus,
+  UserCheck,
+  ClipboardList,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -98,6 +101,7 @@ const toolCategories: ToolCategory[] = [
       { id: "gratuity-calculator", name: "Gratuity Calculator", nameTamil: "நன்கொடை", href: "/tools/gratuity-calculator", icon: Gift },
       { id: "leave-encashment-calculator", name: "Leave Encashment", nameTamil: "விடுப்பு பணமாக்கல்", href: "/tools/leave-encashment-calculator", icon: Calendar },
       { id: "die-in-harness", name: "Die-in-Harness Benefits", nameTamil: "பணியில் இறப்பு சலுகை", href: "/tools/die-in-harness", icon: Heart },
+      { id: "voluntary-retirement", name: "Voluntary Retirement", nameTamil: "தன்னார்வ ஓய்வு", href: "/tools/voluntary-retirement", icon: UserMinus },
     ],
   },
   {
@@ -111,6 +115,8 @@ const toolCategories: ToolCategory[] = [
       { id: "ltc-calculator", name: "LTC Calculator", nameTamil: "LTC கால்குலேட்டர்", href: "/tools/ltc-calculator", icon: Plane },
       { id: "eol-impact", name: "EOL Impact Calculator", nameTamil: "EOL தாக்கம்", href: "/tools/eol-impact", icon: Calendar },
       { id: "special-leave-calculator", name: "Special Leave Calculator", nameTamil: "சிறப்பு விடுப்பு", href: "/tools/special-leave-calculator", icon: Baby },
+      { id: "probation-tracker", name: "Probation Period Tracker", nameTamil: "தகுதிகாண் பருவம்", href: "/tools/probation-tracker", icon: UserCheck },
+      { id: "study-leave", name: "Study Leave Guide", nameTamil: "படிப்பு விடுப்பு", href: "/tools/study-leave", icon: GraduationCap },
     ],
   },
   {
@@ -131,6 +137,8 @@ const toolCategories: ToolCategory[] = [
       { id: "loan-emi-calculator", name: "Loan EMI Calculator", nameTamil: "கடன் EMI", href: "/tools/loan-emi-calculator", icon: Landmark },
       { id: "rte-compliance", name: "RTE Compliance Checklist", nameTamil: "RTE இணக்கம்", href: "/tools/rte-compliance", icon: Scale },
       { id: "deputation-guide", name: "Deputation Rules Guide", nameTamil: "பணி நிலை மாற்றம்", href: "/tools/deputation-guide", icon: ArrowRightLeft },
+      { id: "compassionate-appointment", name: "Compassionate Appointment", nameTamil: "இரக்கப்படி நியமனம்", href: "/tools/compassionate-appointment", icon: Heart },
+      { id: "apar-guide", name: "APAR Self-Assessment", nameTamil: "APAR வழிகாட்டி", href: "/tools/apar-guide", icon: ClipboardList },
     ],
   },
   {
