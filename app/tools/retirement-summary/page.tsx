@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Wallet, Gift, Calendar, PiggyBank, Info, CheckCircle } from "lucide-react";
+import { ArrowLeft, Wallet, Gift, Calendar, PiggyBank, Info, CheckCircle, Printer } from "lucide-react";
 
 // Constants
 const CURRENT_DA = 55;
@@ -71,20 +71,33 @@ export default function RetirementSummaryPage() {
     };
   }, [lastBasicPay, serviceYears, retirementAge, elBalance, commutationPercent, gpfBalance]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/tools" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <Wallet className="text-purple-600" size={28} />
-            Retirement Benefits Summary
-          </h1>
-          <p className="text-sm text-gray-500 tamil">ஓய்வு பலன்கள் சுருக்கம்</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Link href="/tools" className="p-2 hover:bg-gray-100 rounded-lg transition-colors print:hidden">
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
+              <Wallet className="text-purple-600" size={28} />
+              Retirement Benefits Summary
+            </h1>
+            <p className="text-sm text-gray-500 tamil">ஓய்வு பலன்கள் சுருக்கம்</p>
+          </div>
         </div>
+        <button
+          onClick={handlePrint}
+          className="print:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+        >
+          <Printer size={16} />
+          Print
+        </button>
       </div>
 
       {/* Disclaimer */}

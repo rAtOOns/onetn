@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calculator, Info } from "lucide-react";
+import { ArrowLeft, Calculator, Info, Printer } from "lucide-react";
 
 // TN 7th Pay Commission Pay Levels with sample pay ranges
 const payLevels = [
@@ -135,25 +135,38 @@ export default function SalaryCalculatorPage() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link
-          href="/tools"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft size={20} />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <Calculator className="text-green-600" size={28} />
-            Salary Calculator
-          </h1>
-          <p className="text-sm text-gray-500 tamil">
-            சம்பள கால்குலேட்டர் - 7வது ஊதிய குழு
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/tools"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors print:hidden"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
+              <Calculator className="text-green-600" size={28} />
+              Salary Calculator
+            </h1>
+            <p className="text-sm text-gray-500 tamil">
+              சம்பள கால்குலேட்டர் - 7வது ஊதிய குழு
+            </p>
+          </div>
         </div>
+        <button
+          onClick={handlePrint}
+          className="print:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+        >
+          <Printer size={16} />
+          Print
+        </button>
       </div>
 
       {/* Disclaimer */}

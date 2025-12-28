@@ -31,6 +31,10 @@ import {
   ArrowRightLeft,
   Award,
   Landmark,
+  ClipboardCheck,
+  Heart,
+  FileCheck,
+  Monitor,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -59,6 +63,8 @@ const toolCategories: ToolCategory[] = [
       { id: "increment-calculator", name: "Increment Calculator", nameTamil: "ஊதிய உயர்வு", href: "/tools/increment-calculator", icon: Calendar },
       { id: "da-rates", name: "DA Rate Table", nameTamil: "அகவிலைப்படி விகிதம்", href: "/tools/da-rates", icon: TrendingUp },
       { id: "arrears-calculator", name: "DA Arrears Calculator", nameTamil: "நிலுவை கால்குலேட்டர்", href: "/tools/arrears-calculator", icon: TrendingUp },
+      { id: "pay-fixation", name: "Pay Fixation Calculator", nameTamil: "ஊதிய நிர்ணயம்", href: "/tools/pay-fixation", icon: TrendingUp },
+      { id: "pay-slip-decoder", name: "Pay Slip Decoder", nameTamil: "சம்பள சீட்டு விளக்கி", href: "/tools/pay-slip-decoder", icon: FileText },
     ],
   },
   {
@@ -76,6 +82,7 @@ const toolCategories: ToolCategory[] = [
       { id: "tpf-calculator", name: "TPF Calculator", nameTamil: "TPF கால்குலேட்டர்", href: "/tools/tpf-calculator", icon: PiggyBank },
       { id: "loan-calculator", name: "GPF/Loan Calculator", nameTamil: "GPF கடன்", href: "/tools/loan-calculator", icon: Calculator },
       { id: "gpf-interest-calculator", name: "GPF Interest Calculator", nameTamil: "GPF வட்டி", href: "/tools/gpf-interest-calculator", icon: PiggyBank },
+      { id: "nps-calculator", name: "NPS Calculator", nameTamil: "NPS கால்குலேட்டர்", href: "/tools/nps-calculator", icon: PiggyBank },
     ],
   },
   {
@@ -86,6 +93,7 @@ const toolCategories: ToolCategory[] = [
       { id: "pension-calculator", name: "Pension Calculator", nameTamil: "ஓய்வூதியம்", href: "/tools/pension-calculator", icon: Wallet },
       { id: "gratuity-calculator", name: "Gratuity Calculator", nameTamil: "நன்கொடை", href: "/tools/gratuity-calculator", icon: Gift },
       { id: "leave-encashment-calculator", name: "Leave Encashment", nameTamil: "விடுப்பு பணமாக்கல்", href: "/tools/leave-encashment-calculator", icon: Calendar },
+      { id: "die-in-harness", name: "Die-in-Harness Benefits", nameTamil: "பணியில் இறப்பு சலுகை", href: "/tools/die-in-harness", icon: Heart },
     ],
   },
   {
@@ -97,6 +105,7 @@ const toolCategories: ToolCategory[] = [
       { id: "leave-rules", name: "Leave Rules", nameTamil: "விடுப்பு விதிகள்", href: "/tools/leave-rules", icon: FileText },
       { id: "surrender-leave-calculator", name: "Surrender Leave Calculator", nameTamil: "விடுப்பு சரண்", href: "/tools/surrender-leave-calculator", icon: Calendar },
       { id: "ltc-calculator", name: "LTC Calculator", nameTamil: "LTC கால்குலேட்டர்", href: "/tools/ltc-calculator", icon: Plane },
+      { id: "eol-impact", name: "EOL Impact Calculator", nameTamil: "EOL தாக்கம்", href: "/tools/eol-impact", icon: Calendar },
     ],
   },
   {
@@ -106,6 +115,11 @@ const toolCategories: ToolCategory[] = [
       { id: "transfer-rules", name: "Transfer Rules & Process", nameTamil: "இடமாற்ற விதிகள்", href: "/tools/transfer-rules", icon: ArrowRightLeft },
       { id: "promotion-info", name: "Promotion Information", nameTamil: "பதவி உயர்வு", href: "/tools/promotion-info", icon: Award },
       { id: "loans-advances", name: "Loans & Advances Guide", nameTamil: "கடன்கள் வழிகாட்டி", href: "/tools/loans-advances", icon: Landmark },
+      { id: "exam-duty-calculator", name: "Exam Duty Calculator", nameTamil: "தேர்வுப் பணி", href: "/tools/exam-duty-calculator", icon: ClipboardCheck },
+      { id: "medical-reimbursement", name: "Medical Reimbursement", nameTamil: "மருத்துவ திருப்பி", href: "/tools/medical-reimbursement", icon: Heart },
+      { id: "ta-bill-calculator", name: "TA Bill Calculator", nameTamil: "பயணப்படி", href: "/tools/ta-bill-calculator", icon: MapPin },
+      { id: "service-book-checklist", name: "Service Book Checklist", nameTamil: "சேவை புத்தகம்", href: "/tools/service-book-checklist", icon: BookOpen },
+      { id: "document-checklists", name: "Document Checklists", nameTamil: "ஆவண பட்டியல்", href: "/tools/document-checklists", icon: FileCheck },
     ],
   },
   {
@@ -126,6 +140,8 @@ const toolCategories: ToolCategory[] = [
       { id: "ta-da-rates", name: "TA/DA Rates", nameTamil: "பயணப்படி விகிதம்", href: "/tools/ta-da-rates", icon: MapPin },
       { id: "contact-directory", name: "Contact Directory", nameTamil: "தொடர்பு விவரங்கள்", href: "/tools/contact-directory", icon: Building },
       { id: "abbreviations", name: "Abbreviations", nameTamil: "சுருக்கங்கள்", href: "/tools/abbreviations", icon: BookOpen },
+      { id: "emis-guide", name: "EMIS / Paymanager Guide", nameTamil: "EMIS வழிகாட்டி", href: "/tools/emis-guide", icon: Monitor },
+      { id: "academic-calendar", name: "Academic Calendar", nameTamil: "கல்வி நாட்காட்டி", href: "/tools/academic-calendar", icon: Calendar },
     ],
   },
   {

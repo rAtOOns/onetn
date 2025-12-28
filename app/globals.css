@@ -66,3 +66,130 @@ body {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-tn-primary to-tn-highlight;
   }
 }
+
+/* Print Styles */
+@media print {
+  /* Hide navigation and non-essential elements */
+  header,
+  footer,
+  nav,
+  aside,
+  .print\\:hidden,
+  button:not(.print\\:visible),
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset background colors for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  /* Ensure content is visible */
+  .print\\:block {
+    display: block !important;
+  }
+
+  /* Remove shadows and borders for cleaner print */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+
+  /* Ensure gradients become solid colors */
+  .bg-gradient-to-r,
+  .bg-gradient-to-b {
+    background: #065f46 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Preserve background colors for important elements */
+  .print\\:bg-white {
+    background: white !important;
+  }
+
+  /* Table styles for print */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f3f4f6 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Calculator result card print styling */
+  .calculator-result {
+    border: 2px solid #065f46;
+    padding: 16px;
+    margin: 16px 0;
+    background: #f0fdf4 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Print header */
+  .print-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #065f46;
+    padding-bottom: 10px;
+  }
+
+  /* Print footer */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 10pt;
+    color: #666;
+    border-top: 1px solid #ddd;
+    padding-top: 5px;
+  }
+
+  /* Ensure links show URLs */
+  a[href]:after {
+    content: none;
+  }
+
+  /* Full width for main content */
+  main {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Container adjustments */
+  .container {
+    max-width: 100% !important;
+    padding: 0 10px !important;
+  }
+}

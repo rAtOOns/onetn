@@ -169,8 +169,10 @@ export default function PromotionInfoPage() {
             <li>Minimum increment of 3% is ensured</li>
             <li>Date of next increment may change based on promotion date</li>
           </ol>
-          <p className="mt-4 text-orange-700">
-            <strong>Note:</strong> Use the Pay Fixation Calculator (coming soon) for exact calculation.
+          <p className="mt-4">
+            <Link href="/tools/pay-fixation" className="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 font-medium">
+              <strong>→</strong> Use the Pay Fixation Calculator for exact calculation
+            </Link>
           </p>
         </div>
       </div>
