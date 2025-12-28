@@ -66,9 +66,6 @@ const daRates5thPC = [
   { effectiveFrom: "January 2001", rate: 60, increase: 5, goNumber: "G.O.Ms.No.14/2001" },
 ];
 
-// Sample calculation
-const sampleBasicPay = 36900;
-
 type PayCommission = "7th" | "6th" | "5th";
 
 export default function DARatesPage() {
@@ -152,14 +149,14 @@ export default function DARatesPage() {
             </label>
             <input
               type="number"
-              defaultValue={sampleBasicPay}
+              placeholder="Enter basic pay"
               id="basicPayInput"
               className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-tn-primary focus:border-transparent"
               onChange={(e) => {
                 const basic = Number(e.target.value);
-                const daAmount = Math.round((basic * currentDA.rate) / 100);
+                const daAmount = basic ? Math.round((basic * currentDA.rate) / 100) : 0;
                 const resultEl = document.getElementById("daResult");
-                if (resultEl) resultEl.textContent = `₹${daAmount.toLocaleString("en-IN")}`;
+                if (resultEl) resultEl.textContent = basic ? `₹${daAmount.toLocaleString("en-IN")}` : "—";
               }}
             />
           </div>
@@ -169,7 +166,7 @@ export default function DARatesPage() {
             </label>
             <div className="w-full border rounded-lg p-3 bg-gray-50">
               <span id="daResult" className="text-xl font-bold text-green-600">
-                ₹{Math.round((sampleBasicPay * currentDA.rate) / 100).toLocaleString("en-IN")}
+                —
               </span>
             </div>
           </div>
