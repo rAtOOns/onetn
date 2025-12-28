@@ -35,6 +35,10 @@ import {
   Heart,
   FileCheck,
   Monitor,
+  Scale,
+  GraduationCap,
+  Users,
+  Baby,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -106,6 +110,7 @@ const toolCategories: ToolCategory[] = [
       { id: "surrender-leave-calculator", name: "Surrender Leave Calculator", nameTamil: "விடுப்பு சரண்", href: "/tools/surrender-leave-calculator", icon: Calendar },
       { id: "ltc-calculator", name: "LTC Calculator", nameTamil: "LTC கால்குலேட்டர்", href: "/tools/ltc-calculator", icon: Plane },
       { id: "eol-impact", name: "EOL Impact Calculator", nameTamil: "EOL தாக்கம்", href: "/tools/eol-impact", icon: Calendar },
+      { id: "special-leave-calculator", name: "Special Leave Calculator", nameTamil: "சிறப்பு விடுப்பு", href: "/tools/special-leave-calculator", icon: Baby },
     ],
   },
   {
@@ -120,6 +125,12 @@ const toolCategories: ToolCategory[] = [
       { id: "ta-bill-calculator", name: "TA Bill Calculator", nameTamil: "பயணப்படி", href: "/tools/ta-bill-calculator", icon: MapPin },
       { id: "service-book-checklist", name: "Service Book Checklist", nameTamil: "சேவை புத்தகம்", href: "/tools/service-book-checklist", icon: BookOpen },
       { id: "document-checklists", name: "Document Checklists", nameTamil: "ஆவண பட்டியல்", href: "/tools/document-checklists", icon: FileCheck },
+      { id: "seniority-calculator", name: "Seniority Calculator", nameTamil: "மூப்பு கால்குலேட்டர்", href: "/tools/seniority-calculator", icon: Scale },
+      { id: "tntet-score-calculator", name: "TNTET/TRB Score Calculator", nameTamil: "TNTET/TRB மதிப்பெண்", href: "/tools/tntet-score-calculator", icon: GraduationCap },
+      { id: "student-strength-calculator", name: "Student Strength Calculator", nameTamil: "மாணவர் எண்ணிக்கை", href: "/tools/student-strength-calculator", icon: Users },
+      { id: "loan-emi-calculator", name: "Loan EMI Calculator", nameTamil: "கடன் EMI", href: "/tools/loan-emi-calculator", icon: Landmark },
+      { id: "rte-compliance", name: "RTE Compliance Checklist", nameTamil: "RTE இணக்கம்", href: "/tools/rte-compliance", icon: Scale },
+      { id: "deputation-guide", name: "Deputation Rules Guide", nameTamil: "பணி நிலை மாற்றம்", href: "/tools/deputation-guide", icon: ArrowRightLeft },
     ],
   },
   {
