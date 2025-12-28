@@ -1,18 +1,11 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 
 export default function Footer() {
   const links = [
     { name: "Education GOs", href: "/go" },
-    { name: "Schools", href: "/schools" },
     { name: "News", href: "/news" },
     { name: "Tools", href: "/tools" },
     { name: "GO Alerts", href: "/subscribe" },
-  ];
-
-  const externalLinks = [
-    { name: "TN Gov", href: "https://www.tn.gov.in" },
-    { name: "India Gov", href: "https://www.india.gov.in" },
   ];
 
   return (
@@ -42,19 +35,6 @@ export default function Footer() {
               >
                 {link.name}
               </Link>
-            ))}
-            <span className="text-gray-500" aria-hidden="true">|</span>
-            {externalLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-white rounded px-1"
-              >
-                {link.name}
-                <ExternalLink size={12} aria-hidden="true" />
-              </a>
             ))}
           </nav>
         </div>

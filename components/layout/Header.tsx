@@ -12,7 +12,6 @@ export default function Header() {
   const tabs = [
     { name: "Home", href: "/" },
     { name: "Education GOs", href: "/go" },
-    { name: "Schools", href: "/schools" },
     { name: "News", href: "/news" },
     { name: "Tools", href: "/tools" },
     { name: "Alerts", href: "/subscribe" },

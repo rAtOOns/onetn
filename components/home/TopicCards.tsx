@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  GraduationCap,
   Banknote,
   Calendar,
   ArrowLeftRight,
@@ -8,7 +7,6 @@ import {
   FileText,
   ClipboardList,
   Users,
-  BookOpen,
   Award,
 } from "lucide-react";
 
@@ -62,13 +60,6 @@ const educationTopics = [
     icon: Award,
     query: "tet trb",
     color: "text-amber-600 bg-amber-50",
-  },
-  {
-    name: "Schools",
-    nameTamil: "பள்ளிகள்",
-    icon: GraduationCap,
-    query: "school",
-    color: "text-indigo-600 bg-indigo-50",
   },
   {
     name: "Pension / GPF",
