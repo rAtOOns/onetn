@@ -21,6 +21,10 @@ import {
   Building2,
   BookOpen,
   Building,
+  Plane,
+  ArrowRightLeft,
+  Award,
+  Landmark,
 } from "lucide-react";
 
 interface Tool {
@@ -32,6 +36,7 @@ interface Tool {
   href: string;
   color: string;
   category: string;
+  isNew?: boolean;
 }
 
 const tools: Tool[] = [
@@ -70,11 +75,22 @@ const tools: Tool[] = [
     id: "da-rates",
     name: "DA Rate Table",
     nameTamil: "அகவிலைப்படி விகிதம்",
-    description: "Current and historical DA rates",
+    description: "Current and historical DA rates from 2001",
     icon: TrendingUp,
     href: "/tools/da-rates",
     color: "bg-blue-500",
     category: "Salary & Pay",
+  },
+  {
+    id: "arrears-calculator",
+    name: "DA Arrears Calculator",
+    nameTamil: "நிலுவை கால்குலேட்டர்",
+    description: "Calculate DA arrears when rate increases",
+    icon: TrendingUp,
+    href: "/tools/arrears-calculator",
+    color: "bg-green-600",
+    category: "Salary & Pay",
+    isNew: true,
   },
   // Tax & Deductions
   {
@@ -118,7 +134,29 @@ const tools: Tool[] = [
     color: "bg-red-500",
     category: "Provident Fund",
   },
-  // Retirement Benefits
+  {
+    id: "gpf-interest-calculator",
+    name: "GPF Interest Calculator",
+    nameTamil: "GPF வட்டி கால்குலேட்டர்",
+    description: "Calculate yearly GPF interest with monthly breakdown",
+    icon: PiggyBank,
+    href: "/tools/gpf-interest-calculator",
+    color: "bg-emerald-600",
+    category: "Provident Fund",
+    isNew: true,
+  },
+  // Retirement Planning
+  {
+    id: "retirement-summary",
+    name: "Retirement Summary",
+    nameTamil: "ஓய்வு சுருக்கம்",
+    description: "One-page view of all retirement benefits",
+    icon: Wallet,
+    href: "/tools/retirement-summary",
+    color: "bg-purple-600",
+    category: "Retirement Planning",
+    isNew: true,
+  },
   {
     id: "pension-calculator",
     name: "Pension Calculator",
@@ -126,8 +164,8 @@ const tools: Tool[] = [
     description: "Calculate pension, commutation and family pension",
     icon: Wallet,
     href: "/tools/pension-calculator",
-    color: "bg-purple-600",
-    category: "Retirement Benefits",
+    color: "bg-purple-500",
+    category: "Retirement Planning",
   },
   {
     id: "gratuity-calculator",
@@ -137,7 +175,7 @@ const tools: Tool[] = [
     icon: Gift,
     href: "/tools/gratuity-calculator",
     color: "bg-pink-500",
-    category: "Retirement Benefits",
+    category: "Retirement Planning",
   },
   {
     id: "leave-encashment-calculator",
@@ -147,7 +185,7 @@ const tools: Tool[] = [
     icon: Calendar,
     href: "/tools/leave-encashment-calculator",
     color: "bg-teal-600",
-    category: "Retirement Benefits",
+    category: "Retirement Planning",
   },
   // Service & Leave
   {
@@ -179,6 +217,62 @@ const tools: Tool[] = [
     href: "/tools/leave-rules",
     color: "bg-teal-600",
     category: "Service & Leave",
+  },
+  {
+    id: "surrender-leave-calculator",
+    name: "Surrender Leave Calculator",
+    nameTamil: "விடுப்பு சரண் கால்குலேட்டர்",
+    description: "Calculate surrender leave encashment amount",
+    icon: Calendar,
+    href: "/tools/surrender-leave-calculator",
+    color: "bg-teal-700",
+    category: "Service & Leave",
+    isNew: true,
+  },
+  {
+    id: "ltc-calculator",
+    name: "LTC Calculator",
+    nameTamil: "LTC கால்குலேட்டர்",
+    description: "Calculate Leave Travel Concession benefits",
+    icon: Plane,
+    href: "/tools/ltc-calculator",
+    color: "bg-sky-500",
+    category: "Service & Leave",
+    isNew: true,
+  },
+  // Service Matters (New Category)
+  {
+    id: "transfer-rules",
+    name: "Transfer Rules & Process",
+    nameTamil: "இடமாற்ற விதிகள்",
+    description: "Transfer counseling process and rules guide",
+    icon: ArrowRightLeft,
+    href: "/tools/transfer-rules",
+    color: "bg-indigo-600",
+    category: "Service Matters",
+    isNew: true,
+  },
+  {
+    id: "promotion-info",
+    name: "Promotion Information",
+    nameTamil: "பதவி உயர்வு தகவல்",
+    description: "Promotion hierarchy, eligibility and requirements",
+    icon: Award,
+    href: "/tools/promotion-info",
+    color: "bg-orange-600",
+    category: "Service Matters",
+    isNew: true,
+  },
+  {
+    id: "loans-advances",
+    name: "Loans & Advances Guide",
+    nameTamil: "கடன்கள் வழிகாட்டி",
+    description: "HBA, vehicle loan, festival advance details",
+    icon: Landmark,
+    href: "/tools/loans-advances",
+    color: "bg-amber-600",
+    category: "Service Matters",
+    isNew: true,
   },
   // Date & Time
   {
@@ -288,14 +382,17 @@ const categoryOrder = [
   "Salary & Pay",
   "Tax & Deductions",
   "Provident Fund",
-  "Retirement Benefits",
+  "Retirement Planning",
   "Service & Leave",
+  "Service Matters",
   "Date & Time",
   "Reference",
   "Utilities",
 ];
 
 export default function ToolsPage() {
+  const newToolsCount = tools.filter(t => t.isNew).length;
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -305,6 +402,9 @@ export default function ToolsPage() {
         </h1>
         <p className="text-gray-600">
           {tools.length} tools for Tamil Nadu Education Department employees
+          {newToolsCount > 0 && (
+            <span className="ml-2 text-green-600">({newToolsCount} new)</span>
+          )}
         </p>
         <p className="text-sm text-gray-500 tamil">
           தமிழ்நாடு கல்வித்துறை ஊழியர்களுக்கான {tools.length} கருவிகள்
@@ -315,7 +415,7 @@ export default function ToolsPage() {
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
         <p className="text-sm text-amber-800">
           <strong>Disclaimer:</strong> These tools are for informational purposes only.
-          Always verify calculations with official sources or your DDO.
+          This is not an official government website. Always verify calculations with official sources or your DDO.
         </p>
       </div>
 
@@ -329,6 +429,7 @@ export default function ToolsPage() {
             <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
               <span className="w-1 h-6 bg-tn-primary rounded-full"></span>
               {category}
+              <span className="text-sm font-normal text-gray-500">({categoryTools.length})</span>
             </h2>
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               {categoryTools.map((tool) => {
@@ -337,8 +438,13 @@ export default function ToolsPage() {
                   <Link
                     key={tool.id}
                     href={tool.href}
-                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-tn-primary/20 transition-all group"
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-tn-primary/20 transition-all group relative"
                   >
+                    {tool.isNew && (
+                      <span className="absolute top-2 right-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                        NEW
+                      </span>
+                    )}
                     <div className="flex items-start gap-3">
                       <div
                         className={`${tool.color} p-2.5 rounded-lg text-white group-hover:scale-110 transition-transform`}
@@ -368,7 +474,7 @@ export default function ToolsPage() {
       {/* Footer Note */}
       <div className="mt-8 text-center border-t pt-6">
         <p className="text-sm text-gray-500">
-          More tools coming soon. Use the sidebar to navigate between tools.
+          More tools coming soon. Suggestions? We&apos;re always improving!
         </p>
       </div>
     </div>

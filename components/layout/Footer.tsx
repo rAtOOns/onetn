@@ -6,6 +6,7 @@ export default function Footer() {
     { name: "Exams", href: "/exams" },
     { name: "Tools", href: "/tools" },
     { name: "Forms", href: "/forms" },
+    { name: "Links", href: "/links" },
     { name: "FAQ", href: "/faq" },
   ];
 
