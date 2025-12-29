@@ -1,61 +1,78 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
   CheckCircle,
   AlertCircle,
-  AlertTriangle,
-  Info,
   Copy,
   RotateCcw,
-  FileText,
   Sparkles,
-  BookOpen,
+  Check,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Info,
 } from "lucide-react";
 import {
-  validateTamilText,
-  ValidationError,
-  ValidationResult,
+  spellCheck,
+  SpellError,
+  SpellCheckResult,
   getErrorTypeLabel,
-  FORMAL_PHRASES,
+  CONFUSION_RULES,
   containsTamil,
 } from "@/lib/tamil-validator";
 
 export default function TamilSpellCheckerPage() {
   const [inputText, setInputText] = useState("");
-  const [result, setResult] = useState<ValidationResult | null>(null);
-  const [showPhrases, setShowPhrases] = useState(false);
+  const [result, setResult] = useState<SpellCheckResult | null>(null);
+  const [selectedError, setSelectedError] = useState<SpellError | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleValidate = useCallback(() => {
+  // Auto-check when text changes (debounced)
+  useEffect(() => {
     if (!inputText.trim()) {
       setResult(null);
+      setSelectedError(null);
       return;
     }
-    const validationResult = validateTamilText(inputText);
-    setResult(validationResult);
+
+    const timer = setTimeout(() => {
+      const checkResult = spellCheck(inputText);
+      setResult(checkResult);
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [inputText]);
 
-  const handleApplyCorrections = () => {
+  const handleFix = useCallback((error: SpellError) => {
+    const newText =
+      inputText.slice(0, error.position) +
+      error.suggestion +
+      inputText.slice(error.position + error.length);
+    setInputText(newText);
+    setSelectedError(null);
+  }, [inputText]);
+
+  const handleFixAll = useCallback(() => {
     if (result) {
       setInputText(result.correctedText);
-      // Re-validate with corrected text
-      const newResult = validateTamilText(result.correctedText);
-      setResult(newResult);
+      setSelectedError(null);
     }
-  };
+  }, [result]);
 
-  const handleCopy = async (text: string) => {
+  const handleCopy = async () => {
+    const textToCopy = result?.correctedText || inputText;
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = text;
+      textArea.value = textToCopy;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand("copy");
@@ -68,490 +85,380 @@ export default function TamilSpellCheckerPage() {
   const handleClear = () => {
     setInputText("");
     setResult(null);
+    setSelectedError(null);
   };
 
-  const insertPhrase = (phrase: string) => {
-    setInputText((prev) => prev + (prev ? " " : "") + phrase);
-  };
-
-  const getSeverityIcon = (severity: ValidationError["severity"]) => {
-    switch (severity) {
-      case "error":
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case "warning":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case "info":
-        return <Info className="w-4 h-4 text-blue-500" />;
+  const handleIgnore = (error: SpellError) => {
+    if (result) {
+      setResult({
+        ...result,
+        errors: result.errors.filter(e => e.position !== error.position),
+      });
     }
+    setSelectedError(null);
   };
 
-  const getSeverityClass = (severity: ValidationError["severity"]) => {
-    switch (severity) {
-      case "error":
-        return "border-red-200 bg-red-50";
-      case "warning":
-        return "border-yellow-200 bg-yellow-50";
-      case "info":
-        return "border-blue-200 bg-blue-50";
+  // Render text with error highlights
+  const renderHighlightedText = () => {
+    if (!result || result.errors.length === 0) {
+      return inputText;
     }
+
+    const parts: JSX.Element[] = [];
+    let lastIndex = 0;
+
+    const sortedErrors = [...result.errors].sort((a, b) => a.position - b.position);
+
+    sortedErrors.forEach((error, index) => {
+      // Add text before error
+      if (error.position > lastIndex) {
+        parts.push(
+          <span key={`text-${index}`}>
+            {inputText.slice(lastIndex, error.position)}
+          </span>
+        );
+      }
+
+      // Add highlighted error
+      const isSelected = selectedError?.position === error.position;
+      parts.push(
+        <span
+          key={`error-${index}`}
+          onClick={() => setSelectedError(isSelected ? null : error)}
+          className={`
+            cursor-pointer border-b-2 transition-all
+            ${error.severity === 'error'
+              ? 'border-red-500 bg-red-100 hover:bg-red-200'
+              : 'border-yellow-500 bg-yellow-100 hover:bg-yellow-200'}
+            ${isSelected ? 'ring-2 ring-blue-500 rounded' : ''}
+          `}
+        >
+          {error.word}
+        </span>
+      );
+
+      lastIndex = error.position + error.length;
+    });
+
+    // Add remaining text
+    if (lastIndex < inputText.length) {
+      parts.push(
+        <span key="text-end">{inputText.slice(lastIndex)}</span>
+      );
+    }
+
+    return parts;
   };
 
   const hasTamilText = containsTamil(inputText);
+  const errorCount = result?.errors.length || 0;
+  const hasErrors = errorCount > 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Link
-            href="/tools"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-tn-primary mb-3"
-          >
-            <ChevronLeft size={16} className="mr-1" />
-            Back to Tools
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+      <div className="bg-white border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/tools"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ChevronLeft size={20} />
+              </Link>
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">
+                    Tamil Spell Checker
+                  </h1>
+                  <p className="text-xs text-gray-500">
+                    தமிழ் எழுத்துப்பிழை சரிபார்ப்பான்
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Tamil Spell Checker
-              </h1>
-              <p className="text-sm text-gray-600">
-                தமிழ் எழுத்துப்பிழை சரிபார்ப்பான்
-              </p>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-2">
+              {hasErrors && (
+                <button
+                  onClick={handleFixAll}
+                  className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 flex items-center gap-1"
+                >
+                  <Check size={14} />
+                  <span className="hidden sm:inline">Fix All</span>
+                  <span className="sm:hidden">Fix</span>
+                </button>
+              )}
+              <button
+                onClick={handleCopy}
+                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 flex items-center gap-1"
+              >
+                {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                <span className="hidden sm:inline">{copied ? "Copied!" : "Copy"}</span>
+              </button>
+              <button
+                onClick={handleClear}
+                className="p-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              >
+                <RotateCcw size={16} />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Input/Output Area */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Input Section */}
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <FileText size={18} />
-                  Enter Tamil Text / தமிழ் உரை உள்ளிடவும்
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setShowPhrases(!showPhrases)}
-                    className="text-sm px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 flex items-center gap-1"
-                  >
-                    <BookOpen size={14} />
-                    Phrases
-                  </button>
-                  <button
-                    onClick={handleClear}
-                    className="text-sm px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1"
-                  >
-                    <RotateCcw size={14} />
-                    Clear
-                  </button>
-                </div>
-              </div>
-
-              {/* Formal Phrases Panel */}
-              {showPhrases && (
-                <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
-                  <h3 className="text-sm font-medium text-purple-800 mb-2">
-                    Common Formal Phrases / பொதுவான முறையான சொற்றொடர்கள்
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-purple-600 mb-1">
-                        Salutations / வணக்கம்
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {FORMAL_PHRASES.salutations.map((item) => (
-                          <button
-                            key={item.phrase}
-                            onClick={() => insertPhrase(item.phrase)}
-                            className="text-xs px-2 py-1 bg-white border border-purple-200 rounded hover:bg-purple-100"
-                            title={item.meaning}
-                          >
-                            {item.phrase}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-purple-600 mb-1">
-                        Closings / முடிவுரை
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {FORMAL_PHRASES.closings.map((item) => (
-                          <button
-                            key={item.phrase}
-                            onClick={() => insertPhrase(item.phrase)}
-                            className="text-xs px-2 py-1 bg-white border border-purple-200 rounded hover:bg-purple-100"
-                            title={item.meaning}
-                          >
-                            {item.phrase}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-purple-600 mb-1">
-                        Connectors / இணைப்புச் சொற்கள்
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {FORMAL_PHRASES.connectors.map((item) => (
-                          <button
-                            key={item.phrase}
-                            onClick={() => insertPhrase(item.phrase)}
-                            className="text-xs px-2 py-1 bg-white border border-purple-200 rounded hover:bg-purple-100"
-                            title={item.meaning}
-                          >
-                            {item.phrase}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-purple-600 mb-1">
-                        Requests / கோரிக்கைகள்
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {FORMAL_PHRASES.requests.map((item) => (
-                          <button
-                            key={item.phrase}
-                            onClick={() => insertPhrase(item.phrase)}
-                            className="text-xs px-2 py-1 bg-white border border-purple-200 rounded hover:bg-purple-100"
-                            title={item.meaning}
-                          >
-                            {item.phrase}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="தமிழில் எழுதுங்கள்... (Type in Tamil...)"
-                className="w-full h-48 p-4 border rounded-lg resize-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
-                style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}
-              />
-
-              <div className="flex items-center justify-between mt-3">
-                <div className="text-sm text-gray-500">
-                  {inputText.length} characters
-                  {!hasTamilText && inputText.length > 0 && (
-                    <span className="ml-2 text-yellow-600">
-                      (No Tamil text detected)
-                    </span>
-                  )}
-                </div>
-                <button
-                  onClick={handleValidate}
-                  disabled={!inputText.trim()}
-                  className="px-6 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium flex items-center gap-2"
-                >
-                  <CheckCircle size={18} />
-                  Check Text / சரிபார்
-                </button>
-              </div>
-            </div>
-
-            {/* Results Section */}
+      <div className="container mx-auto px-4 py-4 max-w-4xl">
+        {/* Status Bar */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
             {result && (
-              <div className="bg-white rounded-xl shadow-sm border p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-semibold text-gray-900">
-                    Validation Results / சரிபார்ப்பு முடிவுகள்
-                  </h2>
-                  {result.isValid ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1">
-                      <CheckCircle size={14} />
-                      No errors found
-                    </span>
-                  ) : (
-                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm flex items-center gap-1">
-                      <AlertCircle size={14} />
-                      {result.stats.totalErrors} issue(s) found
-                    </span>
-                  )}
-                </div>
-
-                {/* Stats */}
-                {result.stats.totalErrors > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-4">
-                    <div className="p-2 bg-gray-50 rounded-lg text-center">
-                      <div className="text-lg font-bold text-gray-900">
-                        {result.stats.spellingErrors}
-                      </div>
-                      <div className="text-xs text-gray-600">Spelling</div>
-                    </div>
-                    <div className="p-2 bg-gray-50 rounded-lg text-center">
-                      <div className="text-lg font-bold text-gray-900">
-                        {result.stats.consonantErrors}
-                      </div>
-                      <div className="text-xs text-gray-600">Consonant</div>
-                    </div>
-                    <div className="p-2 bg-gray-50 rounded-lg text-center">
-                      <div className="text-lg font-bold text-gray-900">
-                        {result.stats.vowelErrors}
-                      </div>
-                      <div className="text-xs text-gray-600">Vowel</div>
-                    </div>
-                    <div className="p-2 bg-gray-50 rounded-lg text-center">
-                      <div className="text-lg font-bold text-gray-900">
-                        {result.stats.pulliErrors}
-                      </div>
-                      <div className="text-xs text-gray-600">Pulli</div>
-                    </div>
-                    <div className="p-2 bg-gray-50 rounded-lg text-center">
-                      <div className="text-lg font-bold text-gray-900">
-                        {result.stats.grammarErrors}
-                      </div>
-                      <div className="text-xs text-gray-600">Grammar</div>
-                    </div>
-                  </div>
+              <>
+                {result.isValid ? (
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1">
+                    <CheckCircle size={14} />
+                    பிழை இல்லை (No errors)
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errorCount} பிழை{errorCount > 1 ? 'கள்' : ''} ({errorCount} error{errorCount > 1 ? 's' : ''})
+                  </span>
                 )}
-
-                {/* Error List */}
-                {result.errors.length > 0 && (
-                  <div className="space-y-2 mb-4">
-                    <h3 className="text-sm font-medium text-gray-700">
-                      Issues Found / கண்டறியப்பட்ட பிழைகள்
-                    </h3>
-                    <div className="max-h-64 overflow-y-auto space-y-2">
-                      {result.errors.map((error, index) => (
-                        <div
-                          key={index}
-                          className={`p-3 rounded-lg border ${getSeverityClass(error.severity)}`}
-                        >
-                          <div className="flex items-start gap-2">
-                            {getSeverityIcon(error.severity)}
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-medium text-gray-900">
-                                  &quot;{error.original}&quot;
-                                </span>
-                                <span className="text-gray-400">→</span>
-                                <span className="font-medium text-green-700">
-                                  &quot;{error.suggestion}&quot;
-                                </span>
-                                <span className="text-xs px-2 py-0.5 bg-white rounded-full border">
-                                  {getErrorTypeLabel(error.type).tamil}
-                                </span>
-                              </div>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {error.messageTamil}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Corrected Text */}
-                {result.correctedText !== inputText && (
-                  <div className="border-t pt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-gray-700">
-                        Corrected Text / திருத்தப்பட்ட உரை
-                      </h3>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleCopy(result.correctedText)}
-                          className="text-sm px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1"
-                        >
-                          <Copy size={14} />
-                          {copied ? "Copied!" : "Copy"}
-                        </button>
-                        <button
-                          onClick={handleApplyCorrections}
-                          className="text-sm px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1"
-                        >
-                          <CheckCircle size={14} />
-                          Apply All
-                        </button>
-                      </div>
-                    </div>
-                    <div
-                      className="p-4 bg-green-50 border border-green-200 rounded-lg text-lg"
-                      style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}
-                    >
-                      {result.correctedText}
-                    </div>
-                  </div>
-                )}
-
-                {result.isValid && (
-                  <div className="flex items-center justify-center p-6 text-green-600">
-                    <CheckCircle size={24} className="mr-2" />
-                    <span className="text-lg">
-                      Your text looks good! / உங்கள் உரை சரியாக உள்ளது!
-                    </span>
-                  </div>
-                )}
-              </div>
+              </>
             )}
           </div>
+          <button
+            onClick={() => setShowGuide(!showGuide)}
+            className="text-sm text-purple-600 hover:text-purple-700 flex items-center gap-1"
+          >
+            <Info size={14} />
+            {showGuide ? 'Hide' : 'Show'} Guide
+            {showGuide ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+        </div>
 
-          {/* Sidebar - Help & Reference */}
-          <div className="space-y-4">
-            {/* Quick Reference */}
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Common Confusions / பொதுவான குழப்பங்கள்
-              </h3>
-
-              <div className="space-y-4 text-sm">
-                {/* N sounds */}
-                <div>
-                  <h4 className="font-medium text-purple-700 mb-2">
-                    &quot;N&quot; Sounds / ந-வகை ஒலிகள்
-                  </h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ண</span>
-                      <span>Retroflex (பணம், மணி)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ன</span>
-                      <span>Alveolar (மனம், தனம்)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ந</span>
-                      <span>Dental (நான், நீ)</span>
-                    </div>
+        {/* Quick Guide (Collapsible) */}
+        {showGuide && (
+          <div className="mb-4 bg-purple-50 border border-purple-200 rounded-xl p-4">
+            <h3 className="font-semibold text-purple-800 mb-3">
+              Common Tamil Letter Confusions / பொதுவான எழுத்துக் குழப்பங்கள்
+            </h3>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {CONFUSION_RULES.consonants.map((rule, index) => (
+                <div key={index} className="bg-white rounded-lg p-3 border border-purple-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    {rule.letters.map((letter, i) => (
+                      <span key={i} className="text-2xl font-tamil text-purple-700">
+                        {letter}
+                      </span>
+                    ))}
                   </div>
+                  <p className="text-sm font-medium text-gray-800">{rule.name}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {rule.examples.join(', ')}
+                  </p>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                {/* L sounds */}
-                <div>
-                  <h4 className="font-medium text-purple-700 mb-2">
-                    &quot;L&quot; Sounds / ல-வகை ஒலிகள்
-                  </h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ல</span>
-                      <span>Alveolar (வேலை, பால்)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ள</span>
-                      <span>Retroflex (வாள், தோள்)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ழ</span>
-                      <span>Approximant (தமிழ், பழம்)</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* R sounds */}
-                <div>
-                  <h4 className="font-medium text-purple-700 mb-2">
-                    &quot;R&quot; Sounds / ர-வகை ஒலிகள்
-                  </h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ர</span>
-                      <span>Tap (மரம், கரை)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-tamil text-lg">ற</span>
-                      <span>Trill (அறை, சிறை)</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Vowels */}
-                <div>
-                  <h4 className="font-medium text-purple-700 mb-2">
-                    Vowel Length / உயிர் நீளம்
-                  </h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Short / குறில்</span>
-                      <span className="font-tamil">அ இ உ எ ஒ</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Long / நெடில்</span>
-                      <span className="font-tamil">ஆ ஈ ஊ ஏ ஓ</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Main Input Area */}
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          {/* Input Section with Highlights */}
+          <div className="relative">
+            {/* Highlighted preview layer */}
+            <div
+              className="absolute inset-0 p-4 pointer-events-none overflow-auto whitespace-pre-wrap break-words text-lg leading-relaxed"
+              style={{
+                fontFamily: "'Noto Sans Tamil', sans-serif",
+                color: 'transparent',
+              }}
+              aria-hidden="true"
+            >
+              {inputText}
             </div>
 
-            {/* Grantha Letters */}
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Grantha Letters / கிரந்த எழுத்துகள்
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">
-                Used for Sanskrit/foreign words. Prefer Tamil alternatives when
-                possible.
-              </p>
-              <div className="grid grid-cols-4 gap-2 text-center">
-                {["ஜ", "ஷ", "ஸ", "ஹ"].map((letter) => (
-                  <div
-                    key={letter}
-                    className="p-2 bg-orange-50 border border-orange-200 rounded-lg"
-                  >
-                    <span className="text-2xl font-tamil">{letter}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 text-xs text-gray-500">
-                <p>ஜ → ச (சனவரி)</p>
-                <p>ஷ → ச/ட (சரத்து)</p>
-                <p>ஸ → ச (சிலை)</p>
-                <p>ஹ → அ/க (அரி)</p>
-              </div>
-            </div>
+            {/* Editable textarea */}
+            <textarea
+              ref={textareaRef}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="தமிழில் எழுதுங்கள்... (Type in Tamil...)"
+              className="w-full min-h-[200px] p-4 text-lg leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-inset"
+              style={{
+                fontFamily: "'Noto Sans Tamil', sans-serif",
+                background: 'transparent',
+              }}
+            />
+          </div>
 
-            {/* Pulli Info */}
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Pulli Mark / புள்ளி
-              </h3>
-              <div className="text-center mb-3">
-                <span className="text-4xl font-tamil">க் vs க</span>
+          {/* Highlighted Text Preview (when errors exist) */}
+          {hasErrors && (
+            <div className="border-t">
+              <div className="px-4 py-2 bg-gray-50 border-b flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  பிழைகளை சரிசெய்ய கிளிக் செய்யவும் (Click errors to fix)
+                </span>
               </div>
-              <p className="text-sm text-gray-600">
-                The pulli (்) removes the inherent vowel from a consonant.
-              </p>
-              <div className="mt-2 text-sm">
-                <div className="flex justify-between text-gray-600">
-                  <span>க = ka</span>
-                  <span>க் = k</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>ம = ma</span>
-                  <span>ம் = m</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Link to Letter Drafts */}
-            <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl p-4 text-white">
-              <h3 className="font-semibold mb-2">Write Official Letters</h3>
-              <p className="text-sm text-purple-100 mb-3">
-                Use our Letter Drafts tool to write professional Tamil letters
-                with built-in spell checking.
-              </p>
-              <Link
-                href="/drafts"
-                className="inline-block px-4 py-2 bg-white text-purple-600 rounded-lg text-sm font-medium hover:bg-purple-50"
+              <div
+                className="p-4 text-lg leading-relaxed whitespace-pre-wrap break-words"
+                style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}
               >
-                Go to Letter Drafts →
-              </Link>
+                {renderHighlightedText()}
+              </div>
             </div>
+          )}
+
+          {/* Selected Error Detail */}
+          {selectedError && (
+            <div className="border-t bg-blue-50 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xl font-tamil line-through text-red-600">
+                      {selectedError.word}
+                    </span>
+                    <span className="text-gray-400">→</span>
+                    <span className="text-xl font-tamil text-green-600 font-medium">
+                      {selectedError.suggestion}
+                    </span>
+                    <span className="px-2 py-0.5 bg-white rounded text-xs border">
+                      {getErrorTypeLabel(selectedError.type).tamil}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    {selectedError.ruleTamil}
+                  </p>
+                  {selectedError.suggestions.length > 1 && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Other suggestions:</span>
+                      {selectedError.suggestions.slice(1, 4).map((s, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            handleFix({ ...selectedError, suggestion: s });
+                          }}
+                          className="text-sm px-2 py-0.5 bg-white border rounded hover:bg-gray-50"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleFix(selectedError)}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 flex items-center gap-1"
+                  >
+                    <Check size={16} />
+                    Fix / சரி
+                  </button>
+                  <button
+                    onClick={() => handleIgnore(selectedError)}
+                    className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 flex items-center gap-1"
+                  >
+                    <X size={16} />
+                    Ignore
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer Stats */}
+          <div className="px-4 py-2 bg-gray-50 border-t flex items-center justify-between text-sm text-gray-500">
+            <span>
+              {inputText.length} எழுத்துகள் (characters)
+              {!hasTamilText && inputText.length > 0 && (
+                <span className="ml-2 text-yellow-600">
+                  • தமிழ் எழுத்துகள் இல்லை
+                </span>
+              )}
+            </span>
+            {result && (
+              <span>
+                {result.stats.totalWords} சொற்கள் checked
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Error List (Mobile-friendly) */}
+        {hasErrors && (
+          <div className="mt-4 bg-white rounded-xl shadow-sm border overflow-hidden">
+            <div className="px-4 py-3 bg-red-50 border-b">
+              <h3 className="font-semibold text-red-800">
+                கண்டறியப்பட்ட பிழைகள் (Errors Found)
+              </h3>
+            </div>
+            <div className="divide-y max-h-64 overflow-y-auto">
+              {result?.errors.map((error, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedError(error)}
+                  className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between ${
+                    selectedError?.position === error.position ? 'bg-blue-50' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`w-2 h-2 rounded-full ${
+                      error.severity === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+                    }`} />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-tamil line-through text-red-600">
+                          {error.word}
+                        </span>
+                        <span className="text-gray-400">→</span>
+                        <span className="font-tamil text-green-600 font-medium">
+                          {error.suggestion}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {error.ruleTamil}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronLeft size={16} className="text-gray-400 rotate-180" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Success Message */}
+        {result && result.isValid && inputText.trim() && (
+          <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+            <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
+            <h3 className="text-lg font-semibold text-green-800 mb-1">
+              உங்கள் உரை சரியாக உள்ளது!
+            </h3>
+            <p className="text-green-600">Your text looks good - no errors found!</p>
+          </div>
+        )}
+
+        {/* Link to Letter Drafts */}
+        <div className="mt-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold">அரசு கடிதங்கள் எழுத வேண்டுமா?</h3>
+              <p className="text-sm text-purple-100">
+                Use our Letter Drafts tool to write official Tamil letters
+              </p>
+            </div>
+            <Link
+              href="/drafts"
+              className="px-4 py-2 bg-white text-purple-600 rounded-lg text-sm font-medium hover:bg-purple-50 whitespace-nowrap"
+            >
+              Letter Drafts →
+            </Link>
           </div>
         </div>
       </div>
