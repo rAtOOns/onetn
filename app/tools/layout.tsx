@@ -42,6 +42,9 @@ import {
   UserMinus,
   UserCheck,
   ClipboardList,
+  Shield,
+  RefreshCw,
+  ArrowUpCircle,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -72,6 +75,8 @@ const toolCategories: ToolCategory[] = [
       { id: "arrears-calculator", name: "DA Arrears Calculator", nameTamil: "நிலுவை கால்குலேட்டர்", href: "/tools/arrears-calculator", icon: TrendingUp },
       { id: "pay-fixation", name: "Pay Fixation Calculator", nameTamil: "ஊதிய நிர்ணயம்", href: "/tools/pay-fixation", icon: TrendingUp },
       { id: "pay-slip-decoder", name: "Pay Slip Decoder", nameTamil: "சம்பள சீட்டு விளக்கி", href: "/tools/pay-slip-decoder", icon: FileText },
+      { id: "increment-arrears", name: "Increment Arrears", nameTamil: "ஊதிய உயர்வு நிலுவை", href: "/tools/increment-arrears", icon: TrendingUp },
+      { id: "stepping-up-calculator", name: "Stepping Up Calculator", nameTamil: "படிநிலை சரிசெய்தல்", href: "/tools/stepping-up-calculator", icon: ArrowUpCircle },
     ],
   },
   {
@@ -80,6 +85,7 @@ const toolCategories: ToolCategory[] = [
     tools: [
       { id: "income-tax-calculator", name: "Income Tax Calculator", nameTamil: "வருமான வரி", href: "/tools/income-tax-calculator", icon: Receipt },
       { id: "hra-calculator", name: "HRA Exemption", nameTamil: "HRA விலக்கு", href: "/tools/hra-calculator", icon: Home },
+      { id: "hra-city-category", name: "HRA by City Category", nameTamil: "நகர வகை படி HRA", href: "/tools/hra-city-category", icon: Building2 },
     ],
   },
   {
@@ -90,6 +96,7 @@ const toolCategories: ToolCategory[] = [
       { id: "loan-calculator", name: "GPF/Loan Calculator", nameTamil: "GPF கடன்", href: "/tools/loan-calculator", icon: Calculator },
       { id: "gpf-interest-calculator", name: "GPF Interest Calculator", nameTamil: "GPF வட்டி", href: "/tools/gpf-interest-calculator", icon: PiggyBank },
       { id: "nps-calculator", name: "NPS Calculator", nameTamil: "NPS கால்குலேட்டர்", href: "/tools/nps-calculator", icon: PiggyBank },
+      { id: "tngis-calculator", name: "TNGIS Calculator", nameTamil: "TNGIS கால்குலேட்டர்", href: "/tools/tngis-calculator", icon: Shield },
     ],
   },
   {
@@ -102,6 +109,7 @@ const toolCategories: ToolCategory[] = [
       { id: "leave-encashment-calculator", name: "Leave Encashment", nameTamil: "விடுப்பு பணமாக்கல்", href: "/tools/leave-encashment-calculator", icon: Calendar },
       { id: "die-in-harness", name: "Die-in-Harness Benefits", nameTamil: "பணியில் இறப்பு சலுகை", href: "/tools/die-in-harness", icon: Heart },
       { id: "voluntary-retirement", name: "Voluntary Retirement", nameTamil: "தன்னார்வ ஓய்வு", href: "/tools/voluntary-retirement", icon: UserMinus },
+      { id: "commutation-restoration", name: "Commutation Restoration", nameTamil: "ஓய்வூதிய மீட்டெடுப்பு", href: "/tools/commutation-restoration", icon: RefreshCw },
     ],
   },
   {
@@ -139,6 +147,11 @@ const toolCategories: ToolCategory[] = [
       { id: "deputation-guide", name: "Deputation Rules Guide", nameTamil: "பணி நிலை மாற்றம்", href: "/tools/deputation-guide", icon: ArrowRightLeft },
       { id: "compassionate-appointment", name: "Compassionate Appointment", nameTamil: "இரக்கப்படி நியமனம்", href: "/tools/compassionate-appointment", icon: Heart },
       { id: "apar-guide", name: "APAR Self-Assessment", nameTamil: "APAR வழிகாட்டி", href: "/tools/apar-guide", icon: ClipboardList },
+      { id: "children-education-allowance", name: "Children Education Allowance", nameTamil: "குழந்தைகள் கல்வி படி", href: "/tools/children-education-allowance", icon: GraduationCap },
+      { id: "festival-advance", name: "Festival Advance", nameTamil: "திருவிழா முன்பணம்", href: "/tools/festival-advance", icon: Gift },
+      { id: "hostel-subsidy", name: "Hostel Subsidy Guide", nameTamil: "விடுதி மானியம்", href: "/tools/hostel-subsidy", icon: Home },
+      { id: "workload-calculator", name: "Workload Calculator", nameTamil: "பணிச்சுமை கால்குலேட்டர்", href: "/tools/workload-calculator", icon: Clock },
+      { id: "staff-pattern", name: "Staff Pattern Calculator", nameTamil: "பணியாளர் கட்டமைப்பு", href: "/tools/staff-pattern", icon: Users },
     ],
   },
   {
