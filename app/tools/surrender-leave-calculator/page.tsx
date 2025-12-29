@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Calculator, Info } from "lucide-react";
+import { CURRENT_DA_RATE } from "@/lib/constants/rates";
 
-const CURRENT_DA = 55;
+const CURRENT_DA = CURRENT_DA_RATE;
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {

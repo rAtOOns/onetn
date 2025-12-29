@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Calculator, Info, Printer } from "lucide-react";
+import { CURRENT_DA_RATE, HRA_RATES, CCA_RATES } from "@/lib/constants/rates";
 
 // TN 7th Pay Commission Pay Levels with sample pay ranges
 const payLevels = [
@@ -27,15 +28,12 @@ const payLevels = [
   { level: "T4", minPay: 78800, maxPay: 209200, description: "Principal" },
 ];
 
-// City classification for HRA and CCA
+// City classification for HRA and CCA (using centralized rates)
 const cityTypes = [
-  { value: "X", label: "X - Chennai/Metro", hraPercent: 24, cca: 600 },
-  { value: "Y", label: "Y - District HQ", hraPercent: 16, cca: 300 },
-  { value: "Z", label: "Z - Other Areas", hraPercent: 8, cca: 0 },
+  { value: "X", label: "X - Chennai/Metro", hraPercent: HRA_RATES.X, cca: CCA_RATES.chennai },
+  { value: "Y", label: "Y - District HQ", hraPercent: HRA_RATES.Y, cca: CCA_RATES.other_cities },
+  { value: "Z", label: "Z - Other Areas", hraPercent: HRA_RATES.Z, cca: CCA_RATES.none },
 ];
-
-// Current DA rate for TN (as of January 2025)
-const CURRENT_DA_RATE = 55;
 
 // Fixed allowances
 const MEDICAL_ALLOWANCE = 350; // Per month

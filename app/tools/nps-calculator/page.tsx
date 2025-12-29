@@ -3,10 +3,11 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, PiggyBank, Calculator, Info, Printer } from "lucide-react";
+import { CURRENT_DA_RATE, NPS_EMPLOYEE_CONTRIBUTION, NPS_GOVT_CONTRIBUTION } from "@/lib/constants/rates";
 
-const CURRENT_DA = 55;
-const EMPLOYEE_CONTRIBUTION = 10; // 10% of Basic+DA
-const GOVT_CONTRIBUTION = 14; // 14% of Basic+DA
+const CURRENT_DA = CURRENT_DA_RATE;
+const EMPLOYEE_CONTRIBUTION = NPS_EMPLOYEE_CONTRIBUTION;
+const GOVT_CONTRIBUTION = NPS_GOVT_CONTRIBUTION;
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {

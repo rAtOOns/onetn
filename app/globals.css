@@ -65,6 +65,87 @@ body {
   .text-tn-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-tn-primary to-tn-highlight;
   }
+
+  /* Toast slide-in animation */
+  .animate-slide-in {
+    animation: slideIn 0.2s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  /* Ensure touch targets are at least 44px */
+  button,
+  input[type="submit"],
+  input[type="button"],
+  a.btn-primary,
+  a.btn-secondary {
+    min-height: 44px;
+  }
+
+  /* Stack form labels above inputs on mobile */
+  .form-group {
+    flex-direction: column;
+  }
+
+  /* Improve input sizing on mobile */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    padding: 12px;
+  }
+
+  /* Responsive tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better spacing for cards on mobile */
+  .card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-mobile-full {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 641px) {
+  /* Restore inline forms */
+  .form-inline {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Safe area padding for notched devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-top {
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
 }
 
 /* Print Styles */

@@ -3,11 +3,12 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Wallet, Gift, Calendar, PiggyBank, Info, CheckCircle, Printer } from "lucide-react";
+import { CURRENT_DA_RATE, MAX_EL_ENCASHMENT_DAYS, GRATUITY_MULTIPLIER } from "@/lib/constants/rates";
 
-// Constants
-const CURRENT_DA = 55;
-const MAX_EL_DAYS = 300;
-const GRATUITY_FACTOR = 16.5; // For 6 months service = 1 year
+// Constants (using centralized rates)
+const CURRENT_DA = CURRENT_DA_RATE;
+const MAX_EL_DAYS = MAX_EL_ENCASHMENT_DAYS;
+const GRATUITY_FACTOR = GRATUITY_MULTIPLIER;
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {

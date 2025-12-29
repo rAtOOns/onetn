@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Calculator, TrendingUp, Info, ArrowRight, Printer } from "lucide-react";
+import { CURRENT_DA_RATE } from "@/lib/constants/rates";
 
 // 7th Pay Commission Pay Matrix
 const payMatrix: Record<number, number[]> = {
@@ -25,7 +26,7 @@ const payMatrix: Record<number, number[]> = {
   17: [205400, 211600, 217900, 224400, 231100, 238100, 245200, 252600, 260200, 268000, 276000, 284300, 292800, 301600, 310600, 319900, 329500, 339400, 349600, 360100, 370900, 382100, 393600, 405400, 417600, 430100, 443000, 456300],
 };
 
-const CURRENT_DA = 55;
+const CURRENT_DA = CURRENT_DA_RATE;
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {

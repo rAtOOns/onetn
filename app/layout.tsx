@@ -7,6 +7,7 @@ import {
 } from "@/components/layout/ConditionalLayout";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import StructuredData from "@/components/seo/StructuredData";
+import { ToastProvider } from "@/components/ui/toast";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://onetn-portal-734553869592.asia-south1.run.app";
 
@@ -110,13 +111,15 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body className="min-h-screen flex flex-col bg-tn-background">
-        <ConditionalSkipLinks />
-        <ConditionalHeader />
-        <main id="main-content" className="flex-grow">
-          {children}
-        </main>
-        <ConditionalFooter />
-        <InstallPrompt />
+        <ToastProvider>
+          <ConditionalSkipLinks />
+          <ConditionalHeader />
+          <main id="main-content" className="flex-grow">
+            {children}
+          </main>
+          <ConditionalFooter />
+          <InstallPrompt />
+        </ToastProvider>
       </body>
     </html>
   );

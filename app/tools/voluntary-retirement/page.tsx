@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, UserMinus, Calculator, Info, AlertCircle, Printer } from "lucide-react";
+import { CURRENT_DA_RATE, MAX_EL_ENCASHMENT_DAYS, MAX_GRATUITY_AMOUNT } from "@/lib/constants/rates";
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-IN", {
@@ -61,12 +62,11 @@ export default function VoluntaryRetirementPage() {
     const reducedPension = Math.round(monthlyPension - commutablePension);
 
     // Gratuity (1/4 of basic * qualifying service * 2, max 20 lakhs)
-    const gratuity = Math.min(Math.round((basicPay / 4) * qualifyingService * 2), 2000000);
+    const gratuity = Math.min(Math.round((basicPay / 4) * qualifyingService * 2), MAX_GRATUITY_AMOUNT);
 
     // Leave encashment (max 300 days)
-    const DA_PERCENT = 55;
-    const leaveEncashmentDays = Math.min(elBalance, 300);
-    const dailyPay = (basicPay + (basicPay * DA_PERCENT / 100)) / 30;
+    const leaveEncashmentDays = Math.min(elBalance, MAX_EL_ENCASHMENT_DAYS);
+    const dailyPay = (basicPay + (basicPay * CURRENT_DA_RATE / 100)) / 30;
     const leaveEncashment = Math.round(dailyPay * leaveEncashmentDays);
 
     // Total benefits
