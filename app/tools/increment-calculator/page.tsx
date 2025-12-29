@@ -2,30 +2,42 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calendar, TrendingUp, Info } from "lucide-react";
+import { ArrowLeft, Calendar, TrendingUp, Info, GraduationCap, Award } from "lucide-react";
+import {
+  PAY_LEVELS,
+  TEACHING_PAY_LEVELS,
+  ANNUAL_INCREMENT_PERCENT
+} from "@/lib/constants/rates";
 
-// TN 7th Pay Commission - Increment slabs by pay level
-// Increment is based on pay matrix - varies by level
+// Qualification Increments for Teaching Cadre
+const QUALIFICATION_INCREMENTS = {
+  phd: { increments: 3, label: "Ph.D", description: "Doctor of Philosophy" },
+  mphil: { increments: 1, label: "M.Phil", description: "Master of Philosophy" },
+  net: { increments: 1, label: "NET/SLET", description: "National/State Eligibility Test" },
+  bed: { increments: 1, label: "B.Ed (for non-B.Ed recruited)", description: "Bachelor of Education" },
+  med: { increments: 1, label: "M.Ed", description: "Master of Education" },
+} as const;
+
+// Convert centralized pay levels to increment slabs format
 const incrementSlabs = [
-  { level: 1, minPay: 15700, maxPay: 50000, incrementPercent: 3, description: "Multi Tasking Staff" },
-  { level: 2, minPay: 19500, maxPay: 62000, incrementPercent: 3, description: "Junior Assistant" },
-  { level: 3, minPay: 21700, maxPay: 69100, incrementPercent: 3, description: "Typist/Steno" },
-  { level: 4, minPay: 25500, maxPay: 81100, incrementPercent: 3, description: "Assistant" },
-  { level: 5, minPay: 29200, maxPay: 92300, incrementPercent: 3, description: "Senior Assistant" },
-  { level: 6, minPay: 35400, maxPay: 112400, incrementPercent: 3, description: "Superintendent" },
-  { level: 7, minPay: 44900, maxPay: 142400, incrementPercent: 3, description: "Section Officer" },
-  { level: 8, minPay: 47600, maxPay: 151100, incrementPercent: 3, description: "Asst. Section Officer" },
-  { level: 9, minPay: 53100, maxPay: 167800, incrementPercent: 3, description: "Deputy Section Officer" },
-  { level: 10, minPay: 56100, maxPay: 177500, incrementPercent: 3, description: "Under Secretary" },
-  { level: 11, minPay: 67700, maxPay: 208700, incrementPercent: 3, description: "Deputy Secretary" },
-  { level: 12, minPay: 78800, maxPay: 209200, incrementPercent: 3, description: "Joint Secretary" },
-  { level: 13, minPay: 123100, maxPay: 215900, incrementPercent: 3, description: "Additional Secretary" },
-  { level: 14, minPay: 144200, maxPay: 218200, incrementPercent: 3, description: "Secretary" },
-  // Teaching Cadre
-  { level: "T1", minPay: 36900, maxPay: 116600, incrementPercent: 3, description: "BT Assistant / PG Teacher" },
-  { level: "T2", minPay: 47600, maxPay: 151100, incrementPercent: 3, description: "Graduate Teacher" },
-  { level: "T3", minPay: 56100, maxPay: 177500, incrementPercent: 3, description: "Headmaster" },
-  { level: "T4", minPay: 78800, maxPay: 209200, incrementPercent: 3, description: "Principal" },
+  // Administrative Cadre (Level 1-14)
+  ...Object.entries(PAY_LEVELS).map(([level, data]) => ({
+    level: Number(level),
+    minPay: data.minPay,
+    maxPay: data.maxPay,
+    incrementPercent: ANNUAL_INCREMENT_PERCENT,
+    description: data.description,
+    descriptionTamil: data.descriptionTamil,
+  })),
+  // Teaching Cadre (T1-T4)
+  ...Object.entries(TEACHING_PAY_LEVELS).map(([level, data]) => ({
+    level,
+    minPay: data.minPay,
+    maxPay: data.maxPay,
+    incrementPercent: ANNUAL_INCREMENT_PERCENT,
+    description: data.description,
+    descriptionTamil: data.descriptionTamil,
+  })),
 ];
 
 // Pay Matrix based increment - amounts vary at different stages
@@ -126,8 +138,59 @@ export default function IncrementCalculatorPage() {
     defaultJoining.toISOString().split("T")[0]
   );
   const [yearsToProject, setYearsToProject] = useState<number>(5);
+  const [showQualificationCalc, setShowQualificationCalc] = useState<boolean>(false);
+
+  // Qualification increment states
+  const [hasPhd, setHasPhd] = useState<boolean>(false);
+  const [hasMphil, setHasMphil] = useState<boolean>(false);
+  const [hasNet, setHasNet] = useState<boolean>(false);
+  const [hasBed, setHasBed] = useState<boolean>(false);
+  const [hasMed, setHasMed] = useState<boolean>(false);
 
   const selectedLevelData = incrementSlabs.find((s) => String(s.level) === selectedLevel);
+  const isTeachingCadre = selectedLevel.startsWith("T");
+
+  // Calculate qualification increments
+  const qualificationCalc = useMemo(() => {
+    let totalIncrements = 0;
+    const qualifications: string[] = [];
+
+    if (hasPhd) {
+      totalIncrements += QUALIFICATION_INCREMENTS.phd.increments;
+      qualifications.push(`Ph.D (+${QUALIFICATION_INCREMENTS.phd.increments})`);
+    }
+    if (hasMphil && !hasPhd) { // M.Phil not counted if Ph.D already claimed
+      totalIncrements += QUALIFICATION_INCREMENTS.mphil.increments;
+      qualifications.push(`M.Phil (+${QUALIFICATION_INCREMENTS.mphil.increments})`);
+    }
+    if (hasNet) {
+      totalIncrements += QUALIFICATION_INCREMENTS.net.increments;
+      qualifications.push(`NET/SLET (+${QUALIFICATION_INCREMENTS.net.increments})`);
+    }
+    if (hasBed) {
+      totalIncrements += QUALIFICATION_INCREMENTS.bed.increments;
+      qualifications.push(`B.Ed (+${QUALIFICATION_INCREMENTS.bed.increments})`);
+    }
+    if (hasMed) {
+      totalIncrements += QUALIFICATION_INCREMENTS.med.increments;
+      qualifications.push(`M.Ed (+${QUALIFICATION_INCREMENTS.med.increments})`);
+    }
+
+    // Calculate new pay after qualification increments
+    let newPay = basicPay;
+    for (let i = 0; i < totalIncrements; i++) {
+      const inc = getIncrementAmount(selectedLevel, newPay);
+      newPay += inc;
+    }
+
+    return {
+      totalIncrements,
+      qualifications,
+      originalPay: basicPay,
+      newPayAfterQualification: Math.min(newPay, selectedLevelData?.maxPay || 220000),
+      increase: newPay - basicPay,
+    };
+  }, [basicPay, selectedLevel, hasPhd, hasMphil, hasNet, hasBed, hasMed, selectedLevelData?.maxPay]);
 
   const calculations = useMemo(() => {
     const joining = new Date(joiningDate);
@@ -339,6 +402,132 @@ export default function IncrementCalculatorPage() {
               )}
             </div>
           </div>
+
+          {/* Qualification Increment Section (Teachers Only) */}
+          {isTeachingCadre && (
+            <div className="mt-6 pt-6 border-t">
+              <button
+                onClick={() => setShowQualificationCalc(!showQualificationCalc)}
+                className="flex items-center justify-between w-full text-left"
+              >
+                <h3 className="font-medium text-gray-700 flex items-center gap-2">
+                  <GraduationCap size={18} className="text-purple-600" />
+                  Qualification Increment Calculator
+                </h3>
+                <span className="text-sm text-purple-600">
+                  {showQualificationCalc ? "Hide" : "Show"}
+                </span>
+              </button>
+
+              {showQualificationCalc && (
+                <div className="mt-4 p-4 bg-purple-50 rounded-lg space-y-4">
+                  <p className="text-xs text-purple-700">
+                    Select qualifications acquired after joining to calculate additional increments:
+                  </p>
+
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 p-2 bg-white rounded-lg cursor-pointer hover:bg-purple-100">
+                      <input
+                        type="checkbox"
+                        checked={hasPhd}
+                        onChange={(e) => setHasPhd(e.target.checked)}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+                      <div>
+                        <span className="font-medium">Ph.D</span>
+                        <span className="text-xs text-purple-600 ml-2">(+3 increments)</span>
+                      </div>
+                    </label>
+
+                    <label className={`flex items-center gap-3 p-2 bg-white rounded-lg cursor-pointer hover:bg-purple-100 ${hasPhd ? 'opacity-50' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={hasMphil}
+                        onChange={(e) => setHasMphil(e.target.checked)}
+                        disabled={hasPhd}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+                      <div>
+                        <span className="font-medium">M.Phil</span>
+                        <span className="text-xs text-purple-600 ml-2">(+1 increment)</span>
+                        {hasPhd && <span className="text-xs text-gray-500 ml-2">(Not applicable with Ph.D)</span>}
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 p-2 bg-white rounded-lg cursor-pointer hover:bg-purple-100">
+                      <input
+                        type="checkbox"
+                        checked={hasNet}
+                        onChange={(e) => setHasNet(e.target.checked)}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+                      <div>
+                        <span className="font-medium">NET / SLET / SET</span>
+                        <span className="text-xs text-purple-600 ml-2">(+1 increment)</span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 p-2 bg-white rounded-lg cursor-pointer hover:bg-purple-100">
+                      <input
+                        type="checkbox"
+                        checked={hasBed}
+                        onChange={(e) => setHasBed(e.target.checked)}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+                      <div>
+                        <span className="font-medium">B.Ed</span>
+                        <span className="text-xs text-purple-600 ml-2">(+1 increment, if not recruited with B.Ed)</span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 p-2 bg-white rounded-lg cursor-pointer hover:bg-purple-100">
+                      <input
+                        type="checkbox"
+                        checked={hasMed}
+                        onChange={(e) => setHasMed(e.target.checked)}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+                      <div>
+                        <span className="font-medium">M.Ed</span>
+                        <span className="text-xs text-purple-600 ml-2">(+1 increment)</span>
+                      </div>
+                    </label>
+                  </div>
+
+                  {qualificationCalc.totalIncrements > 0 && (
+                    <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Award size={16} className="text-purple-600" />
+                        <span className="font-medium text-purple-800">Qualification Increment Result</span>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Qualifications</span>
+                          <span className="font-medium">{qualificationCalc.qualifications.join(", ")}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Total Increments</span>
+                          <span className="font-bold text-purple-600">{qualificationCalc.totalIncrements}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Current Pay</span>
+                          <span className="font-medium">{formatCurrency(qualificationCalc.originalPay)}</span>
+                        </div>
+                        <div className="flex justify-between pt-2 border-t border-purple-100">
+                          <span className="text-gray-700 font-medium">New Pay (after qualification)</span>
+                          <span className="font-bold text-purple-700">{formatCurrency(qualificationCalc.newPayAfterQualification)}</span>
+                        </div>
+                        <div className="flex justify-between text-green-600">
+                          <span>Pay Increase</span>
+                          <span className="font-bold">+{formatCurrency(qualificationCalc.increase)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Results Section */}

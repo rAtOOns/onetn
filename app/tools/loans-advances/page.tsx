@@ -1,96 +1,132 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Landmark, Home, Car, Laptop, Gift, GraduationCap, Heart, Info, AlertCircle } from "lucide-react";
+import { ArrowLeft, Landmark, Home, Car, Laptop, Calculator, Info, AlertCircle } from "lucide-react";
 
-const loans = [
-  {
-    name: "House Building Advance (HBA)",
+// Loan configuration with TN Government rules
+const loanConfig = {
+  hba: {
+    name: "House Building Advance",
     nameTamil: "வீட்டு கட்டுமான முன்பணம்",
     icon: Home,
     color: "bg-blue-500",
-    eligibility: "Permanent employees with 5+ years service",
-    amount: "Based on pay level (usually 34 months basic pay or ₹25 lakhs, whichever is less)",
-    interest: "Concessional rate (around 7.9%)",
-    repayment: "Maximum 25 years or till retirement, whichever is earlier",
-    purpose: "Construction, purchase, or repair of house",
-    documents: ["Service certificate", "Salary certificate", "Property documents", "NOC from society (if applicable)", "Building plan approval"],
+    interestRate: 7.9,
+    maxAmount: 2500000, // 25 Lakhs
+    maxTenureYears: 25,
+    minServiceYears: 5,
+    formula: "34 months basic pay or ₹25 lakhs (whichever is less)",
   },
-  {
+  car: {
     name: "Motor Car Advance",
     nameTamil: "கார் முன்பணம்",
     icon: Car,
     color: "bg-green-500",
-    eligibility: "Employees in pay level 6 and above with 3+ years service",
-    amount: "Up to ₹3-5 lakhs (varies by state rules)",
-    interest: "Around 11-12%",
-    repayment: "60-80 months",
-    purpose: "Purchase of new car",
-    documents: ["Application form", "Salary certificate", "Quotation from dealer", "LIC policy assignment"],
+    interestRate: 11.5,
+    maxAmount: 500000, // 5 Lakhs
+    maxTenureMonths: 80,
+    minServiceYears: 3,
+    minPayLevel: 6,
+    formula: "Up to ₹5 lakhs for Level 6 and above",
   },
-  {
-    name: "Motor Cycle/Scooter Advance",
+  twoWheeler: {
+    name: "Two-Wheeler Advance",
     nameTamil: "இரு சக்கர வாகன முன்பணம்",
     icon: Car,
     color: "bg-teal-500",
-    eligibility: "All permanent employees with 1+ year service",
-    amount: "Up to ₹80,000 - ₹1,00,000",
-    interest: "Around 11-12%",
-    repayment: "48-60 months",
-    purpose: "Purchase of new two-wheeler",
-    documents: ["Application form", "Salary certificate", "Quotation from dealer"],
+    interestRate: 11.5,
+    maxAmount: 100000, // 1 Lakh
+    maxTenureMonths: 60,
+    minServiceYears: 1,
+    formula: "Up to ₹1 lakh for all permanent employees",
   },
-  {
+  computer: {
     name: "Computer Advance",
     nameTamil: "கணினி முன்பணம்",
     icon: Laptop,
     color: "bg-purple-500",
-    eligibility: "All permanent employees",
-    amount: "Up to ₹50,000 - ₹80,000",
-    interest: "Around 10-12%",
-    repayment: "24-36 months",
-    purpose: "Purchase of computer/laptop for official use",
-    documents: ["Application form", "Quotation", "Declaration of official use"],
+    interestRate: 10.5,
+    maxAmount: 80000,
+    maxTenureMonths: 24,
+    minServiceYears: 0,
+    formula: "Up to ₹80,000 recoverable in 24 months",
   },
-  {
-    name: "Festival Advance",
-    nameTamil: "பண்டிகை முன்பணம்",
-    icon: Gift,
-    color: "bg-orange-500",
-    eligibility: "All government employees",
-    amount: "₹3,000 - ₹10,000",
-    interest: "Interest-free",
-    repayment: "10 monthly installments",
-    purpose: "Diwali, Pongal festivals",
-    documents: ["Simple application to DDO"],
-  },
-  {
-    name: "Education Advance",
-    nameTamil: "கல்வி முன்பணம்",
-    icon: GraduationCap,
-    color: "bg-indigo-500",
-    eligibility: "For children's higher education",
-    amount: "Varies based on course",
-    interest: "Concessional rate",
-    repayment: "After completion of course",
-    purpose: "Professional courses, higher education",
-    documents: ["Admission letter", "Fee structure", "Application form"],
-  },
-  {
-    name: "Medical Advance",
-    nameTamil: "மருத்துவ முன்பணம்",
-    icon: Heart,
-    color: "bg-red-500",
-    eligibility: "For self/family member's treatment",
-    amount: "Based on treatment cost",
-    interest: "Interest-free",
-    repayment: "After reimbursement or in installments",
-    purpose: "Hospitalization, major treatment",
-    documents: ["Medical estimate", "Doctor's recommendation", "Hospital details"],
-  },
-];
+};
+
+type LoanType = keyof typeof loanConfig;
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+// EMI Calculation
+function calculateEMI(principal: number, annualRate: number, tenureMonths: number): number {
+  if (principal <= 0 || tenureMonths <= 0) return 0;
+  const monthlyRate = annualRate / 12 / 100;
+  if (monthlyRate === 0) return principal / tenureMonths;
+  const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+              (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+  return Math.round(emi);
+}
 
 export default function LoansAdvancesPage() {
+  const [activeTab, setActiveTab] = useState<LoanType>("hba");
+  const [basicPay, setBasicPay] = useState<number>(56100);
+  const [loanAmount, setLoanAmount] = useState<number>(1000000);
+  const [tenureMonths, setTenureMonths] = useState<number>(240); // 20 years for HBA
+  const [serviceYears, setServiceYears] = useState<number>(10);
+
+  const config = loanConfig[activeTab];
+
+  // Calculate max eligible amount
+  const maxEligible = useMemo(() => {
+    if (activeTab === "hba") {
+      const basedOnPay = basicPay * 34;
+      return Math.min(basedOnPay, config.maxAmount);
+    }
+    return config.maxAmount;
+  }, [activeTab, basicPay, config.maxAmount]);
+
+  // EMI Calculations
+  const calculations = useMemo(() => {
+    const actualLoan = Math.min(loanAmount, maxEligible);
+    const emi = calculateEMI(actualLoan, config.interestRate, tenureMonths);
+    const totalPayment = emi * tenureMonths;
+    const totalInterest = totalPayment - actualLoan;
+
+    return {
+      loanAmount: actualLoan,
+      emi,
+      totalPayment,
+      totalInterest,
+      interestRate: config.interestRate,
+    };
+  }, [loanAmount, maxEligible, config.interestRate, tenureMonths]);
+
+  // Check eligibility
+  const isEligible = serviceYears >= (config.minServiceYears || 0);
+
+  // Handle tab change with appropriate defaults
+  const handleTabChange = (tab: LoanType) => {
+    setActiveTab(tab);
+    const newConfig = loanConfig[tab];
+    setLoanAmount(Math.min(loanAmount, newConfig.maxAmount));
+    if (tab === "hba") {
+      setTenureMonths(240);
+    } else if (tab === "car") {
+      setTenureMonths(60);
+    } else if (tab === "twoWheeler") {
+      setTenureMonths(48);
+    } else {
+      setTenureMonths(24);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
@@ -101,158 +137,263 @@ export default function LoansAdvancesPage() {
         <div>
           <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
             <Landmark className="text-amber-600" size={28} />
-            Loans & Advances Guide
+            Loans & Advances Calculator
           </h1>
-          <p className="text-sm text-gray-500 tamil">கடன்கள் மற்றும் முன்பணங்கள் வழிகாட்டி</p>
+          <p className="text-sm text-gray-500 tamil">கடன்கள் மற்றும் முன்பணங்கள் கால்குலேட்டர்</p>
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
-        <p className="text-sm text-amber-800">
-          <strong>Disclaimer:</strong> This is general information for reference only.
-          Loan amounts, interest rates, and eligibility criteria are subject to change.
-          Always refer to the latest Government Orders and consult your DDO/Treasury.
-        </p>
+      {/* Loan Type Tabs */}
+      <div className="bg-white rounded-xl shadow-sm border p-2 mb-6">
+        <div className="flex flex-wrap gap-2">
+          {(Object.keys(loanConfig) as LoanType[]).map((key) => {
+            const loan = loanConfig[key];
+            const Icon = loan.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => handleTabChange(key)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === key
+                    ? `${loan.color} text-white`
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                <Icon size={16} />
+                {loan.name.split(" ")[0]}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Quick Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {[
-          { label: "HBA", value: "Up to ₹25L", color: "bg-blue-100 text-blue-700" },
-          { label: "Car Advance", value: "Up to ₹5L", color: "bg-green-100 text-green-700" },
-          { label: "Two-Wheeler", value: "Up to ₹1L", color: "bg-teal-100 text-teal-700" },
-          { label: "Festival", value: "₹10,000", color: "bg-orange-100 text-orange-700" },
-        ].map((item) => (
-          <div key={item.label} className={`${item.color} rounded-lg p-3 text-center`}>
-            <p className="text-xs font-medium">{item.label}</p>
-            <p className="text-lg font-bold">{item.value}</p>
-          </div>
-        ))}
-      </div>
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Input Section */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h2 className="font-semibold text-tn-text mb-4 flex items-center gap-2">
+            <Calculator size={18} />
+            {config.name}
+          </h2>
 
-      {/* Loans List */}
-      <div className="space-y-4">
-        {loans.map((loan) => (
-          <div key={loan.name} className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <div className="p-4 flex items-start gap-4">
-              <div className={`${loan.color} p-3 rounded-lg text-white`}>
-                <loan.icon size={24} />
+          <div className="space-y-4">
+            {activeTab === "hba" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Basic Pay (₹)
+                </label>
+                <input
+                  type="number"
+                  value={basicPay}
+                  onChange={(e) => setBasicPay(Number(e.target.value))}
+                  className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Max eligible: {formatCurrency(maxEligible)} (34 × Basic Pay)
+                </p>
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-tn-text">{loan.name}</h3>
-                <p className="text-xs text-gray-500 tamil">{loan.nameTamil}</p>
+            )}
 
-                <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-gray-500">Eligibility:</span>
-                    <p className="text-gray-700">{loan.eligibility}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Amount:</span>
-                    <p className="text-gray-700">{loan.amount}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Interest:</span>
-                    <p className="text-gray-700">{loan.interest}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Repayment:</span>
-                    <p className="text-gray-700">{loan.repayment}</p>
-                  </div>
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Loan Amount (₹)
+              </label>
+              <input
+                type="number"
+                value={loanAmount}
+                onChange={(e) => setLoanAmount(Number(e.target.value))}
+                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                max={config.maxAmount}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Maximum: {formatCurrency(config.maxAmount)}
+              </p>
+            </div>
 
-                <details className="mt-3">
-                  <summary className="text-sm text-blue-600 cursor-pointer hover:underline">
-                    View required documents
-                  </summary>
-                  <ul className="mt-2 text-sm text-gray-600 space-y-1 pl-4">
-                    {loan.documents.map((doc, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span className="text-gray-400">•</span>
-                        <span>{doc}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tenure: {tenureMonths} months ({(tenureMonths / 12).toFixed(1)} years)
+              </label>
+              <input
+                type="range"
+                value={tenureMonths}
+                onChange={(e) => setTenureMonths(Number(e.target.value))}
+                className="w-full accent-blue-500"
+                min={12}
+                max={activeTab === "hba" ? 300 : (loanConfig[activeTab].maxTenureMonths || 60)}
+              />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>12 months</span>
+                <span>{activeTab === "hba" ? "25 years" : `${(loanConfig[activeTab].maxTenureMonths || 60) / 12} years`}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Years of Service
+              </label>
+              <input
+                type="number"
+                value={serviceYears}
+                onChange={(e) => setServiceYears(Number(e.target.value))}
+                className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                min={0}
+              />
+            </div>
+
+            {/* Eligibility Status */}
+            <div className={`p-4 rounded-lg ${isEligible ? 'bg-green-50' : 'bg-red-50'}`}>
+              <p className={`font-medium ${isEligible ? 'text-green-700' : 'text-red-700'}`}>
+                {isEligible
+                  ? `✓ Eligible (${config.minServiceYears || 0}+ years service required)`
+                  : `✗ Not eligible (need ${config.minServiceYears} years service)`}
+              </p>
+            </div>
+          </div>
+
+          {/* Loan Info */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="font-medium text-blue-800 mb-2">{config.name} Details</h3>
+            <div className="space-y-1 text-sm text-blue-700">
+              <p><strong>Interest Rate:</strong> {config.interestRate}% p.a.</p>
+              <p><strong>Maximum Amount:</strong> {formatCurrency(config.maxAmount)}</p>
+              <p><strong>Formula:</strong> {config.formula}</p>
+              <p><strong>Min Service:</strong> {config.minServiceYears || 0} years</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Section */}
+        <div className="space-y-4">
+          {/* EMI Card */}
+          <div className={`rounded-xl p-6 text-white ${config.color}`}>
+            <p className="text-white/80 text-sm">Monthly EMI</p>
+            <p className="text-4xl font-bold mt-1">{formatCurrency(calculations.emi)}</p>
+            <p className="text-white/80 text-sm mt-2">
+              @ {calculations.interestRate}% for {tenureMonths} months
+            </p>
+          </div>
+
+          {/* Loan Breakdown */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <h3 className="font-semibold text-tn-text mb-4">Loan Breakdown</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600">Principal Amount</span>
+                <span className="font-medium">{formatCurrency(calculations.loanAmount)}</span>
+              </div>
+              <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600">Interest Rate</span>
+                <span className="font-medium">{calculations.interestRate}% p.a.</span>
+              </div>
+              <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600">Tenure</span>
+                <span className="font-medium">{tenureMonths} months</span>
+              </div>
+              <div className="flex justify-between p-3 bg-red-50 rounded-lg">
+                <span className="text-gray-600">Total Interest</span>
+                <span className="font-medium text-red-600">{formatCurrency(calculations.totalInterest)}</span>
+              </div>
+              <div className="flex justify-between p-3 bg-blue-50 rounded-lg">
+                <span className="text-gray-700 font-medium">Total Repayment</span>
+                <span className="font-bold text-blue-700">{formatCurrency(calculations.totalPayment)}</span>
               </div>
             </div>
           </div>
-        ))}
+
+          {/* Repayment Schedule Summary */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <h3 className="font-semibold text-tn-text mb-4">Repayment Summary</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="p-3 bg-gray-50 rounded-lg text-center">
+                <p className="text-gray-500">First EMI</p>
+                <p className="font-bold">{formatCurrency(calculations.emi)}</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-lg text-center">
+                <p className="text-gray-500">Last EMI</p>
+                <p className="font-bold">{formatCurrency(calculations.emi)}</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-lg text-center">
+                <p className="text-gray-500">Total EMIs</p>
+                <p className="font-bold">{tenureMonths}</p>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg text-center">
+                <p className="text-gray-500">Completion</p>
+                <p className="font-bold text-green-600">
+                  {new Date(Date.now() + tenureMonths * 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* GPF Advance Section */}
       <div className="mt-8 bg-emerald-50 rounded-xl p-6">
         <h3 className="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
           <Landmark size={18} />
-          GPF Advances (Non-Refundable & Refundable)
+          GPF Advances (Interest-Free)
         </h3>
-        <div className="text-sm text-emerald-700 space-y-2">
-          <p>
-            <strong>Refundable Advance:</strong> Up to 75% of balance at credit.
-            Can be taken for specified purposes. Refundable in maximum 24 installments.
-          </p>
-          <p>
-            <strong>Non-Refundable Withdrawal:</strong> After 15 years of service or within 10 years of retirement.
-            For specified purposes like house construction, children&apos;s education/marriage, medical treatment.
-          </p>
-          <p>
-            <strong>Interest:</strong> No interest charged on GPF advances (interest-free loan from your own account).
-          </p>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-emerald-700">
+          <div>
+            <p className="font-medium mb-2">Refundable Advance:</p>
+            <ul className="space-y-1">
+              <li>• Up to 75% of balance at credit</li>
+              <li>• Refundable in maximum 24 installments</li>
+              <li>• No interest charged</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-medium mb-2">Non-Refundable Withdrawal:</p>
+            <ul className="space-y-1">
+              <li>• After 15 years of service OR within 10 years of retirement</li>
+              <li>• For house, education, marriage, medical</li>
+              <li>• No interest charged</li>
+            </ul>
+          </div>
         </div>
       </div>
 
       {/* Important Notes */}
-      <div className="mt-6 bg-red-50 rounded-xl p-6">
-        <h3 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
+      <div className="mt-6 bg-amber-50 rounded-xl p-6">
+        <h3 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
           <AlertCircle size={18} />
           Important Points
         </h3>
-        <ul className="space-y-2 text-sm text-red-700">
-          <li className="flex items-start gap-2">
-            <span>•</span>
-            <span>Loan recovery starts from the next month after disbursal</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span>•</span>
-            <span>Cannot take same type of loan if previous one is pending</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span>•</span>
-            <span>HBA requires mortgage of property to government</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span>•</span>
-            <span>Vehicle must be insured and hypothecated to government</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span>•</span>
-            <span>Outstanding loans are recovered from retirement benefits</span>
-          </li>
+        <ul className="space-y-2 text-sm text-amber-700">
+          <li>• Recovery starts from the month following disbursal</li>
+          <li>• Cannot take same type of loan if previous one is pending</li>
+          <li>• HBA requires mortgage of property to government</li>
+          <li>• Vehicle must be insured and hypothecated to government</li>
+          <li>• Outstanding loans are recovered from retirement benefits</li>
+          <li>• Interest rates are subject to revision by Government</li>
         </ul>
       </div>
 
-      {/* Where to Apply */}
+      {/* Info */}
       <div className="mt-6 bg-blue-50 rounded-xl p-6">
         <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
           <Info size={18} />
-          Where to Apply
+          Required Documents
         </h3>
-        <div className="text-sm text-blue-700 space-y-2">
-          <p><strong>Festival Advance:</strong> Submit to your DDO (Drawing & Disbursing Officer)</p>
-          <p><strong>GPF Advance:</strong> Apply through DDO to Treasury/AG Office</p>
-          <p><strong>HBA, Vehicle, Computer Loans:</strong> Apply through DDO to District Treasury</p>
-          <p><strong>Medical Advance:</strong> Apply to DDO with medical documents</p>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+          <div>
+            <p className="font-medium">HBA Documents:</p>
+            <p>Service certificate, Salary certificate, Property documents, NOC, Building plan</p>
+          </div>
+          <div>
+            <p className="font-medium">Vehicle Advance:</p>
+            <p>Application form, Salary certificate, Quotation, LIC policy assignment</p>
+          </div>
         </div>
       </div>
 
       {/* Related Links */}
       <div className="mt-6 flex flex-wrap gap-4">
-        <Link href="/tools/loan-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-          GPF Loan Calculator
-        </Link>
         <Link href="/tools/gpf-interest-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
           GPF Interest Calculator
+        </Link>
+        <Link href="/tools/loan-emi-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          Generic EMI Calculator
         </Link>
         <Link href="/forms" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
           Loan Application Forms

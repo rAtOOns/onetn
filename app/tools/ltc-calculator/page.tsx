@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plane, Calculator, Info, CheckCircle } from "lucide-react";
-
-const CURRENT_DA = 55;
+import { CURRENT_DA_RATE } from "@/lib/constants/rates";
 
 // LTC entitlement based on pay level
 const ltcEntitlement = {
@@ -30,7 +29,7 @@ export default function LTCCalculatorPage() {
   const [hometown, setHometown] = useState<string>("yes");
 
   // Calculate
-  const daAmount = Math.round((basicPay * CURRENT_DA) / 100);
+  const daAmount = Math.round((basicPay * CURRENT_DA_RATE) / 100);
   const totalPay = basicPay + daAmount;
 
   // LTC advance (usually 90% of estimated fare)

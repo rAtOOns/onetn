@@ -3,29 +3,32 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Calculator, Info, Printer } from "lucide-react";
-import { CURRENT_DA_RATE, HRA_RATES, CCA_RATES } from "@/lib/constants/rates";
+import {
+  CURRENT_DA_RATE,
+  HRA_RATES,
+  CCA_RATES,
+  PAY_LEVELS,
+  TEACHING_PAY_LEVELS
+} from "@/lib/constants/rates";
 
-// TN 7th Pay Commission Pay Levels with sample pay ranges
+// Convert centralized pay levels to array format for dropdown
 const payLevels = [
-  { level: 1, minPay: 15700, maxPay: 50000, description: "Multi Tasking Staff" },
-  { level: 2, minPay: 19500, maxPay: 62000, description: "Junior Assistant" },
-  { level: 3, minPay: 21700, maxPay: 69100, description: "Typist/Steno" },
-  { level: 4, minPay: 25500, maxPay: 81100, description: "Assistant" },
-  { level: 5, minPay: 29200, maxPay: 92300, description: "Senior Assistant" },
-  { level: 6, minPay: 35400, maxPay: 112400, description: "Superintendent" },
-  { level: 7, minPay: 44900, maxPay: 142400, description: "Section Officer" },
-  { level: 8, minPay: 47600, maxPay: 151100, description: "Asst. Section Officer" },
-  { level: 9, minPay: 53100, maxPay: 167800, description: "Deputy Section Officer" },
-  { level: 10, minPay: 56100, maxPay: 177500, description: "Under Secretary" },
-  { level: 11, minPay: 67700, maxPay: 208700, description: "Deputy Secretary" },
-  { level: 12, minPay: 78800, maxPay: 209200, description: "Joint Secretary" },
-  { level: 13, minPay: 123100, maxPay: 215900, description: "Additional Secretary" },
-  { level: 14, minPay: 144200, maxPay: 218200, description: "Secretary" },
-  // Teaching Cadre
-  { level: "T1", minPay: 36900, maxPay: 116600, description: "BT Assistant / PG Teacher" },
-  { level: "T2", minPay: 47600, maxPay: 151100, description: "Graduate Teacher" },
-  { level: "T3", minPay: 56100, maxPay: 177500, description: "Headmaster" },
-  { level: "T4", minPay: 78800, maxPay: 209200, description: "Principal" },
+  // Administrative Cadre (Level 1-14)
+  ...Object.entries(PAY_LEVELS).map(([level, data]) => ({
+    level: Number(level),
+    minPay: data.minPay,
+    maxPay: data.maxPay,
+    description: data.description,
+    descriptionTamil: data.descriptionTamil,
+  })),
+  // Teaching Cadre (T1-T4)
+  ...Object.entries(TEACHING_PAY_LEVELS).map(([level, data]) => ({
+    level,
+    minPay: data.minPay,
+    maxPay: data.maxPay,
+    description: data.description,
+    descriptionTamil: data.descriptionTamil,
+  })),
 ];
 
 // City classification for HRA and CCA (using centralized rates)

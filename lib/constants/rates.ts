@@ -77,21 +77,30 @@ export const HOSTEL_SUBSIDY_RATES = {
   post_graduate: { subsidy: 2500, boarding: 3000, total: 5500 },
 } as const;
 
-// Pay Matrix Levels (7th Pay Commission TN)
+// Pay Matrix Levels (7th Pay Commission TN) - Administrative Cadre (Level 1-14)
 export const PAY_LEVELS = {
-  1: { minPay: 15700, maxPay: 50000, description: "MTS/Peon" },
-  2: { minPay: 19500, maxPay: 63200, description: "LDC/Driver" },
-  3: { minPay: 21700, maxPay: 69100, description: "UDC" },
-  4: { minPay: 25500, maxPay: 81100, description: "Assistant" },
-  5: { minPay: 29200, maxPay: 92300, description: "Senior Assistant" },
-  6: { minPay: 35400, maxPay: 112400, description: "Superintendent" },
-  7: { minPay: 44900, maxPay: 142400, description: "Section Officer" },
-  8: { minPay: 47600, maxPay: 151100, description: "Under Secretary" },
-  9: { minPay: 53100, maxPay: 167800, description: "Deputy Secretary" },
-  10: { minPay: 56100, maxPay: 177500, description: "Joint Secretary" },
-  11: { minPay: 67700, maxPay: 208700, description: "Additional Secretary" },
-  12: { minPay: 78800, maxPay: 209200, description: "Secretary" },
-  13: { minPay: 123100, maxPay: 215900, description: "Principal Secretary" },
+  1: { minPay: 15700, maxPay: 50000, description: "MTS/Peon", descriptionTamil: "பல்நோக்கு பணியாளர்" },
+  2: { minPay: 19500, maxPay: 63200, description: "LDC/Driver", descriptionTamil: "எல்.டி.சி/ஓட்டுநர்" },
+  3: { minPay: 21700, maxPay: 69100, description: "UDC/Typist/Steno", descriptionTamil: "யு.டி.சி/தட்டச்சர்" },
+  4: { minPay: 25500, maxPay: 81100, description: "Junior Assistant", descriptionTamil: "இளநிலை உதவியாளர்" },
+  5: { minPay: 29200, maxPay: 92300, description: "Senior Assistant", descriptionTamil: "மூத்த உதவியாளர்" },
+  6: { minPay: 35400, maxPay: 112400, description: "Superintendent", descriptionTamil: "கண்காணிப்பாளர்" },
+  7: { minPay: 44900, maxPay: 142400, description: "Section Officer", descriptionTamil: "பிரிவு அலுவலர்" },
+  8: { minPay: 47600, maxPay: 151100, description: "Asst. Section Officer", descriptionTamil: "உதவி பிரிவு அலுவலர்" },
+  9: { minPay: 53100, maxPay: 167800, description: "Deputy Section Officer", descriptionTamil: "துணை பிரிவு அலுவலர்" },
+  10: { minPay: 56100, maxPay: 177500, description: "Under Secretary", descriptionTamil: "துணைச் செயலாளர்" },
+  11: { minPay: 67700, maxPay: 208700, description: "Deputy Secretary", descriptionTamil: "இணைச் செயலாளர்" },
+  12: { minPay: 78800, maxPay: 209200, description: "Joint Secretary", descriptionTamil: "கூட்டுச் செயலாளர்" },
+  13: { minPay: 123100, maxPay: 215900, description: "Additional Secretary", descriptionTamil: "கூடுதல் செயலாளர்" },
+  14: { minPay: 144200, maxPay: 218200, description: "Secretary", descriptionTamil: "செயலாளர்" },
+} as const;
+
+// Teaching Cadre Pay Levels (T1-T4) - Education Department
+export const TEACHING_PAY_LEVELS = {
+  T1: { minPay: 36900, maxPay: 116600, description: "BT Assistant / PG Teacher", descriptionTamil: "பி.டி உதவியாளர் / முதுகலை ஆசிரியர்" },
+  T2: { minPay: 47600, maxPay: 151100, description: "Graduate Teacher / Special Teacher", descriptionTamil: "பட்டதாரி ஆசிரியர்" },
+  T3: { minPay: 56100, maxPay: 177500, description: "Headmaster / BRTE", descriptionTamil: "தலைமை ஆசிரியர்" },
+  T4: { minPay: 78800, maxPay: 209200, description: "Principal / CEO", descriptionTamil: "முதல்வர்" },
 } as const;
 
 // Standard increment percentage
@@ -118,4 +127,12 @@ export const DA_HISTORY = [
 // Type exports
 export type CityCategory = keyof typeof HRA_RATES;
 export type PayLevel = keyof typeof PAY_LEVELS;
+export type TeachingPayLevel = keyof typeof TEACHING_PAY_LEVELS;
+export type AllPayLevels = PayLevel | TeachingPayLevel;
 export type TNGISScheme = keyof typeof TNGIS_RATES;
+
+// Combined pay levels for easy lookup
+export const ALL_PAY_LEVELS = {
+  ...PAY_LEVELS,
+  ...TEACHING_PAY_LEVELS,
+} as const;

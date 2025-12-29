@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calculator, Info, Receipt } from "lucide-react";
+import { ArrowLeft, Calculator, Info, Receipt, Home, Printer } from "lucide-react";
+import { CURRENT_DA_RATE, HRA_RATES } from "@/lib/constants/rates";
 
 // Tax slabs for FY 2024-25 (AY 2025-26)
 const OLD_REGIME_SLABS = [
@@ -57,9 +58,46 @@ function calculateTaxFromSlabs(income: number, slabs: typeof OLD_REGIME_SLABS): 
   return Math.round(tax);
 }
 
+// Calculate HRA Exemption (minimum of 3 values)
+function calculateHRAExemption(
+  basicPay: number,
+  daPercent: number,
+  hraReceived: number,
+  rentPaid: number,
+  cityCategory: "X" | "Y" | "Z"
+): { exemption: number; breakdown: { actual: number; rentMinus10: number; percentOfSalary: number } } {
+  const basicPlusDA = basicPay + (basicPay * daPercent / 100);
+
+  // HRA percentage based on city
+  const hraPercent = cityCategory === "X" ? 50 : 40;
+
+  // Three conditions for HRA exemption
+  const actualHRA = hraReceived;
+  const rentMinus10 = Math.max(0, rentPaid - (0.1 * basicPlusDA));
+  const percentOfSalary = (hraPercent / 100) * basicPlusDA;
+
+  const exemption = Math.min(actualHRA, rentMinus10, percentOfSalary);
+
+  return {
+    exemption: Math.round(exemption * 12), // Annual
+    breakdown: {
+      actual: Math.round(actualHRA * 12),
+      rentMinus10: Math.round(rentMinus10 * 12),
+      percentOfSalary: Math.round(percentOfSalary * 12),
+    }
+  };
+}
+
 export default function IncomeTaxCalculatorPage() {
   const [grossSalary, setGrossSalary] = useState<number>(800000);
   const [regime, setRegime] = useState<"old" | "new">("new");
+
+  // Basic details for HRA calculation
+  const [basicPay, setBasicPay] = useState<number>(50000);
+  const [hraReceived, setHraReceived] = useState<number>(8000);
+  const [rentPaid, setRentPaid] = useState<number>(15000);
+  const [cityCategory, setCityCategory] = useState<"X" | "Y" | "Z">("Y");
+  const [showHRACalculator, setShowHRACalculator] = useState<boolean>(false);
 
   // Old Regime Deductions
   const [section80C, setSection80C] = useState<number>(150000);
@@ -70,6 +108,11 @@ export default function IncomeTaxCalculatorPage() {
   const [homeLoanInterest, setHomeLoanInterest] = useState<number>(0);
   const [nps80CCD, setNps80CCD] = useState<number>(50000);
   const [otherDeductions, setOtherDeductions] = useState<number>(0);
+
+  // HRA Calculation
+  const hraCalculation = useMemo(() => {
+    return calculateHRAExemption(basicPay, CURRENT_DA_RATE, hraReceived, rentPaid, cityCategory);
+  }, [basicPay, hraReceived, rentPaid, cityCategory]);
 
   const calculations = useMemo(() => {
     const standardDeduction = regime === "old" ? STANDARD_DEDUCTION_OLD : STANDARD_DEDUCTION_NEW;
@@ -166,25 +209,40 @@ export default function IncomeTaxCalculatorPage() {
     };
   }, [grossSalary, section80C, section80D, section80G, hraExemption, lta, homeLoanInterest, nps80CCD, otherDeductions]);
 
+  const applyHRACalculation = () => {
+    setHraExemption(hraCalculation.exemption);
+    setShowHRACalculator(false);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link
-          href="/tools"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft size={20} />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <Receipt className="text-purple-600" size={28} />
-            Income Tax Calculator
-          </h1>
-          <p className="text-sm text-gray-500 tamil">
-            வருமான வரி கணக்கிடுதல் - FY 2024-25
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Link href="/tools" className="p-2 hover:bg-gray-100 rounded-lg transition-colors print:hidden">
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
+              <Receipt className="text-purple-600" size={28} />
+              Income Tax Calculator
+            </h1>
+            <p className="text-sm text-gray-500 tamil">
+              வருமான வரி கணக்கிடுதல் - FY 2024-25
+            </p>
+          </div>
         </div>
+        <button
+          onClick={handlePrint}
+          className="print:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+        >
+          <Printer size={16} />
+          Print
+        </button>
       </div>
 
       {/* Regime Comparison Card */}
@@ -304,16 +362,112 @@ export default function IncomeTaxCalculatorPage() {
                   />
                 </div>
 
+                {/* HRA Exemption with Calculator */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    HRA Exemption
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      HRA Exemption (Annual)
+                    </label>
+                    <button
+                      onClick={() => setShowHRACalculator(!showHRACalculator)}
+                      className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <Calculator size={12} />
+                      {showHRACalculator ? "Hide Calculator" : "Calculate HRA"}
+                    </button>
+                  </div>
                   <input
                     type="number"
                     value={hraExemption}
                     onChange={(e) => setHraExemption(Number(e.target.value))}
                     className="w-full border rounded-lg p-2 text-sm"
                   />
+
+                  {/* HRA Calculator */}
+                  {showHRACalculator && (
+                    <div className="mt-3 p-4 bg-blue-50 rounded-lg space-y-3">
+                      <h4 className="font-medium text-blue-800 flex items-center gap-2">
+                        <Home size={16} />
+                        HRA Exemption Calculator
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs text-gray-600">Monthly Basic Pay</label>
+                          <input
+                            type="number"
+                            value={basicPay}
+                            onChange={(e) => setBasicPay(Number(e.target.value))}
+                            className="w-full border rounded p-2 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Monthly HRA Received</label>
+                          <input
+                            type="number"
+                            value={hraReceived}
+                            onChange={(e) => setHraReceived(Number(e.target.value))}
+                            className="w-full border rounded p-2 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Monthly Rent Paid</label>
+                          <input
+                            type="number"
+                            value={rentPaid}
+                            onChange={(e) => setRentPaid(Number(e.target.value))}
+                            className="w-full border rounded p-2 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">City Category</label>
+                          <select
+                            value={cityCategory}
+                            onChange={(e) => setCityCategory(e.target.value as "X" | "Y" | "Z")}
+                            className="w-full border rounded p-2 text-sm"
+                          >
+                            <option value="X">X - Metro (50%)</option>
+                            <option value="Y">Y - Other cities (40%)</option>
+                            <option value="Z">Z - Rural (40%)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded p-3 space-y-2">
+                        <p className="text-xs text-gray-600">HRA exemption is minimum of:</p>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span>1. Actual HRA received</span>
+                            <span className={hraCalculation.exemption === hraCalculation.breakdown.actual ? "font-bold text-green-600" : ""}>
+                              {formatCurrency(hraCalculation.breakdown.actual)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>2. Rent - 10% of Salary</span>
+                            <span className={hraCalculation.exemption === hraCalculation.breakdown.rentMinus10 ? "font-bold text-green-600" : ""}>
+                              {formatCurrency(hraCalculation.breakdown.rentMinus10)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>3. {cityCategory === "X" ? "50" : "40"}% of Basic+DA</span>
+                            <span className={hraCalculation.exemption === hraCalculation.breakdown.percentOfSalary ? "font-bold text-green-600" : ""}>
+                              {formatCurrency(hraCalculation.breakdown.percentOfSalary)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between pt-2 border-t font-bold text-blue-700">
+                            <span>HRA Exemption</span>
+                            <span>{formatCurrency(hraCalculation.exemption)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={applyHRACalculation}
+                        className="w-full bg-blue-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-600"
+                      >
+                        Apply This Amount
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -496,7 +650,24 @@ export default function IncomeTaxCalculatorPage() {
             <strong>For Government Employees:</strong> GPF contributions qualify under 80C (max ₹1.5L).
             NPS contributions get additional ₹50,000 under 80CCD(1B).
           </p>
+          <p>
+            <strong>HRA Exemption:</strong> Minimum of (Actual HRA, Rent - 10% of Salary, 50%/40% of Basic+DA).
+            Use the HRA calculator above for accurate exemption calculation.
+          </p>
         </div>
+      </div>
+
+      {/* Related Links */}
+      <div className="mt-6 flex flex-wrap gap-4 print:hidden">
+        <Link href="/tools/salary-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          Salary Calculator
+        </Link>
+        <Link href="/tools/hra-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          HRA Calculator
+        </Link>
+        <Link href="/tools/gpf-interest-calculator" className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+          GPF Calculator
+        </Link>
       </div>
     </div>
   );
