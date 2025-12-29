@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -17,7 +17,15 @@ import {
   Plane,
   Heart,
   AlertCircle,
+  Sparkles,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
+import {
+  validateTamilText,
+  ValidationResult,
+  getErrorTypeLabel,
+} from "@/lib/tamil-validator";
 
 type LetterCategory = "leave" | "gpf" | "transfer" | "medical" | "general";
 
@@ -192,6 +200,10 @@ export default function LetterDraftsPage() {
   const [generalSubject, setGeneralSubject] = useState("");
   const [generalContent, setGeneralContent] = useState("");
 
+  // Spell check state
+  const [spellCheckResult, setSpellCheckResult] = useState<ValidationResult | null>(null);
+  const [showSpellCheck, setShowSpellCheck] = useState(false);
+
   const filteredTemplates = letterTemplates.filter((t) => t.category === selectedCategory);
 
   // Calculate leave days
@@ -258,6 +270,39 @@ export default function LetterDraftsPage() {
     }
   };
 
+  // Spell check handler
+  const handleSpellCheck = useCallback(() => {
+    // Collect all Tamil text from form fields
+    const textToCheck = [
+      senderName,
+      senderDesignation,
+      senderOffice,
+      senderPlace,
+      recipientDesignation,
+      recipientOffice,
+      leaveReason,
+      gpfPurpose,
+      currentPlace,
+      requestedPlace,
+      transferReason,
+      hospitalName,
+      treatmentFor,
+      generalSubject,
+      generalContent,
+      letterContent.subject,
+      letterContent.body,
+    ].filter(Boolean).join(" ");
+
+    const result = validateTamilText(textToCheck);
+    setSpellCheckResult(result);
+    setShowSpellCheck(true);
+  }, [
+    senderName, senderDesignation, senderOffice, senderPlace,
+    recipientDesignation, recipientOffice, leaveReason, gpfPurpose,
+    currentPlace, requestedPlace, transferReason, hospitalName,
+    treatmentFor, generalSubject, generalContent, letterContent,
+  ]);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header */}
@@ -276,6 +321,13 @@ export default function LetterDraftsPage() {
         </div>
         <div className="flex gap-2">
           <button
+            onClick={handleSpellCheck}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm"
+          >
+            <Sparkles size={16} />
+            Check Tamil
+          </button>
+          <button
             onClick={handleCopy}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
           >
@@ -291,6 +343,77 @@ export default function LetterDraftsPage() {
           </button>
         </div>
       </div>
+
+      {/* Spell Check Results Panel */}
+      {showSpellCheck && spellCheckResult && (
+        <div className="mb-6 bg-white rounded-xl shadow-sm border overflow-hidden print:hidden">
+          <div className="flex items-center justify-between p-3 bg-purple-50 border-b">
+            <div className="flex items-center gap-2">
+              <Sparkles size={18} className="text-purple-600" />
+              <h3 className="font-semibold text-purple-800">Tamil Spell Check Results</h3>
+              {spellCheckResult.isValid ? (
+                <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-1">
+                  <CheckCircle size={12} />
+                  No errors
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1">
+                  <AlertCircle size={12} />
+                  {spellCheckResult.stats.totalErrors} issue(s)
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/tools/tamil-spell-checker"
+                className="text-xs text-purple-600 hover:underline"
+              >
+                Open Full Checker →
+              </Link>
+              <button
+                onClick={() => setShowSpellCheck(false)}
+                className="p-1 hover:bg-purple-100 rounded"
+              >
+                <XCircle size={18} className="text-purple-400" />
+              </button>
+            </div>
+          </div>
+
+          {spellCheckResult.errors.length > 0 ? (
+            <div className="p-3 max-h-48 overflow-y-auto">
+              <div className="space-y-2">
+                {spellCheckResult.errors.map((error, index) => (
+                  <div
+                    key={index}
+                    className={`p-2 rounded-lg border ${
+                      error.severity === "error"
+                        ? "bg-red-50 border-red-200"
+                        : error.severity === "warning"
+                        ? "bg-yellow-50 border-yellow-200"
+                        : "bg-blue-50 border-blue-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">&quot;{error.original}&quot;</span>
+                      <span className="text-gray-400">→</span>
+                      <span className="font-medium text-green-700">&quot;{error.suggestion}&quot;</span>
+                      <span className="text-xs px-1.5 py-0.5 bg-white rounded border">
+                        {getErrorTypeLabel(error.type).tamil}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">{error.messageTamil}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 text-center text-green-600">
+              <CheckCircle size={32} className="mx-auto mb-2" />
+              <p>உங்கள் உரை சரியாக உள்ளது! (Your text looks good!)</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Info Banner */}
       <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 print:hidden">

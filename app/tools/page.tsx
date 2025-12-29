@@ -39,6 +39,7 @@ import {
   Shield,
   RefreshCw,
   ArrowUpCircle,
+  Sparkles,
 } from "lucide-react";
 
 interface Tool {
@@ -722,6 +723,17 @@ const tools: Tool[] = [
     href: "/tools/number-to-words",
     color: "bg-violet-500",
     category: "Utilities",
+  },
+  {
+    id: "tamil-spell-checker",
+    name: "Tamil Spell Checker",
+    nameTamil: "தமிழ் எழுத்துப்பிழை சரிபார்ப்பான்",
+    description: "Check Tamil text for spelling & grammar errors",
+    icon: Sparkles,
+    href: "/tools/tamil-spell-checker",
+    color: "bg-purple-500",
+    category: "Utilities",
+    isNew: true,
   },
 ];
 
