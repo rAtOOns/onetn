@@ -216,9 +216,14 @@ export default function TamilSpellCheckerPage() {
         {/* Status Bar */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            {result && (
+            {inputText.trim() && (
               <>
-                {result.isValid ? (
+                {!hasTamilText ? (
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    தமிழ் உரை இல்லை (No Tamil text)
+                  </span>
+                ) : result?.isValid ? (
                   <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1">
                     <CheckCircle size={14} />
                     பிழை இல்லை (No errors)
@@ -433,14 +438,28 @@ export default function TamilSpellCheckerPage() {
           </div>
         )}
 
-        {/* Success Message */}
-        {result && result.isValid && inputText.trim() && (
+        {/* Success Message - Only show if Tamil text exists and no errors */}
+        {result && result.isValid && inputText.trim() && hasTamilText && (
           <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-6 text-center">
             <CheckCircle size={48} className="mx-auto text-green-500 mb-3" />
             <h3 className="text-lg font-semibold text-green-800 mb-1">
               உங்கள் உரை சரியாக உள்ளது!
             </h3>
             <p className="text-green-600">Your text looks good - no errors found!</p>
+          </div>
+        )}
+
+        {/* No Tamil Text Warning */}
+        {inputText.trim() && !hasTamilText && (
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+            <AlertCircle size={48} className="mx-auto text-yellow-500 mb-3" />
+            <h3 className="text-lg font-semibold text-yellow-800 mb-1">
+              தமிழ் எழுத்துகள் இல்லை
+            </h3>
+            <p className="text-yellow-600">No Tamil characters found. Please type in Tamil to check spelling.</p>
+            <p className="text-sm text-yellow-500 mt-2">
+              Tip: Enable Tamil keyboard or use Google Input Tools
+            </p>
           </div>
         )}
 

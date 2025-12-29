@@ -20,6 +20,11 @@ import {
   Sparkles,
   CheckCircle,
   XCircle,
+  ChevronDown,
+  ChevronRight,
+  Menu,
+  X,
+  Settings,
 } from "lucide-react";
 import {
   validateTamilText,
@@ -168,6 +173,12 @@ export default function LetterDraftsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("casual-leave");
   const [copied, setCopied] = useState(false);
   const letterRef = useRef<HTMLDivElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Expanded sections
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["category", "template", "sender", "recipient", "details"])
+  );
 
   // Common fields
   const [senderName, setSenderName] = useState("");
@@ -213,6 +224,19 @@ export default function LetterDraftsPage() {
           (new Date(leaveToDate).getTime() - new Date(leaveFromDate).getTime()) / (1000 * 60 * 60 * 24)
         ) + 1
       : 0;
+
+  // Toggle section
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(section)) {
+        next.delete(section);
+      } else {
+        next.add(section);
+      }
+      return next;
+    });
+  };
 
   // Generate letter content based on template
   const getLetterContent = () => {
@@ -272,7 +296,6 @@ export default function LetterDraftsPage() {
 
   // Spell check handler
   const handleSpellCheck = useCallback(() => {
-    // Collect all Tamil text from form fields
     const textToCheck = [
       senderName,
       senderDesignation,
@@ -303,538 +326,537 @@ export default function LetterDraftsPage() {
     treatmentFor, generalSubject, generalContent, letterContent,
   ]);
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 print:hidden">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ArrowLeft size={20} />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-              <FileText className="text-indigo-600" size={28} />
-              Letter Drafts
-            </h1>
-            <p className="text-sm text-gray-500 tamil">கடித வரைவுகள்</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleSpellCheck}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm"
-          >
-            <Sparkles size={16} />
-            Check Tamil
-          </button>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
-          >
-            {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
-            {copied ? "Copied!" : "Copy"}
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm"
-          >
-            <Printer size={16} />
-            Print
-          </button>
-        </div>
+  // Section header component
+  const SectionHeader = ({ id, icon: Icon, title, titleTamil }: { id: string; icon: typeof User; title: string; titleTamil?: string }) => (
+    <button
+      onClick={() => toggleSection(id)}
+      className="w-full flex items-center justify-between px-3 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+    >
+      <div className="flex items-center gap-2">
+        <Icon size={16} className="text-indigo-600" />
+        <span className="font-medium text-sm text-indigo-900">{title}</span>
+        {titleTamil && <span className="text-xs text-indigo-500 tamil hidden sm:inline">({titleTamil})</span>}
       </div>
-
-      {/* Spell Check Results Panel */}
-      {showSpellCheck && spellCheckResult && (
-        <div className="mb-6 bg-white rounded-xl shadow-sm border overflow-hidden print:hidden">
-          <div className="flex items-center justify-between p-3 bg-purple-50 border-b">
-            <div className="flex items-center gap-2">
-              <Sparkles size={18} className="text-purple-600" />
-              <h3 className="font-semibold text-purple-800">Tamil Spell Check Results</h3>
-              {spellCheckResult.isValid ? (
-                <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-1">
-                  <CheckCircle size={12} />
-                  No errors
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1">
-                  <AlertCircle size={12} />
-                  {spellCheckResult.stats.totalErrors} issue(s)
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/tools/tamil-spell-checker"
-                className="text-xs text-purple-600 hover:underline"
-              >
-                Open Full Checker →
-              </Link>
-              <button
-                onClick={() => setShowSpellCheck(false)}
-                className="p-1 hover:bg-purple-100 rounded"
-              >
-                <XCircle size={18} className="text-purple-400" />
-              </button>
-            </div>
-          </div>
-
-          {spellCheckResult.errors.length > 0 ? (
-            <div className="p-3 max-h-48 overflow-y-auto">
-              <div className="space-y-2">
-                {spellCheckResult.errors.map((error, index) => (
-                  <div
-                    key={index}
-                    className={`p-2 rounded-lg border ${
-                      error.severity === "error"
-                        ? "bg-red-50 border-red-200"
-                        : error.severity === "warning"
-                        ? "bg-yellow-50 border-yellow-200"
-                        : "bg-blue-50 border-blue-200"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">&quot;{error.original}&quot;</span>
-                      <span className="text-gray-400">→</span>
-                      <span className="font-medium text-green-700">&quot;{error.suggestion}&quot;</span>
-                      <span className="text-xs px-1.5 py-0.5 bg-white rounded border">
-                        {getErrorTypeLabel(error.type).tamil}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">{error.messageTamil}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="p-6 text-center text-green-600">
-              <CheckCircle size={32} className="mx-auto mb-2" />
-              <p>உங்கள் உரை சரியாக உள்ளது! (Your text looks good!)</p>
-            </div>
-          )}
-        </div>
+      {expandedSections.has(id) ? (
+        <ChevronDown size={16} className="text-indigo-400" />
+      ) : (
+        <ChevronRight size={16} className="text-indigo-400" />
       )}
+    </button>
+  );
 
-      {/* Info Banner */}
-      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 print:hidden">
-        <p className="text-sm text-indigo-800">
-          <strong>How to use:</strong> Select letter type, fill in details, and the Tamil letter will be generated automatically.
-          You can print or copy the letter. Font used: <strong>Noto Sans Tamil</strong> (Unicode compliant).
-        </p>
-      </div>
+  return (
+    <div className="flex min-h-screen">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed bottom-4 left-4 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg print:hidden"
+      >
+        {sidebarOpen ? <X size={24} /> : <Settings size={24} />}
+      </button>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Left - Form */}
-        <div className="space-y-6 print:hidden">
-          {/* Category Selection */}
-          <div className="bg-white rounded-xl shadow-sm border p-4">
-            <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-              <ClipboardList size={18} />
-              Select Category
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => {
-                const Icon = cat.icon;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setSelectedCategory(cat.id);
-                      setSelectedTemplate(letterTemplates.find((t) => t.category === cat.id)?.id || "");
-                    }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      selectedCategory === cat.id
-                        ? "bg-indigo-500 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    <Icon size={16} />
-                    {cat.name}
-                  </button>
-                );
-              })}
+      {/* Sidebar Form */}
+      <aside
+        className={`
+          fixed lg:sticky top-0 left-0 z-40 h-screen lg:h-auto
+          w-80 bg-gradient-to-b from-indigo-50 to-purple-50 border-r border-indigo-100 overflow-y-auto
+          transform transition-transform duration-300 ease-in-out print:hidden
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        <div className="p-4 space-y-3">
+          {/* Sidebar Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <Link href="/" className="p-2 hover:bg-white/50 rounded-lg transition-colors">
+              <ArrowLeft size={18} />
+            </Link>
+            <div>
+              <h1 className="font-bold text-indigo-900 flex items-center gap-2">
+                <FileText className="text-indigo-600" size={20} />
+                Letter Drafts
+              </h1>
+              <p className="text-xs text-indigo-500 tamil">கடித வரைவுகள்</p>
             </div>
+          </div>
+
+          {/* Category Selection */}
+          <div>
+            <SectionHeader id="category" icon={ClipboardList} title="Category" titleTamil="வகை" />
+            {expandedSections.has("category") && (
+              <div className="mt-2 flex flex-wrap gap-1.5 px-1">
+                {categories.map((cat) => {
+                  const Icon = cat.icon;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        setSelectedTemplate(letterTemplates.find((t) => t.category === cat.id)?.id || "");
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        selectedCategory === cat.id
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-600 hover:bg-indigo-100 border border-indigo-100"
+                      }`}
+                    >
+                      <Icon size={14} />
+                      {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Template Selection */}
-          <div className="bg-white rounded-xl shadow-sm border p-4">
-            <h2 className="font-semibold text-tn-text mb-3">Select Letter Type</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {filteredTemplates.map((template) => (
-                <button
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template.id)}
-                  className={`p-3 rounded-lg text-left transition-colors ${
-                    selectedTemplate === template.id
-                      ? "bg-indigo-100 border-2 border-indigo-500"
-                      : "bg-gray-50 border-2 border-transparent hover:bg-gray-100"
-                  }`}
-                >
-                  <p className="font-medium text-sm">{template.name}</p>
-                  <p className="text-xs text-gray-500 tamil">{template.nameTamil}</p>
-                </button>
-              ))}
-            </div>
+          <div>
+            <SectionHeader id="template" icon={FileText} title="Letter Type" titleTamil="கடித வகை" />
+            {expandedSections.has("template") && (
+              <div className="mt-2 space-y-1 px-1">
+                {filteredTemplates.map((template) => (
+                  <button
+                    key={template.id}
+                    onClick={() => setSelectedTemplate(template.id)}
+                    className={`w-full p-2 rounded-lg text-left text-sm transition-colors ${
+                      selectedTemplate === template.id
+                        ? "bg-indigo-500 text-white"
+                        : "bg-white text-gray-700 hover:bg-indigo-50 border border-indigo-100"
+                    }`}
+                  >
+                    <p className="font-medium">{template.name}</p>
+                    <p className={`text-xs tamil ${selectedTemplate === template.id ? "text-indigo-100" : "text-gray-400"}`}>
+                      {template.nameTamil}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Common Details */}
-          <div className="bg-white rounded-xl shadow-sm border p-4">
-            <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-              <User size={18} />
-              Your Details
-            </h2>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your Name / உங்கள் பெயர்</label>
+          {/* Sender Details */}
+          <div>
+            <SectionHeader id="sender" icon={User} title="Your Details" titleTamil="உங்கள் விவரங்கள்" />
+            {expandedSections.has("sender") && (
+              <div className="mt-2 space-y-2 px-1">
                 <input
                   type="text"
                   value={senderName}
                   onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="திரு. முருகன்"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="பெயர் / Name"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Designation / பதவி</label>
                 <input
                   type="text"
                   value={senderDesignation}
                   onChange={(e) => setSenderDesignation(e.target.value)}
-                  placeholder="பட்டதாரி ஆசிரியர்"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="பதவி / Designation"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Office/School / அலுவலகம்</label>
                 <input
                   type="text"
                   value={senderOffice}
                   onChange={(e) => setSenderOffice(e.target.value)}
-                  placeholder="அரசு மேல்நிலைப்பள்ளி, சென்னை"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="அலுவலகம் / Office"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Place / இடம்</label>
                 <input
                   type="text"
                   value={senderPlace}
                   onChange={(e) => setSenderPlace(e.target.value)}
-                  placeholder="சென்னை"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="இடம் / Place"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
-            </div>
+            )}
           </div>
 
           {/* Recipient Details */}
-          <div className="bg-white rounded-xl shadow-sm border p-4">
-            <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-              <Building size={18} />
-              Recipient Details
-            </h2>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Designation / பதவி</label>
+          <div>
+            <SectionHeader id="recipient" icon={Building} title="Recipient" titleTamil="பெறுநர்" />
+            {expandedSections.has("recipient") && (
+              <div className="mt-2 space-y-2 px-1">
                 <input
                   type="text"
                   value={recipientDesignation}
                   onChange={(e) => setRecipientDesignation(e.target.value)}
-                  placeholder="தலைமை ஆசிரியர்"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="பதவி / Designation"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Office / அலுவலகம்</label>
                 <input
                   type="text"
                   value={recipientOffice}
                   onChange={(e) => setRecipientOffice(e.target.value)}
-                  placeholder="அரசு மேல்நிலைப்பள்ளி, சென்னை"
-                  className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+                  placeholder="அலுவலகம் / Office"
+                  className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
-            </div>
+            )}
           </div>
 
           {/* Category-specific fields */}
-          {selectedCategory === "leave" && (
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-                <Calendar size={18} />
-                Leave Details
-              </h2>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
-                    <input
-                      type="date"
-                      value={leaveFromDate}
-                      onChange={(e) => setLeaveFromDate(e.target.value)}
-                      className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
+          <div>
+            <SectionHeader
+              id="details"
+              icon={selectedCategory === "leave" ? Calendar : selectedCategory === "gpf" ? Wallet : selectedCategory === "transfer" ? Plane : selectedCategory === "medical" ? Heart : Mail}
+              title={
+                selectedCategory === "leave" ? "Leave Details" :
+                selectedCategory === "gpf" ? "GPF Details" :
+                selectedCategory === "transfer" ? "Transfer Details" :
+                selectedCategory === "medical" ? "Medical Details" : "Letter Content"
+              }
+              titleTamil={
+                selectedCategory === "leave" ? "விடுப்பு விவரங்கள்" :
+                selectedCategory === "gpf" ? "GPF விவரங்கள்" :
+                selectedCategory === "transfer" ? "இடமாற்ற விவரங்கள்" :
+                selectedCategory === "medical" ? "மருத்துவ விவரங்கள்" : "உள்ளடக்கம்"
+              }
+            />
+            {expandedSections.has("details") && (
+              <div className="mt-2 space-y-2 px-1">
+                {selectedCategory === "leave" && (
+                  <>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">From Date</label>
+                        <input
+                          type="date"
+                          value={leaveFromDate}
+                          onChange={(e) => setLeaveFromDate(e.target.value)}
+                          className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">To Date</label>
+                        <input
+                          type="date"
+                          value={leaveToDate}
+                          onChange={(e) => setLeaveToDate(e.target.value)}
+                          className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    {leaveDays > 0 && (
+                      <p className="text-xs text-indigo-600 font-medium px-1">Total: {leaveDays} days</p>
+                    )}
+                    <textarea
+                      value={leaveReason}
+                      onChange={(e) => setLeaveReason(e.target.value)}
+                      placeholder="காரணம் / Reason"
+                      rows={2}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
-                    <input
-                      type="date"
-                      value={leaveToDate}
-                      onChange={(e) => setLeaveToDate(e.target.value)}
-                      className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                </div>
-                {leaveDays > 0 && (
-                  <p className="text-sm text-indigo-600 font-medium">Total: {leaveDays} days</p>
+                  </>
                 )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Reason / காரணம்</label>
-                  <textarea
-                    value={leaveReason}
-                    onChange={(e) => setLeaveReason(e.target.value)}
-                    placeholder="சொந்த வேலை காரணமாக..."
-                    rows={2}
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+
+                {selectedCategory === "gpf" && (
+                  <>
+                    <input
+                      type="number"
+                      value={gpfAmount}
+                      onChange={(e) => setGpfAmount(e.target.value)}
+                      placeholder="தொகை (₹) / Amount"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <textarea
+                      value={gpfPurpose}
+                      onChange={(e) => setGpfPurpose(e.target.value)}
+                      placeholder="நோக்கம் / Purpose"
+                      rows={2}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </>
+                )}
+
+                {selectedCategory === "transfer" && (
+                  <>
+                    <input
+                      type="text"
+                      value={currentPlace}
+                      onChange={(e) => setCurrentPlace(e.target.value)}
+                      placeholder="தற்போதைய இடம் / Current Place"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={requestedPlace}
+                      onChange={(e) => setRequestedPlace(e.target.value)}
+                      placeholder="கோரும் இடம் / Requested Place"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <textarea
+                      value={transferReason}
+                      onChange={(e) => setTransferReason(e.target.value)}
+                      placeholder="காரணம் / Reason"
+                      rows={2}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </>
+                )}
+
+                {selectedCategory === "medical" && (
+                  <>
+                    <input
+                      type="number"
+                      value={medicalAmount}
+                      onChange={(e) => setMedicalAmount(e.target.value)}
+                      placeholder="தொகை (₹) / Amount"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={hospitalName}
+                      onChange={(e) => setHospitalName(e.target.value)}
+                      placeholder="மருத்துவமனை / Hospital"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <input
+                      type="text"
+                      value={treatmentFor}
+                      onChange={(e) => setTreatmentFor(e.target.value)}
+                      placeholder="சிகிச்சை / Treatment For"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </>
+                )}
+
+                {selectedCategory === "general" && (
+                  <>
+                    <input
+                      type="text"
+                      value={generalSubject}
+                      onChange={(e) => setGeneralSubject(e.target.value)}
+                      placeholder="பொருள் / Subject"
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <textarea
+                      value={generalContent}
+                      onChange={(e) => setGeneralContent(e.target.value)}
+                      placeholder="உள்ளடக்கம் / Content"
+                      rows={4}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </>
+                )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {selectedCategory === "gpf" && (
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-                <Wallet size={18} />
-                GPF Details
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹) / தொகை</label>
-                  <input
-                    type="number"
-                    value={gpfAmount}
-                    onChange={(e) => setGpfAmount(e.target.value)}
-                    placeholder="100000"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purpose / நோக்கம்</label>
-                  <textarea
-                    value={gpfPurpose}
-                    onChange={(e) => setGpfPurpose(e.target.value)}
-                    placeholder="வீடு கட்டுவதற்காக..."
-                    rows={2}
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {selectedCategory === "transfer" && (
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-                <Plane size={18} />
-                Transfer Details
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Place / தற்போதைய இடம்</label>
-                  <input
-                    type="text"
-                    value={currentPlace}
-                    onChange={(e) => setCurrentPlace(e.target.value)}
-                    placeholder="சென்னை"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Requested Place / கோரும் இடம்</label>
-                  <input
-                    type="text"
-                    value={requestedPlace}
-                    onChange={(e) => setRequestedPlace(e.target.value)}
-                    placeholder="மதுரை"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Reason / காரணம்</label>
-                  <textarea
-                    value={transferReason}
-                    onChange={(e) => setTransferReason(e.target.value)}
-                    placeholder="பெற்றோர் நலம் பேணுவதற்காக..."
-                    rows={2}
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {selectedCategory === "medical" && (
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-                <Heart size={18} />
-                Medical Details
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹) / தொகை</label>
-                  <input
-                    type="number"
-                    value={medicalAmount}
-                    onChange={(e) => setMedicalAmount(e.target.value)}
-                    placeholder="50000"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Hospital Name / மருத்துவமனை</label>
-                  <input
-                    type="text"
-                    value={hospitalName}
-                    onChange={(e) => setHospitalName(e.target.value)}
-                    placeholder="அரசு பொது மருத்துவமனை"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Treatment For / சிகிச்சை</label>
-                  <input
-                    type="text"
-                    value={treatmentFor}
-                    onChange={(e) => setTreatmentFor(e.target.value)}
-                    placeholder="கண் அறுவை சிகிச்சை"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {selectedCategory === "general" && (
-            <div className="bg-white rounded-xl shadow-sm border p-4">
-              <h2 className="font-semibold text-tn-text mb-3 flex items-center gap-2">
-                <Mail size={18} />
-                Letter Content
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject / பொருள்</label>
-                  <input
-                    type="text"
-                    value={generalSubject}
-                    onChange={(e) => setGeneralSubject(e.target.value)}
-                    placeholder="சான்றிதழ் கோரிக்கை"
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Content / உள்ளடக்கம்</label>
-                  <textarea
-                    value={generalContent}
-                    onChange={(e) => setGeneralContent(e.target.value)}
-                    placeholder="உங்கள் கடிதத்தின் உள்ளடக்கத்தை இங்கே எழுதவும்..."
-                    rows={5}
-                    className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right - Letter Preview */}
-        <div className="lg:sticky lg:top-4 lg:self-start">
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <div className="bg-indigo-50 p-3 border-b print:hidden">
-              <h2 className="font-semibold text-indigo-800">Letter Preview / கடித முன்னோட்டம்</h2>
-            </div>
-
-            {/* Letter Content */}
-            <div
-              ref={letterRef}
-              className="p-8 min-h-[600px] font-tamil leading-relaxed"
-              style={{ fontFamily: "'Noto Sans Tamil', 'Tamil Sangam MN', sans-serif" }}
+          {/* Action Buttons */}
+          <div className="pt-2 space-y-2">
+            <button
+              onClick={handleSpellCheck}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-sm font-medium transition-colors"
             >
-              {/* Header - Place & Date */}
-              <div className="text-right mb-6">
-                <p>{senderPlace || "________________"}</p>
-                <p>தேதி: {today}</p>
-              </div>
-
-              {/* Sender */}
-              <div className="mb-4">
-                <p className="font-semibold">அனுப்புநர்:</p>
-                <p>{senderName || "________________"}</p>
-                <p>{senderDesignation || "________________"}</p>
-                <p>{senderOffice || "________________"}</p>
-              </div>
-
-              {/* Recipient */}
-              <div className="mb-4">
-                <p className="font-semibold">பெறுநர்:</p>
-                <p>{recipientDesignation || "________________"}</p>
-                <p>{recipientOffice || "________________"}</p>
-              </div>
-
-              {/* Subject */}
-              <div className="mb-4">
-                <p>
-                  <span className="font-semibold">பொருள்: </span>
-                  {letterContent.subject}
-                </p>
-              </div>
-
-              {/* Salutation */}
-              <div className="mb-4">
-                <p className="font-semibold">மதிப்புற்குரிய ஐயா/அம்மா,</p>
-              </div>
-
-              {/* Body */}
-              <div className="mb-6 text-justify whitespace-pre-line">
-                {letterContent.body}
-              </div>
-
-              {/* Closing */}
-              <div className="mt-8">
-                <p>இப்படிக்கு,</p>
-                <p className="mt-1">தங்கள் பணிவுள்ள,</p>
-                <div className="mt-8">
-                  <p className="border-t border-gray-400 pt-1 w-48">கையொப்பம்</p>
-                  <p className="mt-2">{senderName || "________________"}</p>
-                  <p>{senderDesignation || "________________"}</p>
-                </div>
-              </div>
-
-              {/* Enclosures hint */}
-              {(selectedCategory === "medical" || selectedCategory === "gpf") && (
-                <div className="mt-8 pt-4 border-t border-dashed border-gray-300">
-                  <p className="text-sm text-gray-600">
-                    <span className="font-semibold">இணைப்புகள்:</span>
-                    {selectedCategory === "medical" && " மருத்துவ பில்கள், மருத்துவர் சான்றிதழ்"}
-                    {selectedCategory === "gpf" && " GPF அறிக்கை, அடையாள ஆவணங்கள்"}
-                  </p>
-                </div>
-              )}
+              <Sparkles size={16} />
+              Check Tamil Spelling
+            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCopy}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"
+              >
+                {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+                {copied ? "Copied!" : "Copy"}
+              </button>
+              <button
+                onClick={handlePrint}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                <Printer size={16} />
+                Print
+              </button>
             </div>
           </div>
 
           {/* Tips */}
-          <div className="mt-4 bg-amber-50 rounded-xl p-4 print:hidden">
-            <h3 className="font-semibold text-amber-800 mb-2">Tips</h3>
-            <ul className="text-sm text-amber-700 space-y-1">
+          <div className="mt-4 bg-amber-50 rounded-lg p-3 border border-amber-100">
+            <h3 className="font-medium text-amber-800 text-sm mb-1">Tips</h3>
+            <ul className="text-xs text-amber-700 space-y-0.5">
               <li>• Fill all details for a complete letter</li>
-              <li>• Use Print button to get a clean printout</li>
-              <li>• Copy button copies the text to clipboard</li>
               <li>• Letter follows TN Government standard format</li>
+              <li>• Font: Noto Sans Tamil (Unicode compliant)</li>
             </ul>
           </div>
         </div>
-      </div>
+      </aside>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden print:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main Content - Letter Preview */}
+      <main className="flex-1 min-w-0 bg-gray-100 print:bg-white">
+        {/* Spell Check Results Panel */}
+        {showSpellCheck && spellCheckResult && (
+          <div className="m-4 bg-white rounded-xl shadow-sm border overflow-hidden print:hidden">
+            <div className="flex items-center justify-between p-3 bg-purple-50 border-b">
+              <div className="flex items-center gap-2">
+                <Sparkles size={18} className="text-purple-600" />
+                <h3 className="font-semibold text-purple-800">Tamil Spell Check</h3>
+                {spellCheckResult.isValid ? (
+                  <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-1">
+                    <CheckCircle size={12} />
+                    No errors
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    {spellCheckResult.stats.totalErrors} issue(s)
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/tools/tamil-spell-checker"
+                  className="text-xs text-purple-600 hover:underline"
+                >
+                  Open Full Checker →
+                </Link>
+                <button
+                  onClick={() => setShowSpellCheck(false)}
+                  className="p-1 hover:bg-purple-100 rounded"
+                >
+                  <XCircle size={18} className="text-purple-400" />
+                </button>
+              </div>
+            </div>
+
+            {spellCheckResult.errors.length > 0 ? (
+              <div className="p-3 max-h-36 overflow-y-auto">
+                <div className="flex flex-wrap gap-2">
+                  {spellCheckResult.errors.map((error, index) => (
+                    <div
+                      key={index}
+                      className={`px-2 py-1 rounded-lg text-xs border ${
+                        error.severity === "error"
+                          ? "bg-red-50 border-red-200"
+                          : error.severity === "warning"
+                          ? "bg-yellow-50 border-yellow-200"
+                          : "bg-blue-50 border-blue-200"
+                      }`}
+                    >
+                      <span className="font-medium">&quot;{error.original}&quot;</span>
+                      <span className="text-gray-400 mx-1">→</span>
+                      <span className="font-medium text-green-700">&quot;{error.suggestion}&quot;</span>
+                      <span className="text-gray-400 ml-1">({getErrorTypeLabel(error.type).tamil})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 text-center text-green-600">
+                <CheckCircle size={24} className="mx-auto mb-1" />
+                <p className="text-sm">உங்கள் உரை சரியாக உள்ளது!</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Letter Preview */}
+        <div className="p-4 lg:p-8">
+          <div className="max-w-3xl mx-auto">
+            {/* Preview Header */}
+            <div className="flex items-center justify-between mb-4 print:hidden">
+              <h2 className="font-semibold text-gray-700 flex items-center gap-2">
+                <FileText size={18} className="text-indigo-600" />
+                Letter Preview
+                <span className="text-xs text-gray-400 tamil">/ கடித முன்னோட்டம்</span>
+              </h2>
+              <div className="lg:hidden flex gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs"
+                >
+                  {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs"
+                >
+                  <Printer size={14} />
+                  Print
+                </button>
+              </div>
+            </div>
+
+            {/* Letter Content */}
+            <div className="bg-white rounded-xl shadow-lg border overflow-hidden print:shadow-none print:border-none print:rounded-none">
+              <div
+                ref={letterRef}
+                id="letter-content"
+                className="p-8 lg:p-12 min-h-[700px] font-tamil leading-relaxed"
+                style={{ fontFamily: "'Noto Sans Tamil', 'Tamil Sangam MN', sans-serif" }}
+              >
+                {/* Header - Place & Date */}
+                <div className="text-right mb-8">
+                  <p className="text-lg">{senderPlace || "________________"}</p>
+                  <p>தேதி: {today}</p>
+                </div>
+
+                {/* Sender */}
+                <div className="mb-6">
+                  <p className="font-semibold text-lg mb-1">அனுப்புநர்:</p>
+                  <p>{senderName || "________________"}</p>
+                  <p>{senderDesignation || "________________"}</p>
+                  <p>{senderOffice || "________________"}</p>
+                </div>
+
+                {/* Recipient */}
+                <div className="mb-6">
+                  <p className="font-semibold text-lg mb-1">பெறுநர்:</p>
+                  <p>{recipientDesignation || "________________"}</p>
+                  <p>{recipientOffice || "________________"}</p>
+                </div>
+
+                {/* Subject */}
+                <div className="mb-6">
+                  <p>
+                    <span className="font-semibold">பொருள்: </span>
+                    {letterContent.subject}
+                  </p>
+                </div>
+
+                {/* Salutation */}
+                <div className="mb-6">
+                  <p className="font-semibold">மதிப்புற்குரிய ஐயா/அம்மா,</p>
+                </div>
+
+                {/* Body */}
+                <div className="mb-8 text-justify whitespace-pre-line leading-loose">
+                  {letterContent.body}
+                </div>
+
+                {/* Closing */}
+                <div className="mt-12">
+                  <p>இப்படிக்கு,</p>
+                  <p className="mt-1">தங்கள் பணிவுள்ள,</p>
+                  <div className="mt-12">
+                    <p className="border-t border-gray-400 pt-2 w-48">கையொப்பம்</p>
+                    <p className="mt-3">{senderName || "________________"}</p>
+                    <p>{senderDesignation || "________________"}</p>
+                  </div>
+                </div>
+
+                {/* Enclosures hint */}
+                {(selectedCategory === "medical" || selectedCategory === "gpf") && (
+                  <div className="mt-12 pt-4 border-t border-dashed border-gray-300">
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">இணைப்புகள்:</span>
+                      {selectedCategory === "medical" && " மருத்துவ பில்கள், மருத்துவர் சான்றிதழ்"}
+                      {selectedCategory === "gpf" && " GPF அறிக்கை, அடையாள ஆவணங்கள்"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
 
       {/* Print Styles */}
       <style jsx global>{`
