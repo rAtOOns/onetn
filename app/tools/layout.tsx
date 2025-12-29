@@ -45,6 +45,7 @@ import {
   Shield,
   RefreshCw,
   ArrowUpCircle,
+  Sparkles,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -181,6 +182,7 @@ const toolCategories: ToolCategory[] = [
     nameTamil: "பயன்பாடுகள்",
     tools: [
       { id: "number-to-words", name: "Number to Words", nameTamil: "எண்ணை சொல்லாக", href: "/tools/number-to-words", icon: Type },
+      { id: "tamil-spell-checker", name: "Tamil Spell Checker", nameTamil: "தமிழ் எழுத்துப்பிழை", href: "/tools/tamil-spell-checker", icon: Sparkles },
     ],
   },
 ];
