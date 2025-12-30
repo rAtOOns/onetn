@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, BookOpen, GraduationCap, Award } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, BookOpen, GraduationCap, Award, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Exam {
   id: string;
@@ -175,15 +178,18 @@ export default function ExamsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <PageContainer padding="lg">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
+      <div className="flex items-center gap-4 mb-8">
+        <Link
+          href="/"
+          className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft size={20} className="text-tn-primary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <Calendar className="text-red-600" size={28} />
+          <h1 className="text-3xl md:text-4xl font-bold text-tn-text flex items-center gap-3">
+            <Calendar className="text-tn-primary" size={32} />
             Exam Calendar 2025
           </h1>
           <p className="text-sm text-gray-500 tamil">தேர்வு அட்டவணை 2025</p>
@@ -191,65 +197,69 @@ export default function ExamsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {examTypes.map((type) => {
           const Icon = type.icon;
           return (
-            <button
+            <Button
               key={type.value}
               onClick={() => setSelectedType(type.value)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedType === type.value
-                  ? "bg-tn-primary text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              variant={selectedType === type.value ? "primary" : "outline"}
+              size="md"
+              icon={<Icon size={16} />}
             >
-              <Icon size={16} />
               {type.label}
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
-        <p className="text-sm text-amber-800">
-          <strong>Note:</strong> Exam dates are tentative and subject to change. Always verify
-          with official sources before making plans.
-        </p>
-      </div>
+      <Card category="exam" className="mb-8">
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            <strong className="text-tn-primary">Note:</strong> Exam dates are tentative and subject to change. Always verify
+            with official sources before making plans.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Upcoming Exams */}
       {upcomingExams.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
-            <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+        <div className="mb-10">
+          <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
+            <span className="text-2xl">📅</span>
             Upcoming Exams
+            <span className="text-sm font-normal text-gray-500 ml-auto">({upcomingExams.length})</span>
           </h2>
-          <div className="grid gap-4">
+          <div className="space-y-4">
             {upcomingExams.map((exam) => (
-              <div
+              <Card
                 key={exam.id}
-                className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition-shadow"
+                category="exam"
+                variant="elevated"
+                hoverable
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-2">
                       {getTypeIcon(exam.type)}
-                      <h3 className="font-medium text-tn-text">{exam.name}</h3>
+                      <h3 className="font-semibold text-tn-text">{exam.name}</h3>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(exam.status)}`}>
                         Upcoming
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 tamil mb-2">{exam.nameTamil}</p>
-                    <p className="text-sm text-gray-600 mb-2">{exam.description}</p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="flex items-center gap-1 text-blue-600">
+                    {exam.nameTamil && (
+                      <p className="text-xs text-gray-500 tamil mb-2">{exam.nameTamil}</p>
+                    )}
+                    <p className="text-sm text-gray-600 mb-3">{exam.description}</p>
+                    <div className="flex flex-wrap items-center gap-4 text-sm">
+                      <span className="flex items-center gap-1 text-tn-primary font-medium">
                         <Clock size={14} />
                         {exam.dates}
                       </span>
                       {exam.resultDate && (
-                        <span className="text-gray-500">Result: {exam.resultDate}</span>
+                        <span className="text-gray-600">Result: {exam.resultDate}</span>
                       )}
                     </div>
                   </div>
@@ -258,13 +268,14 @@ export default function ExamsPage() {
                       href={exam.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-tn-primary hover:underline whitespace-nowrap"
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-tn-primary bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
                     >
-                      Official Site
+                      <ExternalLink size={14} />
+                      Visit
                     </a>
                   )}
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -323,38 +334,50 @@ export default function ExamsPage() {
       )}
 
       {/* Quick Links */}
-      <div className="bg-blue-50 rounded-xl p-6 mt-8">
-        <h3 className="font-semibold text-blue-800 mb-4">Official Exam Portals</h3>
+      <div className="mt-10">
+        <h3 className="text-xl font-semibold text-tn-text mb-4">Official Exam Portals</h3>
         <div className="grid md:grid-cols-3 gap-4">
           <a
             href="https://dge.tn.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <p className="font-medium text-tn-text">DGE Tamil Nadu</p>
-            <p className="text-sm text-gray-500">SSLC & HSC Results</p>
+            <Card category="exam" variant="elevated" hoverable className="h-full">
+              <CardHeader
+                title="DGE Tamil Nadu"
+                subtitle="SSLC & HSC Results"
+                category="exam"
+              />
+            </Card>
           </a>
           <a
             href="https://trb.tn.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <p className="font-medium text-tn-text">TRB Tamil Nadu</p>
-            <p className="text-sm text-gray-500">Teacher Recruitment</p>
+            <Card category="exam" variant="elevated" hoverable className="h-full">
+              <CardHeader
+                title="TRB Tamil Nadu"
+                subtitle="Teacher Recruitment"
+                category="exam"
+              />
+            </Card>
           </a>
           <a
             href="https://tnpsc.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <p className="font-medium text-tn-text">TNPSC</p>
-            <p className="text-sm text-gray-500">Group Exams</p>
+            <Card category="exam" variant="elevated" hoverable className="h-full">
+              <CardHeader
+                title="TNPSC"
+                subtitle="Group Exams"
+                category="exam"
+              />
+            </Card>
           </a>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }
