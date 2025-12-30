@@ -6,25 +6,29 @@ export default function QuickStats() {
       icon: Zap,
       value: "66",
       label: "Tools & Calculators",
-      color: "from-cyan-500 to-cyan-600",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
     },
     {
       icon: FileText,
       value: "1.2K+",
       label: "Government Orders",
-      color: "from-violet-500 to-violet-600",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
     },
     {
       icon: BookOpen,
       value: "800+",
       label: "Forms & Documents",
-      color: "from-emerald-500 to-emerald-600",
+      color: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
     },
     {
       icon: TrendingUp,
       value: "Latest",
       label: "DA & Salary Updates",
-      color: "from-amber-500 to-amber-600",
+      color: "from-pink-500 to-pink-600",
+      bgColor: "bg-pink-50",
     },
   ];
 
@@ -37,7 +41,7 @@ export default function QuickStats() {
             return (
               <div
                 key={index}
-                className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300"
+                className={`group ${stat.bgColor} rounded-xl p-6 shadow-sm hover:shadow-lg border border-gray-100 transition-all duration-300`}
               >
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} p-3 mb-4 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className="w-full h-full text-white" />

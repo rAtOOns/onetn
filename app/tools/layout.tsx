@@ -235,7 +235,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       {/* Mobile Menu Button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-4 right-4 z-50 bg-tn-primary text-white p-3 rounded-full shadow-lg"
+        className="lg:hidden fixed bottom-4 right-4 z-50 bg-gradient-to-br from-tn-primary to-tn-secondary text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
       >
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
@@ -244,7 +244,7 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
       <aside
         className={`
           fixed lg:sticky top-0 left-0 z-40 h-screen lg:h-[calc(100vh-64px)]
-          w-72 bg-gradient-to-b from-cyan-50 to-blue-50 border-r border-cyan-100 overflow-y-auto
+          w-72 bg-gradient-to-b from-emerald-50 to-green-50 border-r border-emerald-100 overflow-y-auto
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
@@ -252,29 +252,29 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
         <div className="p-4 space-y-4">
           {/* Sidebar Header */}
           <Link href="/tools" className="block">
-            <h2 className="text-lg font-bold text-tn-government">Tools & Calculators</h2>
+            <h2 className="text-lg font-bold text-tn-primary">Tools & Calculators</h2>
             <p className="text-xs text-gray-500 tamil">கருவிகள் மற்றும் கால்குலேட்டர்கள்</p>
           </Link>
 
           {/* Enhanced Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-400" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400" size={16} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tools..."
-              className="w-full pl-9 pr-3 py-2.5 text-sm border border-cyan-200 rounded-lg bg-white focus:ring-2 focus:ring-tn-primary focus:border-tn-primary focus:outline-none transition-all"
+              className="w-full pl-9 pr-3 py-2.5 text-sm border border-emerald-200 rounded-lg bg-white focus:ring-2 focus:ring-tn-primary focus:border-tn-primary focus:outline-none transition-all"
             />
           </div>
 
           {/* Tool Stats */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 bg-gradient-to-br from-cyan-100 to-cyan-50 rounded-lg text-center">
+            <div className="px-3 py-2 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-lg text-center">
               <div className="text-lg font-bold text-tn-primary">{allTools.length}</div>
               <div className="text-xs text-gray-600">Total Tools</div>
             </div>
-            <div className="px-3 py-2 bg-gradient-to-br from-violet-100 to-violet-50 rounded-lg text-center">
+            <div className="px-3 py-2 bg-gradient-to-br from-green-100 to-green-50 rounded-lg text-center">
               <div className="text-lg font-bold text-tn-secondary">{filteredCategories.length}</div>
               <div className="text-xs text-gray-600">Matching</div>
             </div>
@@ -286,11 +286,11 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
               <div key={category.name}>
                 <button
                   onClick={() => toggleCategory(category.name)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-tn-government hover:bg-cyan-100 rounded-lg transition-colors duration-200"
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-tn-primary hover:bg-emerald-100 rounded-lg transition-colors duration-200"
                 >
                   <span>{category.name}</span>
                   {expandedCategories.has(category.name) ? (
-                    <ChevronDown size={16} className="text-tn-primary" />
+                    <ChevronDown size={16} className="text-tn-secondary" />
                   ) : (
                     <ChevronRight size={16} className="text-gray-400" />
                   )}
@@ -310,8 +310,8 @@ export default function ToolsLayout({ children }: { children: React.ReactNode })
                             flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all duration-200
                             ${
                               isActive
-                                ? "bg-gradient-to-r from-tn-primary to-tn-accent text-white shadow-md"
-                                : "text-gray-600 hover:bg-cyan-100"
+                                ? "bg-gradient-to-r from-tn-primary to-tn-secondary text-white shadow-md"
+                                : "text-gray-600 hover:bg-emerald-100"
                             }
                           `}
                         >

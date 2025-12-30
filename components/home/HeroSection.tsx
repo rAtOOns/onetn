@@ -61,7 +61,7 @@ export default function HeroSection() {
                 />
                 <button
                   type="submit"
-                  className="mr-2 p-2.5 bg-gradient-to-r from-tn-primary to-tn-accent text-white rounded-lg hover:shadow-lg transition-all duration-200 flex-shrink-0"
+                  className="mr-2 p-2.5 bg-gradient-to-r from-tn-primary to-tn-secondary text-white rounded-lg hover:shadow-lg transition-all duration-200 flex-shrink-0"
                   aria-label="Search"
                 >
                   <ArrowRight size={20} />
