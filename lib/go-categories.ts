@@ -59,21 +59,23 @@ export function getGOCategory(
 }
 
 /**
- * Get category icon for the GO
+ * Get category icon for the GO - kept for backwards compatibility
+ * Actual icons are rendered using lucide-react in components
  */
 export function getCategoryIcon(category: CardCategory) {
+  // Return simple identifiers that can be mapped to lucide icons in components
   const iconMap: Record<CardCategory, string> = {
-    salary: "💰",
-    leave: "📅",
-    pension: "🏛️",
-    tax: "📊",
-    transfer: "🔄",
-    exam: "📝",
-    gpf: "💼",
-    reference: "📚",
-    utility: "🔧",
-    default: "📄",
+    salary: "wallet",
+    leave: "calendar",
+    pension: "building-2",
+    tax: "bar-chart-3",
+    transfer: "arrow-right-left",
+    exam: "file-text",
+    gpf: "briefcase",
+    reference: "book-open",
+    utility: "wrench",
+    default: "file",
   };
 
-  return iconMap[category] || "📄";
+  return iconMap[category] || "file";
 }

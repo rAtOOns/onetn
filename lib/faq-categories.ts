@@ -18,17 +18,17 @@ export function getFaqCardCategory(category: string): CardCategory {
 }
 
 /**
- * Get icon emoji for FAQ category
+ * Get icon identifier for FAQ category (not used anymore - kept for compatibility)
  */
 export function getFaqCategoryIcon(category: string): string {
   const iconMap: Record<string, string> = {
-    "Salary & DA": "💰",
-    "Leave": "📅",
-    "GPF & Pension": "🏦",
-    "Transfer": "🔄",
-    "Exams": "📝",
-    "Service": "📚",
+    "Salary & DA": "wallet",
+    "Leave": "calendar",
+    "GPF & Pension": "bank",
+    "Transfer": "arrow-right-left",
+    "Exams": "file-text",
+    "Service": "book-open",
   };
 
-  return iconMap[category] || "❓";
+  return iconMap[category] || "help-circle";
 }

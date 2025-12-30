@@ -27,22 +27,20 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto">
           {/* Headline Section */}
           <div className="text-center mb-8 md:mb-12">
-            <div className="inline-block mb-4">
-              <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30">
-                📚 Tamil Nadu Education Resources
-              </span>
-            </div>
-
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-              Government Orders, Tools & Schemes
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              Tamil Nadu Education Portal
             </h1>
 
-            <p className="text-lg md:text-xl text-cyan-50 max-w-3xl mx-auto mb-2">
-              Comprehensive resource portal for teachers and school staff across Tamil Nadu
+            <p className="text-xl md:text-2xl text-cyan-50 max-w-3xl mx-auto mb-4">
+              Government Orders, Tools & Administrative Resources
             </p>
 
-            <p className="text-sm text-cyan-100">
-              கல்வித்துறை அரசாணைகள், கணக்கீடு கருவிகள் மற்றும் திட்டங்கள் ஒரு இடத்தில்
+            <p className="text-base text-cyan-100 max-w-2xl mx-auto">
+              Official resource portal for Tamil Nadu Education Department employees
+            </p>
+
+            <p className="text-sm text-cyan-100 mt-2 tamil">
+              தமிழ்நாடு கல்வித்துறை ஊழியர்களுக்கான அதிகாரபூர்வ வள தளம்
             </p>
           </div>
 
@@ -72,7 +70,6 @@ export default function HeroSection() {
 
           {/* Quick Links */}
           <div className="text-center">
-            <p className="text-cyan-50 text-sm font-medium mb-3">Popular Searches:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {["Salary Calculator", "Leave Rules", "DA Hike", "Transfer", "Promotion", "TET", "Forms"].map((term) => (
                 <button

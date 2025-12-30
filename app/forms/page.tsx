@@ -7,7 +7,7 @@ import PageContainer from "@/components/ui/page-container";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getFormCardCategory, getFormCategoryIcon } from "@/lib/form-categories";
+import { getFormCardCategory } from "@/lib/form-categories";
 
 interface Form {
   id: string;
@@ -368,10 +368,9 @@ export default function FormsPage() {
         <div className="space-y-8">
           {Object.entries(groupedForms).map(([category, categoryForms]) => (
             <div key={category}>
-              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
-                <span className="text-2xl">{getFormCategoryIcon(category)}</span>
-                {category} Forms
-                <span className="text-sm font-normal text-gray-500 ml-auto">({categoryForms.length})</span>
+              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center justify-between">
+                <span>{category} Forms</span>
+                <span className="text-sm font-normal text-gray-500">({categoryForms.length})</span>
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {categoryForms.map((form) => (

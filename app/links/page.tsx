@@ -278,10 +278,9 @@ export default function LinksPage() {
         <div className="space-y-8">
           {Object.entries(groupedLinks).map(([category, links]) => (
             <div key={category}>
-              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
-                <span className="text-2xl">{getLinkCategoryIcon(category)}</span>
-                {category}
-                <span className="text-sm font-normal text-gray-500 ml-auto">({links.length})</span>
+              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center justify-between">
+                <span>{category}</span>
+                <span className="text-sm font-normal text-gray-500">({links.length})</span>
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {links.map((link) => (

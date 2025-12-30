@@ -227,10 +227,9 @@ export default function ExamsPage() {
       {/* Upcoming Exams */}
       {upcomingExams.length > 0 && (
         <div className="mb-10">
-          <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
-            <span className="text-2xl">📅</span>
-            Upcoming Exams
-            <span className="text-sm font-normal text-gray-500 ml-auto">({upcomingExams.length})</span>
+          <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center justify-between">
+            <span>Upcoming Exams</span>
+            <span className="text-sm font-normal text-gray-500">({upcomingExams.length})</span>
           </h2>
           <div className="space-y-4">
             {upcomingExams.map((exam) => (

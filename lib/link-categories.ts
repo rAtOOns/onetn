@@ -17,16 +17,16 @@ export function getLinkCardCategory(category: string): CardCategory {
 }
 
 /**
- * Get icon emoji for link category
+ * Get icon identifier for link category (not used anymore - kept for compatibility)
  */
 export function getLinkCategoryIcon(category: string): string {
   const iconMap: Record<string, string> = {
-    "School Education": "🏫",
-    "Teacher Recruitment": "👨‍🏫",
-    "Higher Education": "🎓",
-    "Employee Services": "💼",
-    "Official Orders": "📋",
+    "School Education": "building",
+    "Teacher Recruitment": "users",
+    "Higher Education": "graduation-cap",
+    "Employee Services": "briefcase",
+    "Official Orders": "file-text",
   };
 
-  return iconMap[category] || "🔗";
+  return iconMap[category] || "link";
 }
