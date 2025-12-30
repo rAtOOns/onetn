@@ -36,11 +36,11 @@ export default function HeroSection() {
             </p>
 
             <p className="text-base text-cyan-100 max-w-2xl mx-auto">
-              Official resource portal for Tamil Nadu Education Department employees
+              Comprehensive resource portal for Tamil Nadu Education Department employees
             </p>
 
             <p className="text-sm text-cyan-100 mt-2 tamil">
-              தமிழ்நாடு கல்வித்துறை ஊழியர்களுக்கான அதிகாரபூர்வ வள தளம்
+              தமிழ்நாடு கல்வித்துறை ஊழியர்களுக்கான விரிவான வள தளம்
             </p>
           </div>
 
