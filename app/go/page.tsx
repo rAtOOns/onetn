@@ -1,6 +1,8 @@
 import prisma from "@/lib/db";
 import Link from "next/link";
 import { FileText, Calendar, Building2, Search, Filter, Star, Languages } from "lucide-react";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { getGOCategory, getCategoryIcon } from "@/lib/go-categories";
 
 interface PageProps {
   searchParams: { dept?: string; year?: string; q?: string; page?: string };
@@ -212,82 +214,85 @@ export default async function QualityGOPage({ searchParams }: PageProps) {
           <>
             {/* GO Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {gos.map((go) => (
-                <Link
-                  key={go.id}
-                  href={`/go/${go.id}`}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all group overflow-hidden border border-gray-100"
-                >
-                  {/* Header with GO Info */}
-                  <div className="bg-gradient-to-r from-tn-primary/5 to-tn-highlight/5 p-4 border-b">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span className="text-xs font-medium text-tn-primary bg-tn-primary/10 px-2 py-0.5 rounded">
-                          {go.goType}
+              {gos.map((go) => {
+                const category = getGOCategory(go.deptCode, go.deptName, go.goType);
+                const icon = getCategoryIcon(category);
+
+                return (
+                  <Link key={go.id} href={`/go/${go.id}`}>
+                    <Card
+                      category={category}
+                      variant="elevated"
+                      hoverable
+                      className="h-full"
+                    >
+                      <CardHeader
+                        title={`G.O. No. ${go.goNumber}`}
+                        subtitle={formatDate(go.goDate)}
+                        subtitleTamil={formatDateTamil(go.goDate)}
+                        category={category}
+                      />
+
+                      <CardContent>
+                        {/* GO Type */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{icon}</span>
+                          <span className="text-xs font-medium text-gray-600">
+                            {go.goType}
+                          </span>
+                        </div>
+
+                        {/* Department */}
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Building2 size={14} />
+                          <span>{go.deptName}</span>
+                          {go.deptNameTamil && (
+                            <span className="text-gray-400 tamil text-xs">
+                              ({go.deptNameTamil})
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Tamil Summary */}
+                        {go.summaryTa && (
+                          <p className="tamil text-sm text-gray-700 line-clamp-2">
+                            {go.summaryTa}
+                          </p>
+                        )}
+
+                        {/* English Summary */}
+                        {go.summaryEn && (
+                          <p className="text-sm text-gray-600 line-clamp-2">
+                            {go.summaryEn}
+                          </p>
+                        )}
+                      </CardContent>
+
+                      <CardFooter className="!flex-wrap gap-1">
+                        <span className="text-xs text-gray-500 flex items-center gap-1">
+                          <FileText size={12} />
+                          {formatFileSize(go.fileSize)}
                         </span>
-                        <h3 className="text-lg font-bold text-tn-text mt-1">
-                          G.O. No. {go.goNumber}
-                        </h3>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">{formatDate(go.goDate)}</p>
-                        <p className="text-xs text-gray-400 tamil">{formatDateTamil(go.goDate)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4">
-                    {/* Department */}
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-                      <Building2 size={14} className="text-tn-accent" />
-                      <span>{go.deptName}</span>
-                      {go.deptNameTamil && (
-                        <span className="text-gray-400 tamil text-xs">({go.deptNameTamil})</span>
-                      )}
-                    </div>
-
-                    {/* Tamil Summary - Highlighted */}
-                    {go.summaryTa && (
-                      <div className="bg-amber-50 border-l-4 border-tn-accent rounded-r p-3 mb-3">
-                        <p className="tamil text-sm text-gray-700 line-clamp-2">
-                          {go.summaryTa}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* English Summary */}
-                    {go.summaryEn && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                        {go.summaryEn}
-                      </p>
-                    )}
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-3 border-t text-xs text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <FileText size={12} />
-                        {formatFileSize(go.fileSize)}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {go.hasTamil && (
-                          <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded tamil text-[10px]">
-                            தமிழ்
-                          </span>
-                        )}
-                        {go.hasEnglish && (
-                          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px]">
-                            EN
-                          </span>
-                        )}
-                        {go.qualityScore >= 80 && (
-                          <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                        <div className="flex items-center gap-1 ml-auto">
+                          {go.hasTamil && (
+                            <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded tamil text-[10px]">
+                              தமிழ்
+                            </span>
+                          )}
+                          {go.hasEnglish && (
+                            <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[10px]">
+                              EN
+                            </span>
+                          )}
+                          {go.qualityScore >= 80 && (
+                            <Star size={12} className="text-yellow-500 fill-yellow-500" />
+                          )}
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Pagination */}
