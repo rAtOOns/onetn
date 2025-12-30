@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Search, GraduationCap, Users, Building, FileText, Briefcase } from "lucide-react";
 import { useState } from "react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getLinkCardCategory, getLinkCategoryIcon } from "@/lib/link-categories";
 
 interface PortalLink {
   id: string;
@@ -202,15 +207,18 @@ export default function LinksPage() {
   }, {} as Record<string, PortalLink[]>);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <PageContainer padding="lg">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
+      <div className="flex items-center gap-4 mb-8">
+        <Link
+          href="/"
+          className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft size={20} className="text-tn-primary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <ExternalLink className="text-emerald-600" size={28} />
+          <h1 className="text-3xl md:text-4xl font-bold text-tn-text flex items-center gap-3">
+            <ExternalLink className="text-tn-primary" size={32} />
             Important Links
           </h1>
           <p className="text-sm text-gray-500 tamil">முக்கிய இணைப்புகள்</p>
@@ -218,99 +226,119 @@ export default function LinksPage() {
       </div>
 
       {/* Search */}
-      <div className="relative mb-6">
+      <div className="relative mb-8">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input
           type="text"
           placeholder="Search portals..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-tn-primary focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-tn-primary focus:border-transparent"
         />
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {categories.map((cat) => {
           const Icon = cat.icon;
           return (
-            <button
+            <Button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedCategory === cat.id
-                  ? "bg-tn-primary text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              variant={selectedCategory === cat.id ? "primary" : "outline"}
+              size="md"
+              icon={<Icon size={16} />}
             >
-              <Icon size={16} />
               {cat.name}
-            </button>
+            </Button>
           );
         })}
       </div>
 
       {/* Info Box */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
-        <p className="text-sm text-emerald-800">
-          <strong>Official Portals:</strong> All links below are official Tamil Nadu Government
-          and Education Department websites. Links open in a new tab.
-        </p>
-      </div>
+      <Card category="reference" className="mb-8">
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            <strong className="text-tn-primary">Official Portals:</strong> All links below are official Tamil Nadu Government
+            and Education Department websites. Links open in a new tab.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Links Grid */}
       {Object.keys(groupedLinks).length === 0 ? (
-        <div className="text-center py-12">
-          <ExternalLink size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">No portals found matching your search.</p>
-        </div>
+        <EmptyState
+          icon={<ExternalLink size={48} />}
+          title="No portals found"
+          titleTamil="இணைப்புகள் கிடைக்கவில்லை"
+          description="Try adjusting your search or category filter"
+          descriptionTamil="உங்கள் தேடல் அல்லது வகை வடிப்பு மாற்றிப்பாருங்கள்"
+        />
       ) : (
-        Object.entries(groupedLinks).map(([category, links]) => (
-          <div key={category} className="mb-8">
-            <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-emerald-500 rounded-full"></span>
-              {category}
-              <span className="text-sm font-normal text-gray-500">({links.length})</span>
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {links.map((link) => (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md hover:border-emerald-300 transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-tn-text group-hover:text-emerald-700 transition-colors">
-                        {link.name}
-                      </h3>
-                      <p className="text-xs text-gray-500 tamil mb-2">{link.nameTamil}</p>
-                      <p className="text-sm text-gray-600 mb-2">{link.description}</p>
-                      <p className="text-xs text-emerald-600 font-mono">{link.url.replace('https://', '')}</p>
-                    </div>
-                    <ExternalLink
-                      size={18}
-                      className="text-gray-400 group-hover:text-emerald-600 transition-colors flex-shrink-0 mt-1"
-                    />
-                  </div>
-                </a>
-              ))}
+        <div className="space-y-8">
+          {Object.entries(groupedLinks).map(([category, links]) => (
+            <div key={category}>
+              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
+                <span className="text-2xl">{getLinkCategoryIcon(category)}</span>
+                {category}
+                <span className="text-sm font-normal text-gray-500 ml-auto">({links.length})</span>
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                {links.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Card
+                      category={getLinkCardCategory(category)}
+                      variant="elevated"
+                      hoverable
+                      className="h-full"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <CardHeader
+                            title={link.name}
+                            titleTamil={link.nameTamil}
+                            category={getLinkCardCategory(category)}
+                          />
+                          <CardContent>
+                            <p className="text-sm text-gray-600 mb-2">{link.description}</p>
+                            <p className="text-xs text-gray-500 font-mono truncate">
+                              {link.url.replace('https://', '').replace('http://', '')}
+                            </p>
+                          </CardContent>
+                        </div>
+                        <ExternalLink
+                          size={18}
+                          className="text-tn-primary flex-shrink-0 mt-2"
+                        />
+                      </div>
+                    </Card>
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
 
       {/* Footer Note */}
-      <div className="mt-8 bg-gray-50 rounded-xl p-6">
-        <h3 className="font-semibold text-tn-text mb-2">Note</h3>
-        <p className="text-sm text-gray-600">
-          These are official government portals. If any link is not working, the website may be
-          temporarily unavailable. For issues with specific portals, contact the respective
-          department helpdesk.
-        </p>
-      </div>
-    </div>
+      <Card category="reference" className="mt-10">
+        <CardHeader
+          title="Note"
+          category="reference"
+        />
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            These are official government portals. If any link is not working, the website may be
+            temporarily unavailable. For issues with specific portals, contact the respective
+            department helpdesk.
+          </p>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }

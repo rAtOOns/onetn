@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, HelpCircle, ChevronDown, ChevronUp, Search } from "lucide-react";
+import { ArrowLeft, HelpCircle, ChevronDown, ChevronUp, Search, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getFaqCardCategory, getFaqCategoryIcon } from "@/lib/faq-categories";
 
 interface FAQ {
   id: string;
@@ -164,15 +169,18 @@ export default function FAQPage() {
   }, {} as Record<string, FAQ[]>);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <PageContainer padding="lg">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
+      <div className="flex items-center gap-4 mb-8">
+        <Link
+          href="/"
+          className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft size={20} className="text-tn-primary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <HelpCircle className="text-purple-600" size={28} />
+          <h1 className="text-3xl md:text-4xl font-bold text-tn-text flex items-center gap-3">
+            <HelpCircle className="text-tn-primary" size={32} />
             Frequently Asked Questions
           </h1>
           <p className="text-sm text-gray-500 tamil">அடிக்கடி கேட்கப்படும் கேள்விகள்</p>
@@ -180,102 +188,111 @@ export default function FAQPage() {
       </div>
 
       {/* Search */}
-      <div className="relative mb-6">
+      <div className="relative mb-8">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input
           type="text"
           placeholder="Search questions..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-tn-primary focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-tn-primary focus:border-transparent"
         />
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-8">
         {categories.map((cat) => (
-          <button
+          <Button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedCategory === cat
-                ? "bg-tn-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            variant={selectedCategory === cat ? "primary" : "outline"}
+            size="md"
           >
             {cat}
-          </button>
+          </Button>
         ))}
       </div>
 
       {/* FAQ List */}
       {Object.keys(groupedFaqs).length === 0 ? (
-        <div className="text-center py-12">
-          <HelpCircle size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">No questions found matching your search.</p>
-        </div>
+        <EmptyState
+          icon={<HelpCircle size={48} />}
+          title="No questions found"
+          titleTamil="கேள்விகள் கிடைக்கவில்லை"
+          description="Try adjusting your search or category filter"
+          descriptionTamil="உங்கள் தேடல் அல்லது வகை வடிப்பு மாற்றிப்பாருங்கள்"
+        />
       ) : (
-        Object.entries(groupedFaqs).map(([category, categoryFaqs]) => (
-          <div key={category} className="mb-8">
-            <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-tn-primary rounded-full"></span>
-              {category}
-            </h2>
-            <div className="space-y-3">
-              {categoryFaqs.map((faq) => (
-                <div
-                  key={faq.id}
-                  className="bg-white rounded-xl shadow-sm border overflow-hidden"
-                >
-                  <button
-                    onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
-                    className="w-full px-4 py-4 text-left flex items-start justify-between gap-4 hover:bg-gray-50 transition-colors"
+        <div className="space-y-8">
+          {Object.entries(groupedFaqs).map(([category, categoryFaqs]) => (
+            <div key={category}>
+              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
+                <span className="text-2xl">{getFaqCategoryIcon(category)}</span>
+                {category}
+                <span className="text-sm font-normal text-gray-500 ml-auto">({categoryFaqs.length})</span>
+              </h2>
+              <div className="space-y-3">
+                {categoryFaqs.map((faq) => (
+                  <Card
+                    key={faq.id}
+                    category={getFaqCardCategory(category)}
+                    variant="elevated"
                   >
-                    <div>
-                      <h3 className="font-medium text-tn-text">{faq.question}</h3>
-                      <p className="text-xs text-gray-500 tamil mt-0.5">{faq.questionTamil}</p>
-                    </div>
-                    {expandedId === faq.id ? (
-                      <ChevronUp className="text-gray-400 flex-shrink-0" size={20} />
-                    ) : (
-                      <ChevronDown className="text-gray-400 flex-shrink-0" size={20} />
-                    )}
-                  </button>
-                  {expandedId === faq.id && (
-                    <div className="px-4 pb-4 pt-0">
-                      <div className="bg-gray-50 rounded-lg p-4">
+                    <button
+                      onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
+                      className="w-full text-left flex items-start justify-between gap-4 group"
+                    >
+                      <div className="flex-1">
+                        <h3 className="font-medium text-tn-text group-hover:text-tn-primary transition-colors">
+                          {faq.question}
+                        </h3>
+                        {faq.questionTamil && (
+                          <p className="text-xs text-gray-500 tamil mt-0.5">{faq.questionTamil}</p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0">
+                        {expandedId === faq.id ? (
+                          <ChevronUp className="text-tn-primary" size={20} />
+                        ) : (
+                          <ChevronDown className="text-gray-400 group-hover:text-tn-primary transition-colors" size={20} />
+                        )}
+                      </div>
+                    </button>
+                    {expandedId === faq.id && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
                         <p className="text-gray-700 text-sm leading-relaxed">{faq.answer}</p>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
 
       {/* Still Have Questions */}
-      <div className="bg-blue-50 rounded-xl p-6 mt-8">
-        <h3 className="font-semibold text-blue-800 mb-2">Still have questions?</h3>
-        <p className="text-sm text-blue-700 mb-4">
-          Check our Government Orders section for official rules and regulations.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/go"
-            className="px-4 py-2 bg-white rounded-lg text-sm font-medium text-tn-primary hover:bg-blue-100 transition-colors"
-          >
-            Browse GOs
-          </Link>
-          <Link
-            href="/tools"
-            className="px-4 py-2 bg-white rounded-lg text-sm font-medium text-tn-primary hover:bg-blue-100 transition-colors"
-          >
-            Use Calculators
-          </Link>
-        </div>
-      </div>
-    </div>
+      <Card category="reference" className="mt-10">
+        <CardHeader
+          title="Still have questions?"
+          subtitle="Check our Government Orders section for official rules and regulations"
+          category="reference"
+        />
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/go">
+              <Button variant="primary" size="md" icon={<ArrowRight size={16} />}>
+                Browse GOs
+              </Button>
+            </Link>
+            <Link href="/tools">
+              <Button variant="secondary" size="md" icon={<ArrowRight size={16} />}>
+                Use Calculators
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }
