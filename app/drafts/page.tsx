@@ -25,6 +25,11 @@ import {
   Menu,
   X,
   Settings,
+  Award,
+  FileCheck,
+  Clock,
+  GraduationCap,
+  BadgeCheck,
 } from "lucide-react";
 import {
   validateTamilText,
@@ -32,7 +37,7 @@ import {
   getErrorTypeLabel,
 } from "@/lib/tamil-validator";
 
-type LetterCategory = "leave" | "gpf" | "transfer" | "medical" | "general";
+type LetterCategory = "leave" | "gpf" | "transfer" | "medical" | "certificate" | "service" | "general";
 
 interface LetterTemplate {
   id: string;
@@ -48,17 +53,33 @@ const letterTemplates: LetterTemplate[] = [
   { id: "earned-leave", name: "Earned Leave", nameTamil: "ஈட்டிய விடுப்பு", category: "leave", icon: Calendar },
   { id: "medical-leave", name: "Medical Leave", nameTamil: "மருத்துவ விடுப்பு", category: "leave", icon: Heart },
   { id: "maternity-leave", name: "Maternity Leave", nameTamil: "மகப்பேறு விடுப்பு", category: "leave", icon: Heart },
+  { id: "leave-surrender", name: "Leave Surrender", nameTamil: "விடுப்பு சரண்", category: "leave", icon: Calendar },
+  { id: "child-care-leave", name: "Child Care Leave", nameTamil: "குழந்தை பராமரிப்பு விடுப்பு", category: "leave", icon: Heart },
   // GPF
   { id: "gpf-advance", name: "GPF Advance", nameTamil: "GPF முன்பணம்", category: "gpf", icon: Wallet },
   { id: "gpf-withdrawal", name: "GPF Withdrawal", nameTamil: "GPF திரும்பப்பெறுதல்", category: "gpf", icon: Wallet },
+  { id: "gpf-nomination", name: "GPF Nomination", nameTamil: "GPF வேட்பாளர் நியமனம்", category: "gpf", icon: Wallet },
   // Transfer
   { id: "transfer-request", name: "Transfer Request", nameTamil: "இடமாற்றம் கோரிக்கை", category: "transfer", icon: Plane },
   { id: "spouse-posting", name: "Spouse Station", nameTamil: "துணை நிலைய கோரிக்கை", category: "transfer", icon: Plane },
+  { id: "mutual-transfer", name: "Mutual Transfer", nameTamil: "பரஸ்பர இடமாற்றம்", category: "transfer", icon: Plane },
   // Medical
   { id: "medical-reimbursement", name: "Medical Reimbursement", nameTamil: "மருத்துவ செலவு திருப்பி", category: "medical", icon: Heart },
+  { id: "medical-advance", name: "Medical Advance", nameTamil: "மருத்துவ முன்பணம்", category: "medical", icon: Heart },
+  // Certificates
+  { id: "service-certificate", name: "Service Certificate", nameTamil: "சேவை சான்றிதழ்", category: "certificate", icon: FileCheck },
+  { id: "noc-request", name: "NOC Request", nameTamil: "தடையின்மை சான்று", category: "certificate", icon: BadgeCheck },
+  { id: "character-certificate", name: "Character Certificate", nameTamil: "நடத்தை சான்றிதழ்", category: "certificate", icon: Award },
+  { id: "experience-certificate", name: "Experience Certificate", nameTamil: "அனுபவ சான்றிதழ்", category: "certificate", icon: GraduationCap },
+  // Service Matters
+  { id: "increment-release", name: "Increment Release", nameTamil: "ஊதிய உயர்வு விடுவிப்பு", category: "service", icon: Clock },
+  { id: "pay-fixation", name: "Pay Fixation Request", nameTamil: "ஊதிய நிர்ணயம்", category: "service", icon: Wallet },
+  { id: "promotion-request", name: "Promotion Request", nameTamil: "பதவி உயர்வு கோரிக்கை", category: "service", icon: Award },
+  { id: "probation-declaration", name: "Probation Declaration", nameTamil: "தகுதிகாண் அறிவிப்பு", category: "service", icon: FileCheck },
   // General
   { id: "general-request", name: "General Request", nameTamil: "பொது கோரிக்கை", category: "general", icon: Mail },
   { id: "representation", name: "Representation", nameTamil: "மனு", category: "general", icon: AlertCircle },
+  { id: "address-change", name: "Address Change", nameTamil: "முகவரி மாற்றம்", category: "general", icon: Mail },
 ];
 
 const categories = [
@@ -66,6 +87,8 @@ const categories = [
   { id: "gpf" as LetterCategory, name: "GPF", nameTamil: "GPF", icon: Wallet },
   { id: "transfer" as LetterCategory, name: "Transfer", nameTamil: "இடமாற்றம்", icon: Plane },
   { id: "medical" as LetterCategory, name: "Medical", nameTamil: "மருத்துவம்", icon: Heart },
+  { id: "certificate" as LetterCategory, name: "Certificates", nameTamil: "சான்றிதழ்", icon: FileCheck },
+  { id: "service" as LetterCategory, name: "Service", nameTamil: "பணி", icon: Award },
   { id: "general" as LetterCategory, name: "General", nameTamil: "பொது", icon: Mail },
 ];
 
@@ -83,16 +106,41 @@ function generateLeaveContent(
   fromDate: string,
   toDate: string,
   reason: string,
-  days: number
+  days: number,
+  surrenderDays?: number
 ): { subject: string; body: string } {
   const leaveNames: Record<string, { en: string; ta: string }> = {
     "casual-leave": { en: "Casual Leave", ta: "தற்காலிக விடுப்பு" },
     "earned-leave": { en: "Earned Leave", ta: "ஈட்டிய விடுப்பு" },
     "medical-leave": { en: "Medical Leave", ta: "மருத்துவ விடுப்பு" },
     "maternity-leave": { en: "Maternity Leave", ta: "மகப்பேறு விடுப்பு" },
+    "leave-surrender": { en: "Leave Surrender", ta: "விடுப்பு சரண்" },
+    "child-care-leave": { en: "Child Care Leave", ta: "குழந்தை பராமரிப்பு விடுப்பு" },
   };
 
   const leaveName = leaveNames[leaveType] || { en: "Leave", ta: "விடுப்பு" };
+
+  if (leaveType === "leave-surrender") {
+    return {
+      subject: `விடுப்பு சரண் கோரிக்கை - ${surrenderDays || days} நாட்கள்`,
+      body: `என்னுடைய கணக்கில் உள்ள ஈட்டிய விடுப்பு நாட்களில் ${surrenderDays || days} நாட்களை சரண் செய்ய விரும்புகிறேன்.
+
+விடுப்பு சரண் செய்ய காரணம்: ${reason}
+
+எனவே, மேற்கண்ட விடுப்பு நாட்களுக்கான தொகையை வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
+
+  if (leaveType === "child-care-leave") {
+    return {
+      subject: `குழந்தை பராமரிப்பு விடுப்பு கோரிக்கை - ${days} நாட்கள்`,
+      body: `எனக்கு ${fromDate} முதல் ${toDate} வரை ${days} நாட்கள் குழந்தை பராமரிப்பு விடுப்பு தேவைப்படுகிறது.
+
+காரணம்: ${reason}
+
+எனவே, மேற்கண்ட நாட்களுக்கு குழந்தை பராமரிப்பு விடுப்பு வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
 
   return {
     subject: `${leaveName.ta} கோரிக்கை - ${days} நாட்கள்`,
@@ -107,8 +155,21 @@ function generateLeaveContent(
 function generateGPFContent(
   gpfType: string,
   amount: string,
-  purpose: string
+  purpose: string,
+  nomineeName?: string
 ): { subject: string; body: string } {
+  if (gpfType === "gpf-nomination") {
+    return {
+      subject: "GPF வேட்பாளர் நியமனம் / மாற்றம்",
+      body: `என்னுடைய GPF கணக்கிற்கு கீழ்க்கண்ட நபரை வேட்பாளராக நியமிக்க விரும்புகிறேன்.
+
+வேட்பாளர் பெயர்: ${nomineeName || "____________________"}
+உறவு முறை: ${purpose || "____________________"}
+
+எனவே, மேற்கண்ட நபரை என் GPF வேட்பாளராக பதிவு செய்யுமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
+
   const isAdvance = gpfType === "gpf-advance";
 
   return {
@@ -125,8 +186,22 @@ function generateTransferContent(
   transferType: string,
   currentPlace: string,
   requestedPlace: string,
-  reason: string
+  reason: string,
+  mutualPartnerName?: string
 ): { subject: string; body: string } {
+  if (transferType === "mutual-transfer") {
+    return {
+      subject: "பரஸ்பர இடமாற்றம் கோரிக்கை",
+      body: `தற்போது நான் ${currentPlace} இல் பணிபுரிந்து வருகிறேன்.
+
+${requestedPlace} இல் பணிபுரியும் ${mutualPartnerName || "____________________"} அவர்களுடன் பரஸ்பர இடமாற்றம் செய்துகொள்ள விரும்புகிறேன்.
+
+காரணம்: ${reason}
+
+இருவரும் இடமாற்றத்திற்கு சம்மதம் தெரிவித்துள்ளோம். எனவே, பரஸ்பர இடமாற்றம் வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
+
   const isSpouse = transferType === "spouse-posting";
 
   return {
@@ -142,10 +217,22 @@ ${isSpouse ? `என் துணை அரசு பணியில் ${reques
 }
 
 function generateMedicalContent(
+  medicalType: string,
   amount: string,
   hospitalName: string,
   treatmentFor: string
 ): { subject: string; body: string } {
+  if (medicalType === "medical-advance") {
+    return {
+      subject: `மருத்துவ முன்பணம் கோரிக்கை - ₹${amount}`,
+      body: `நான் / என் குடும்பத்தினர் ${treatmentFor} க்காக ${hospitalName} மருத்துவமனையில் சிகிச்சை பெற உள்ளேன்/உள்ளார்.
+
+மதிப்பிடப்பட்ட மருத்துவ செலவு: ₹${amount}
+
+எனவே, மேற்கண்ட தொகையை முன்பணமாக வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
+
   return {
     subject: `மருத்துவ செலவு திருப்பி கோரிக்கை - ₹${amount}`,
     body: `நான் / என் குடும்பத்தினர் ${treatmentFor} க்காக ${hospitalName} மருத்துவமனையில் சிகிச்சை பெற்றேன்/பெற்றார்.
@@ -158,10 +245,116 @@ function generateMedicalContent(
   };
 }
 
-function generateGeneralContent(
-  subject: string,
-  content: string
+function generateCertificateContent(
+  certType: string,
+  purpose: string
 ): { subject: string; body: string } {
+  const certNames: Record<string, { subject: string; body: string }> = {
+    "service-certificate": {
+      subject: "சேவை சான்றிதழ் கோரிக்கை",
+      body: `நான் இப்பள்ளி/அலுவலகத்தில் பணிபுரிந்து வருகிறேன்.
+
+எனக்கு சேவை சான்றிதழ் தேவைப்படுகிறது.
+
+தேவைப்படும் நோக்கம்: ${purpose}
+
+எனவே, எனக்கு சேவை சான்றிதழ் வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "noc-request": {
+      subject: "தடையின்மை சான்று (NOC) கோரிக்கை",
+      body: `நான் இப்பள்ளி/அலுவலகத்தில் பணிபுரிந்து வருகிறேன்.
+
+எனக்கு தடையின்மை சான்று (No Objection Certificate) தேவைப்படுகிறது.
+
+தேவைப்படும் நோக்கம்: ${purpose}
+
+எனவே, எனக்கு தடையின்மை சான்று வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "character-certificate": {
+      subject: "நடத்தை சான்றிதழ் கோரிக்கை",
+      body: `நான் இப்பள்ளி/அலுவலகத்தில் பணிபுரிந்து வருகிறேன்.
+
+எனக்கு நடத்தை சான்றிதழ் தேவைப்படுகிறது.
+
+தேவைப்படும் நோக்கம்: ${purpose}
+
+எனவே, எனக்கு நடத்தை சான்றிதழ் வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "experience-certificate": {
+      subject: "அனுபவ சான்றிதழ் கோரிக்கை",
+      body: `நான் இப்பள்ளி/அலுவலகத்தில் பணிபுரிந்து வருகிறேன்/பணிபுரிந்தேன்.
+
+எனக்கு அனுபவ சான்றிதழ் தேவைப்படுகிறது.
+
+தேவைப்படும் நோக்கம்: ${purpose}
+
+எனவே, எனக்கு அனுபவ சான்றிதழ் வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+  };
+
+  return certNames[certType] || { subject: "சான்றிதழ் கோரிக்கை", body: purpose };
+}
+
+function generateServiceContent(
+  serviceType: string,
+  details: string
+): { subject: string; body: string } {
+  const serviceTemplates: Record<string, { subject: string; body: string }> = {
+    "increment-release": {
+      subject: "ஊதிய உயர்வு விடுவிப்பு கோரிக்கை",
+      body: `என்னுடைய ஊதிய உயர்வு நிறுத்தி வைக்கப்பட்டுள்ளது.
+
+விவரம்: ${details}
+
+எனவே, என்னுடைய ஊதிய உயர்வை விடுவிக்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "pay-fixation": {
+      subject: "ஊதிய நிர்ணயம் கோரிக்கை",
+      body: `என்னுடைய ஊதியம் சரியாக நிர்ணயிக்கப்படவில்லை / மறு நிர்ணயம் தேவைப்படுகிறது.
+
+விவரம்: ${details}
+
+எனவே, என்னுடைய ஊதியத்தை சரியாக நிர்ணயித்து உத்தரவிடுமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "promotion-request": {
+      subject: "பதவி உயர்வு கோரிக்கை",
+      body: `நான் இப்பணியில் நீண்ட காலமாக பணிபுரிந்து வருகிறேன்.
+
+விவரம்: ${details}
+
+எனவே, எனக்கு பதவி உயர்வு வழங்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+    "probation-declaration": {
+      subject: "தகுதிகாண் காலம் முடிவு அறிவிப்பு கோரிக்கை",
+      body: `நான் இப்பணியில் தகுதிகாண் காலத்தை வெற்றிகரமாக நிறைவு செய்துள்ளேன்.
+
+விவரம்: ${details}
+
+எனவே, என்னுடைய தகுதிகாண் காலம் முடிவடைந்ததாக அறிவிக்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    },
+  };
+
+  return serviceTemplates[serviceType] || { subject: "பணி கோரிக்கை", body: details };
+}
+
+function generateGeneralContent(
+  generalType: string,
+  subject: string,
+  content: string,
+  newAddress?: string
+): { subject: string; body: string } {
+  if (generalType === "address-change") {
+    return {
+      subject: "முகவரி மாற்றம் அறிவிப்பு",
+      body: `என்னுடைய முகவரி மாற்றம் அடைந்துள்ளது என்பதை தெரிவித்துக்கொள்கிறேன்.
+
+புதிய முகவரி:
+${newAddress || content}
+
+எனவே, என்னுடைய பணிவேலை ஆவணங்களில் மேற்கண்ட முகவரியை புதுப்பிக்குமாறு தாழ்மையுடன் கேட்டுக்கொள்கிறேன்.`,
+    };
+  }
+
   return {
     subject: subject,
     body: content,
@@ -206,6 +399,12 @@ export default function LetterDraftsPage() {
   const [medicalAmount, setMedicalAmount] = useState("");
   const [hospitalName, setHospitalName] = useState("");
   const [treatmentFor, setTreatmentFor] = useState("");
+
+  // Certificate fields
+  const [certificatePurpose, setCertificatePurpose] = useState("");
+
+  // Service fields
+  const [serviceDetails, setServiceDetails] = useState("");
 
   // General fields
   const [generalSubject, setGeneralSubject] = useState("");
@@ -264,12 +463,24 @@ export default function LetterDraftsPage() {
         );
       case "medical":
         return generateMedicalContent(
+          selectedTemplate,
           medicalAmount || "____",
           hospitalName || "____",
           treatmentFor || "____________________"
         );
+      case "certificate":
+        return generateCertificateContent(
+          selectedTemplate,
+          certificatePurpose || "____________________"
+        );
+      case "service":
+        return generateServiceContent(
+          selectedTemplate,
+          serviceDetails || "____________________"
+        );
       case "general":
         return generateGeneralContent(
+          selectedTemplate,
           generalSubject || "கோரிக்கை",
           generalContent || "____________________"
         );
@@ -497,18 +708,29 @@ export default function LetterDraftsPage() {
           <div>
             <SectionHeader
               id="details"
-              icon={selectedCategory === "leave" ? Calendar : selectedCategory === "gpf" ? Wallet : selectedCategory === "transfer" ? Plane : selectedCategory === "medical" ? Heart : Mail}
+              icon={
+                selectedCategory === "leave" ? Calendar :
+                selectedCategory === "gpf" ? Wallet :
+                selectedCategory === "transfer" ? Plane :
+                selectedCategory === "medical" ? Heart :
+                selectedCategory === "certificate" ? FileCheck :
+                selectedCategory === "service" ? Award : Mail
+              }
               title={
                 selectedCategory === "leave" ? "Leave Details" :
                 selectedCategory === "gpf" ? "GPF Details" :
                 selectedCategory === "transfer" ? "Transfer Details" :
-                selectedCategory === "medical" ? "Medical Details" : "Letter Content"
+                selectedCategory === "medical" ? "Medical Details" :
+                selectedCategory === "certificate" ? "Certificate Details" :
+                selectedCategory === "service" ? "Service Details" : "Letter Content"
               }
               titleTamil={
                 selectedCategory === "leave" ? "விடுப்பு விவரங்கள்" :
                 selectedCategory === "gpf" ? "GPF விவரங்கள்" :
                 selectedCategory === "transfer" ? "இடமாற்ற விவரங்கள்" :
-                selectedCategory === "medical" ? "மருத்துவ விவரங்கள்" : "உள்ளடக்கம்"
+                selectedCategory === "medical" ? "மருத்துவ விவரங்கள்" :
+                selectedCategory === "certificate" ? "சான்றிதழ் விவரங்கள்" :
+                selectedCategory === "service" ? "பணி விவரங்கள்" : "உள்ளடக்கம்"
               }
             />
             {expandedSections.has("details") && (
@@ -616,6 +838,36 @@ export default function LetterDraftsPage() {
                       placeholder="சிகிச்சை / Treatment For"
                       className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     />
+                  </>
+                )}
+
+                {selectedCategory === "certificate" && (
+                  <>
+                    <textarea
+                      value={certificatePurpose}
+                      onChange={(e) => setCertificatePurpose(e.target.value)}
+                      placeholder="தேவைப்படும் நோக்கம் / Purpose"
+                      rows={3}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <p className="text-xs text-gray-500 px-1">
+                      உதா: வங்கி கடன், பாஸ்போர்ட், மேற்படிப்பு
+                    </p>
+                  </>
+                )}
+
+                {selectedCategory === "service" && (
+                  <>
+                    <textarea
+                      value={serviceDetails}
+                      onChange={(e) => setServiceDetails(e.target.value)}
+                      placeholder="விவரங்கள் / Details"
+                      rows={3}
+                      className="w-full border border-indigo-100 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                    <p className="text-xs text-gray-500 px-1">
+                      பணி தொடர்பான விவரங்களை எழுதவும்
+                    </p>
                   </>
                 )}
 
@@ -867,6 +1119,18 @@ export default function LetterDraftsPage() {
         }
 
         @media print {
+          @page {
+            size: A4;
+            margin: 2cm 2.5cm;
+          }
+
+          html, body {
+            height: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
           body * {
             visibility: hidden;
           }
@@ -880,11 +1144,49 @@ export default function LetterDraftsPage() {
             left: 0;
             top: 0;
             width: 100%;
-            padding: 2cm;
+            padding: 0;
+            font-size: 14pt;
+            line-height: 1.8;
+            color: black !important;
+            background: white !important;
+          }
+
+          #letter-content p {
+            margin-bottom: 0.3em;
+          }
+
+          #letter-content .font-semibold {
+            font-weight: 600;
+          }
+
+          #letter-content .text-lg {
+            font-size: 15pt;
+          }
+
+          #letter-content .text-sm {
+            font-size: 12pt;
+          }
+
+          #letter-content .border-t {
+            border-top: 1px solid #333 !important;
+          }
+
+          #letter-content .border-dashed {
+            border-style: dashed !important;
           }
 
           .print\\:hidden {
             display: none !important;
+          }
+
+          /* Avoid page breaks inside elements */
+          #letter-content > div {
+            page-break-inside: avoid;
+          }
+
+          /* Ensure signature section stays together */
+          #letter-content > div:last-child {
+            page-break-inside: avoid;
           }
         }
       `}</style>
