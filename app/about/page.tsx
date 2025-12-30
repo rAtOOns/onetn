@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Heart, Target, Users, Shield, BookOpen, Calculator } from "lucide-react";
+import { Heart, Target, Users, Shield, BookOpen, Calculator, ArrowRight } from "lucide-react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "About Us | One TN - Tamil Nadu Education Portal",
@@ -39,10 +42,10 @@ const stats = [
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
+    <PageContainer padding="lg">
       {/* Hero Section */}
       <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-tn-text mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-tn-text mb-4">
           About One TN Portal
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -55,15 +58,17 @@ export default function AboutPage() {
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-12">
-        <h2 className="font-semibold text-amber-800 mb-2">Important Disclaimer</h2>
-        <p className="text-sm text-amber-700">
-          This is <strong>NOT</strong> an official government website. One TN Portal is an independent,
-          community-driven project. All tools and information are for reference purposes only.
-          Always verify calculations and rules with official sources, your DDO, or the concerned
-          department before making any decisions.
-        </p>
-      </div>
+      <Card category="reference" className="mb-12">
+        <CardHeader title="Important Disclaimer" category="reference" />
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            This is <strong className="text-tn-primary">NOT</strong> an official government website. One TN Portal is an independent,
+            community-driven project. All tools and information are for reference purposes only.
+            Always verify calculations and rules with official sources, your DDO, or the concerned
+            department before making any decisions.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Mission */}
       <div className="bg-gradient-to-r from-tn-primary to-emerald-600 rounded-xl p-8 text-white mb-12">
@@ -84,56 +89,59 @@ export default function AboutPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl shadow-sm border p-6 text-center">
-            <p className="text-3xl font-bold text-tn-primary">{stat.number}</p>
-            <p className="text-sm text-gray-600">{stat.label}</p>
-          </div>
+          <Card key={stat.label} category="default" variant="elevated">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-tn-primary mb-1">{stat.number}</p>
+              <p className="text-sm text-gray-600">{stat.label}</p>
+            </div>
+          </Card>
         ))}
       </div>
 
       {/* Features */}
       <div className="mb-12">
-        <h2 className="text-2xl font-bold text-tn-text mb-6 text-center">What We Offer</h2>
+        <h2 className="text-3xl font-bold text-tn-text mb-8 text-center">What We Offer</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <div key={feature.title} className="bg-white rounded-xl shadow-sm border p-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-tn-primary/10 p-3 rounded-lg">
-                    <Icon className="text-tn-primary" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-tn-text">{feature.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{feature.description}</p>
-                  </div>
-                </div>
-              </div>
+              <Card key={feature.title} category="reference" variant="elevated">
+                <CardHeader
+                  title={feature.title}
+                  icon={<Icon size={24} />}
+                  category="reference"
+                />
+                <CardContent>
+                  <p className="text-sm text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
       </div>
 
       {/* Why We Built This */}
-      <div className="bg-blue-50 rounded-xl p-8 mb-12">
-        <h2 className="text-xl font-bold text-blue-800 mb-4">Why We Built This</h2>
-        <div className="space-y-4 text-blue-700">
-          <p>
-            Government service rules are complex. Calculating salary, understanding leave rules,
-            planning for retirement - these should be simple tasks, but often require consulting
-            multiple rule books or waiting for office clarifications.
-          </p>
-          <p>
-            We created One TN Portal to bridge this gap. Our tools are based on official government
-            rules (FR/SR, Pay Commission reports, Government Orders) and designed to give you
-            quick, accurate calculations right at your fingertips.
-          </p>
-          <p>
-            Whether you&apos;re a newly joined teacher trying to understand your first salary slip,
-            or a senior employee planning for retirement, we hope these tools make your life easier.
-          </p>
-        </div>
-      </div>
+      <Card category="reference" className="mb-12">
+        <CardHeader title="Why We Built This" category="reference" />
+        <CardContent>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              Government service rules are complex. Calculating salary, understanding leave rules,
+              planning for retirement - these should be simple tasks, but often require consulting
+              multiple rule books or waiting for office clarifications.
+            </p>
+            <p>
+              We created One TN Portal to bridge this gap. Our tools are based on official government
+              rules (FR/SR, Pay Commission reports, Government Orders) and designed to give you
+              quick, accurate calculations right at your fingertips.
+            </p>
+            <p>
+              Whether you&apos;re a newly joined teacher trying to understand your first salary slip,
+              or a senior employee planning for retirement, we hope these tools make your life easier.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Made with Love */}
       <div className="text-center mb-12">
@@ -145,26 +153,27 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="bg-gray-50 rounded-xl p-8 text-center">
-        <h2 className="text-xl font-bold text-tn-text mb-4">Start Using Our Tools</h2>
-        <p className="text-gray-600 mb-6">
-          Explore our collection of 55+ tools designed for your needs.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="/tools"
-            className="px-6 py-3 bg-tn-primary text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
-          >
-            Browse All Tools
-          </Link>
-          <Link
-            href="/contact"
-            className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-          >
-            Contact Us
-          </Link>
-        </div>
-      </div>
-    </div>
+      <Card category="default" variant="elevated" className="text-center">
+        <CardHeader
+          title="Start Using Our Tools"
+          subtitle="Explore our collection of 55+ tools designed for your needs"
+          category="default"
+        />
+        <CardContent>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/tools">
+              <Button variant="primary" size="lg" icon={<ArrowRight size={18} />}>
+                Browse All Tools
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="outline" size="lg" icon={<ArrowRight size={18} />}>
+                Contact Us
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }

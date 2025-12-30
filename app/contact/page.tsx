@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, MessageSquare, AlertCircle, CheckCircle, Send, HelpCircle, Bug, Lightbulb } from "lucide-react";
+import { Mail, MessageSquare, AlertCircle, CheckCircle, Send, HelpCircle, Bug, Lightbulb, ArrowRight } from "lucide-react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const contactReasons = [
   { id: "feedback", label: "General Feedback", icon: MessageSquare },
@@ -57,10 +60,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
+    <PageContainer padding="lg">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-tn-text mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-tn-text mb-4">
           Contact Us
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -73,31 +76,33 @@ export default function ContactPage() {
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Contact Form */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="font-semibold text-tn-text mb-4 flex items-center gap-2">
-            <Mail size={20} />
-            Send us a Message
-          </h2>
+        <Card category="reference" variant="elevated">
+          <CardHeader
+            title="Send us a Message"
+            icon={<Mail size={20} />}
+            category="reference"
+          />
 
-          {submitted ? (
-            <div className="text-center py-12">
-              <CheckCircle className="mx-auto text-green-500 mb-4" size={48} />
-              <h3 className="text-xl font-semibold text-tn-text mb-2">Thank You!</h3>
-              <p className="text-gray-600 mb-4">
-                Your message has been received. We appreciate your feedback!
-              </p>
-              <button
-                onClick={() => {
-                  setSubmitted(false);
-                  setFormData({ name: "", email: "", reason: "feedback", message: "" });
-                }}
-                className="text-tn-primary hover:underline"
-              >
-                Send another message
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent>
+            {submitted ? (
+              <div className="text-center py-8">
+                <CheckCircle className="mx-auto text-emerald-500 mb-4" size={48} />
+                <h3 className="text-lg font-semibold text-tn-text mb-2">Thank You!</h3>
+                <p className="text-gray-600 mb-4">
+                  Your message has been received. We appreciate your feedback!
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setFormData({ name: "", email: "", reason: "feedback", message: "" });
+                  }}
+                >
+                  Send another message
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Your Name (Optional)
@@ -164,109 +169,105 @@ export default function ContactPage() {
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
+                variant="primary"
+                fullWidth
                 disabled={loading || !formData.message}
-                className="w-full bg-tn-primary text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                isLoading={loading}
+                icon={loading ? undefined : <Send size={18} />}
               >
-                {loading ? (
-                  <>Sending...</>
-                ) : (
-                  <>
-                    <Send size={18} />
-                    Send Message
-                  </>
-                )}
-              </button>
+                {loading ? "Sending..." : "Send Message"}
+              </Button>
             </form>
-          )}
-        </div>
+            )}
+          </CardContent>
+        </Card>
 
-        {/* FAQ Section */}
-        <div>
-          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-            <h2 className="font-semibold text-tn-text mb-4 flex items-center gap-2">
-              <HelpCircle size={20} />
-              Frequently Asked Questions
-            </h2>
-            <div className="space-y-4">
-              {faqs.map((faq, i) => (
-                <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
-                  <h3 className="font-medium text-tn-text mb-1">{faq.question}</h3>
-                  <p className="text-sm text-gray-600">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* FAQ Section & Quick Links */}
+        <div className="space-y-6">
+          <Card category="reference" variant="elevated">
+            <CardHeader
+              title="Frequently Asked Questions"
+              icon={<HelpCircle size={20} />}
+              category="reference"
+            />
+            <CardContent>
+              <div className="space-y-4">
+                {faqs.map((faq, i) => (
+                  <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
+                    <h3 className="font-medium text-tn-text mb-1">{faq.question}</h3>
+                    <p className="text-sm text-gray-600">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Quick Links */}
-          <div className="bg-gray-50 rounded-xl p-6">
-            <h3 className="font-semibold text-tn-text mb-4">Quick Links</h3>
-            <div className="space-y-2">
-              <Link
-                href="/tools"
-                className="block p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-sm"
-              >
-                Browse All Tools →
-              </Link>
-              <Link
-                href="/faq"
-                className="block p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-sm"
-              >
-                Full FAQ Page →
-              </Link>
-              <Link
-                href="/request"
-                className="block p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-sm"
-              >
-                Request a Document →
-              </Link>
-              <Link
-                href="/about"
-                className="block p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-sm"
-              >
-                About Us →
-              </Link>
-            </div>
-          </div>
+          <Card category="default" variant="elevated">
+            <CardHeader title="Quick Links" category="default" />
+            <CardContent>
+              <div className="space-y-2">
+                {[
+                  { href: "/tools", label: "Browse All Tools" },
+                  { href: "/faq", label: "Full FAQ Page" },
+                  { href: "/request", label: "Request a Document" },
+                  { href: "/about", label: "About Us" },
+                ].map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium"
+                  >
+                    <span>{link.label}</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-12 bg-amber-50 border border-amber-200 rounded-xl p-6">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
-          <div>
-            <h3 className="font-semibold text-amber-800 mb-1">Please Note</h3>
-            <p className="text-sm text-amber-700">
-              This is an unofficial portal. For official queries regarding your service matters,
-              salary, or other administrative issues, please contact your respective DDO, DEO office,
-              or the Directorate of School Education, Tamil Nadu.
-            </p>
-          </div>
-        </div>
-      </div>
+      <Card category="reference" className="mt-10">
+        <CardHeader
+          title="Please Note"
+          icon={<AlertCircle size={20} />}
+          category="reference"
+        />
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            This is an unofficial portal. For official queries regarding your service matters,
+            salary, or other administrative issues, please contact your respective DDO, DEO office,
+            or the Directorate of School Education, Tamil Nadu.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Official Contacts */}
-      <div className="mt-6 bg-blue-50 rounded-xl p-6">
-        <h3 className="font-semibold text-blue-800 mb-4">Official Contacts</h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
-          <div>
-            <p className="font-medium mb-2">Directorate of School Education</p>
-            <p>DPI Campus, College Road</p>
-            <p>Chennai - 600 006</p>
-            <p className="mt-1">Phone: 044-28278803</p>
+      <Card category="default" className="mt-6">
+        <CardHeader title="Official Contacts" category="default" />
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <p className="font-medium text-tn-text">Directorate of School Education</p>
+              <p className="text-sm text-gray-600">DPI Campus, College Road</p>
+              <p className="text-sm text-gray-600">Chennai - 600 006</p>
+              <p className="text-sm text-gray-600 mt-1">Phone: 044-28278803</p>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium text-tn-text">Useful Official Websites</p>
+              <ul className="space-y-1 text-sm text-gray-600">
+                <li>• EMIS: emis.tnschools.gov.in</li>
+                <li>• IFHRMS: ifhrms.tn.gov.in</li>
+                <li>• TN Govt: tn.gov.in</li>
+              </ul>
+            </div>
           </div>
-          <div>
-            <p className="font-medium mb-2">Useful Official Websites</p>
-            <ul className="space-y-1">
-              <li>• EMIS: emis.tnschools.gov.in</li>
-              <li>• IFHRMS: ifhrms.tn.gov.in</li>
-              <li>• TN Govt: tn.gov.in</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }
