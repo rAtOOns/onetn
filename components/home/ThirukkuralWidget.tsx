@@ -6,12 +6,12 @@ export default function ThirukkuralWidget() {
 
   return (
     <section
-      className="py-4 bg-gradient-to-r from-tn-primary to-tn-highlight text-white"
+      className="py-2 bg-gradient-to-r from-tn-primary to-tn-highlight text-white"
       aria-labelledby="thirukkural-heading"
     >
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center gap-2 mb-3">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 mb-1.5">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
               <BookOpen size={20} />
@@ -35,10 +35,10 @@ export default function ThirukkuralWidget() {
         </div>
 
         {/* Kural Content - Responsive Grid */}
-        <div className="grid md:grid-cols-2 gap-3">
+        <div className="grid md:grid-cols-2 gap-2">
           {/* Left: Tamil Kural */}
-          <div className="bg-white/15 backdrop-blur-sm rounded-lg p-3">
-            <div className="flex items-start gap-1 mb-2">
+          <div className="bg-white/15 backdrop-blur-sm rounded-lg p-2">
+            <div className="flex items-start gap-1 mb-1">
               <Heart size={14} className="text-emerald-100 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <h3 className="text-xs font-semibold text-white">
@@ -51,15 +51,15 @@ export default function ThirukkuralWidget() {
             </div>
 
             {/* Tamil Text */}
-            <div className="space-y-1 mb-2">
+            <div className="space-y-0.5 mb-1">
               <p
-                className="text-sm md:text-base font-medium tamil leading-snug"
+                className="text-xs md:text-sm font-medium tamil leading-tight"
                 lang="ta"
               >
                 {kural.lines[0]}
               </p>
               <p
-                className="text-sm md:text-base font-medium tamil leading-snug"
+                className="text-xs md:text-sm font-medium tamil leading-tight"
                 lang="ta"
               >
                 {kural.lines[1]}
@@ -75,23 +75,23 @@ export default function ThirukkuralWidget() {
           </div>
 
           {/* Right: English Translation */}
-          <div className="bg-white/15 backdrop-blur-sm rounded-lg p-3 flex flex-col justify-center">
-            <h3 className="text-xs font-semibold text-white mb-2">
+          <div className="bg-white/15 backdrop-blur-sm rounded-lg p-2 flex flex-col justify-center">
+            <h3 className="text-[10px] font-semibold text-white mb-1">
               Translation
             </h3>
-            <p className="text-sm md:text-base leading-snug italic text-emerald-50">
+            <p className="text-xs md:text-sm leading-tight italic text-emerald-50">
               &ldquo;{kural.translation}&rdquo;
             </p>
-            <p className="text-[10px] text-emerald-100 mt-2 pt-2 border-t border-white/20">
+            <p className="text-[9px] text-emerald-100 mt-1 pt-1 border-t border-white/20">
               —Thiruvalluvar
             </p>
           </div>
         </div>
 
         {/* Footer Note - Explanation */}
-        <div className="mt-2 text-center text-[10px] text-emerald-100">
-          <p>
-            <strong>Kural</strong> (குறள்): Sacred couplet from Thirukkural—1,330 verses of Tamil wisdom on virtue, wealth, and love
+        <div className="mt-1 text-center text-[9px] text-emerald-100">
+          <p className="leading-tight">
+            <strong>Kural</strong>: 1,330 Tamil wisdom verses on virtue, wealth, love
           </p>
         </div>
       </div>
