@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { ArrowLeft, FileText, Search, Filter, MapPin, Building2, Globe } from "lucide-react";
 import { useState } from "react";
+import PageContainer from "@/components/ui/page-container";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getFormCardCategory, getFormCategoryIcon } from "@/lib/form-categories";
 
 interface Form {
   id: string;
@@ -272,15 +277,18 @@ export default function FormsPage() {
   }, {} as Record<string, Form[]>);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <PageContainer padding="lg">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
+      <div className="flex items-center gap-4 mb-8">
+        <Link
+          href="/"
+          className="p-2 hover:bg-emerald-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft size={20} className="text-tn-primary" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-tn-text flex items-center gap-2">
-            <FileText className="text-blue-600" size={28} />
+          <h1 className="text-3xl md:text-4xl font-bold text-tn-text flex items-center gap-3">
+            <FileText className="text-tn-primary" size={32} />
             Forms Guide
           </h1>
           <p className="text-sm text-gray-500 tamil">படிவங்கள் வழிகாட்டி</p>
@@ -288,7 +296,7 @@ export default function FormsPage() {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
+      <Card variant="outlined" className="mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
@@ -298,7 +306,7 @@ export default function FormsPage() {
               placeholder="Search forms..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-tn-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-tn-primary focus:border-transparent bg-transparent"
             />
           </div>
 
@@ -308,7 +316,7 @@ export default function FormsPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-tn-primary"
+              className="border rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-tn-primary bg-white"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -318,10 +326,10 @@ export default function FormsPage() {
             </select>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mb-6 text-sm">
+      <div className="flex flex-wrap gap-4 mb-8 text-sm">
         <div className="flex items-center gap-1.5">
           <Building2 size={14} className="text-blue-500" />
           <span className="text-gray-600">Office/Treasury</span>
@@ -337,64 +345,77 @@ export default function FormsPage() {
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <p className="text-sm text-blue-800">
-          <strong>How to use:</strong> This guide lists common government forms and where to obtain them.
-          Contact the specified office or portal to get the official form. Always verify you have the
-          latest version before submission.
-        </p>
-      </div>
+      <Card category="reference" className="mb-8">
+        <CardContent>
+          <p className="text-sm text-gray-700">
+            <strong className="text-tn-primary">How to use:</strong> This guide lists common government forms and where to obtain them.
+            Contact the specified office or portal to get the official form. Always verify you have the
+            latest version before submission.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Forms List */}
       {Object.keys(groupedForms).length === 0 ? (
-        <div className="text-center py-12">
-          <FileText size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">No forms found matching your search.</p>
-        </div>
+        <EmptyState
+          icon={<FileText size={48} />}
+          title="No forms found"
+          titleTamil="படிவங்கள் கிடைக்கவில்லை"
+          description="Try adjusting your search or category filter"
+          descriptionTamil="உங்கள் தேடல் அல்லது வகை வடிப்பு மாற்றிப்பாருங்கள்"
+        />
       ) : (
-        Object.entries(groupedForms).map(([category, categoryForms]) => (
-          <div key={category} className="mb-8">
-            <h2 className="text-lg font-semibold text-tn-text mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-tn-primary rounded-full"></span>
-              {category} Forms
-              <span className="text-sm font-normal text-gray-500">({categoryForms.length})</span>
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {categoryForms.map((form) => (
-                <div
-                  key={form.id}
-                  className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition-shadow"
-                >
-                  <div>
-                    <h3 className="font-medium text-tn-text">{form.name}</h3>
-                    <p className="text-xs text-gray-500 tamil mb-2">{form.nameTamil}</p>
-                    <p className="text-sm text-gray-600 mb-3">{form.description}</p>
-                    <div className="flex items-center gap-2 text-sm bg-gray-50 rounded-lg p-2">
-                      {getWhereToGetIcon(form.whereToGetType)}
-                      <span className="text-gray-700">{form.whereToGet}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        <div className="space-y-8">
+          {Object.entries(groupedForms).map(([category, categoryForms]) => (
+            <div key={category}>
+              <h2 className="text-xl font-semibold text-tn-text mb-4 flex items-center gap-3">
+                <span className="text-2xl">{getFormCategoryIcon(category)}</span>
+                {category} Forms
+                <span className="text-sm font-normal text-gray-500 ml-auto">({categoryForms.length})</span>
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                {categoryForms.map((form) => (
+                  <Card
+                    key={form.id}
+                    category={getFormCardCategory(category)}
+                    variant="elevated"
+                    hoverable
+                  >
+                    <CardHeader
+                      title={form.name}
+                      titleTamil={form.nameTamil}
+                      category={getFormCardCategory(category)}
+                    />
+
+                    <CardContent>
+                      <p className="text-sm text-gray-600 mb-3">{form.description}</p>
+                      <div className="flex items-center gap-2 text-sm bg-gray-50 rounded-lg p-2.5">
+                        {getWhereToGetIcon(form.whereToGetType)}
+                        <span className="text-gray-700">{form.whereToGet}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
 
       {/* Footer Note */}
-      <div className="mt-8 text-center border-t pt-6">
+      <div className="mt-10 text-center border-t pt-6">
         <p className="text-sm text-gray-500">
           Need information about specific rules?{" "}
-          <Link href="/go" className="text-tn-primary hover:underline">
+          <Link href="/go" className="text-tn-primary hover:underline font-medium">
             Browse Government Orders
           </Link>{" "}
           or check the{" "}
-          <Link href="/faq" className="text-tn-primary hover:underline">
+          <Link href="/faq" className="text-tn-primary hover:underline font-medium">
             FAQ section
           </Link>
           .
         </p>
       </div>
-    </div>
+    </PageContainer>
   );
 }
