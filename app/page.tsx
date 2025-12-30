@@ -1,4 +1,5 @@
 import HeroSection from "@/components/home/HeroSection";
+import ThirukkuralWidget from "@/components/home/ThirukkuralWidget";
 import QuickStats from "@/components/home/QuickStats";
 import LatestNews from "@/components/home/LatestNews";
 import TopicCards from "@/components/home/TopicCards";
@@ -13,6 +14,9 @@ export default function Home() {
     <>
       {/* Hero Section with Search */}
       <HeroSection />
+
+      {/* Daily Thirukkural Widget - Cultural Element */}
+      <ThirukkuralWidget />
 
       {/* Quick Stats */}
       <QuickStats />
