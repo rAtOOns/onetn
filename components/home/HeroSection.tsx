@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -16,60 +16,74 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative bg-tn-gradient py-8 md:py-12 overflow-hidden">
-      {/* Decorative background pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-48 h-48 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
+    <section className="relative bg-tn-gradient py-16 md:py-24 overflow-hidden">
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 opacity-15">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center text-white">
-          {/* Welcome text - Education Focus */}
-          <h1 className="text-2xl md:text-4xl font-bold mb-2">
-            TN Education GOs <span className="tamil font-normal text-xl md:text-2xl">கல்வித்துறை அரசாணைகள்</span>
-          </h1>
-          <p className="text-sm md:text-base text-gray-200 mb-1 max-w-xl mx-auto">
-            GOs, Forms & Schemes for Teachers & Schools
-          </p>
-          <p className="text-xs text-yellow-300 mb-4">
-            Unofficial Community Portal - Not a Government Website
-          </p>
+        <div className="max-w-4xl mx-auto">
+          {/* Headline Section */}
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-block mb-4">
+              <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30">
+                📚 Tamil Nadu Education Resources
+              </span>
+            </div>
 
-          {/* Search bar - Compact */}
-          <form onSubmit={handleSearch} className="max-w-xl mx-auto mb-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search: teacher salary, leave rules, transfer..."
-                className="w-full py-3 px-5 pr-12 rounded-full text-tn-text bg-white shadow-lg
-                         focus:outline-none focus:ring-2 focus:ring-tn-highlight/50"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 bg-tn-highlight
-                         text-white rounded-full hover:bg-tn-primary transition-colors"
-                aria-label="Search"
-              >
-                <Search size={20} />
-              </button>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+              Government Orders, Tools & Schemes
+            </h1>
+
+            <p className="text-lg md:text-xl text-cyan-50 max-w-3xl mx-auto mb-2">
+              Comprehensive resource portal for teachers and school staff across Tamil Nadu
+            </p>
+
+            <p className="text-sm text-cyan-100">
+              கல்வித்துறை அரசாணைகள், கணக்கீடு கருவிகள் மற்றும் திட்டங்கள் ஒரு இடத்தில்
+            </p>
+          </div>
+
+          {/* Enhanced Search Bar */}
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+              <div className="relative bg-white rounded-xl shadow-2xl p-1 flex items-center gap-2">
+                <Search className="ml-4 text-tn-primary flex-shrink-0" size={22} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search: Salary, Leave Rules, Transfer, GOs, Forms..."
+                  className="flex-1 py-4 px-2 text-tn-text bg-transparent outline-none placeholder:text-gray-400 text-base"
+                />
+                <button
+                  type="submit"
+                  className="mr-2 p-2.5 bg-gradient-to-r from-tn-primary to-tn-accent text-white rounded-lg hover:shadow-lg transition-all duration-200 flex-shrink-0"
+                  aria-label="Search"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              </div>
             </div>
           </form>
 
-          {/* Quick search suggestions - Education focused */}
-          <div className="flex flex-wrap justify-center gap-2 text-xs">
-            <span className="text-gray-300">Popular:</span>
-            {["Teacher Salary", "DA Order", "Leave Rules", "Transfer", "Promotion", "TET"].map((term) => (
-              <button
-                key={term}
-                onClick={() => router.push(`/go?q=${encodeURIComponent(term)}`)}
-                className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-              >
-                {term}
-              </button>
-            ))}
+          {/* Quick Links */}
+          <div className="text-center">
+            <p className="text-cyan-50 text-sm font-medium mb-3">Popular Searches:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {["Salary Calculator", "Leave Rules", "DA Hike", "Transfer", "Promotion", "TET", "Forms"].map((term) => (
+                <button
+                  key={term}
+                  onClick={() => router.push(`/go?q=${encodeURIComponent(term)}`)}
+                  className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white text-sm font-medium rounded-lg backdrop-blur-sm border border-white/20 transition-all duration-200"
+                >
+                  {term}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

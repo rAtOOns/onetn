@@ -1,4 +1,5 @@
 import HeroSection from "@/components/home/HeroSection";
+import QuickStats from "@/components/home/QuickStats";
 import LatestNews from "@/components/home/LatestNews";
 import TopicCards from "@/components/home/TopicCards";
 import LatestDocuments from "@/components/home/LatestDocuments";
@@ -12,6 +13,9 @@ export default function Home() {
     <>
       {/* Hero Section with Search */}
       <HeroSection />
+
+      {/* Quick Stats */}
+      <QuickStats />
 
       {/* Latest News - Prominent Banner */}
       <LatestNews />
